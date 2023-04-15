@@ -19,8 +19,8 @@ class User(AbstractUser):
 
     code = models.CharField(max_length=50, unique=True, null=True, blank=True)
     friends = models.IntegerField(default=0)
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    # USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['email' ]
 
 
     def save(self, *args, **kwargs):
