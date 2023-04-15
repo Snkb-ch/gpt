@@ -143,7 +143,7 @@ STATICFILES_DIRS = [
 
 with open("openaikey.txt") as f:
     OPENAI_API_KEY = f.read().strip()
-ALLOWED_HOSTS = ['www.brainstorm.ru', 'brainstorm.ru']
+ALLOWED_HOSTS = ['www.brainstormai.ru', 'brainstormai.ru']
 ACCOUNT_AUTHENTICATION_METHOD ="email"
 
 AUTH_USER_MODEL = 'basegpt.User'
