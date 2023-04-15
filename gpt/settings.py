@@ -132,8 +132,9 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
 
-OPENAI_API_KEY = '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'
 
+with open("openaikey.txt") as f:
+    OPENAI_API_KEY = f.read().strip()
 ALLOWED_HOSTS = ['www.brainstorm.ru', 'brainstorm.ru']
 ACCOUNT_AUTHENTICATION_METHOD ="email"
 
