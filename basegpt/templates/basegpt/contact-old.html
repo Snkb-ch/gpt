@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<form class="form" action="" method="post">
+                    {% csrf_token %}
+
+
+                    <div class="form__group form__group">
+                        <label for="username">{{field.label}}</label>
+                        {{field.message}}
+
+                    </div>
+
+
+
+                    <button class="btn btn--main" type="submit">Submit</button>
+                </form>
+
+</body>
+</html>

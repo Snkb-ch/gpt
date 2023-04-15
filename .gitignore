@@ -1,0 +1,5 @@
+/static/images/rawfiles/
+/static/images/responsefiles/
+/db.sqlite3
+/cert/
+/secret_key.txt

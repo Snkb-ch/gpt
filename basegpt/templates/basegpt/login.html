@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+{% load static %}
+{% load widget_tweaks %}
+
+
+  <head>
+    <title></title>
+    <meta property="og:title" content="Trained All Capybara" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta property="twitter:card" content="summary_large_image" />
+<link href="{% static 'css/register.css' %}" rel="stylesheet" />
+<link href="{% static 'css/style.css' %}" rel="stylesheet" />
+
+  </head>
+<body>
+
+
+<div>
+
+  <div class="register-container">
+      <form class="form" method="POST">
+              <span class="signup">Войти</span>
+            {% csrf_token %}
+        {{form.username.label_tag}}
+        {{form.username|add_class:"form--input"}}
+        {{form.password.label_tag}}
+        {{form.password|add_class:"form--input"}}
+
+
+
+<!--    <span class="signup">Зарегистрироваться</span>-->
+<!--    <input type="email" placeholder="Email" class="form&#45;&#45;input">-->
+<!--    <input type="password" placeholder="Пароль" class="form&#45;&#45;input">-->
+<!--    <input type="password" placeholder="Подтвердите пароль" class="form&#45;&#45;input">-->
+
+    <div class="form--marketing">
+
+
+        <span>Нет аккаунта?   <a href="{% url 'register' %}">  Зарегистрироваться</a> </span>
+
+    </div>
+    <button class="form--submit"  type="submit" value="Register">
+        Войти
+    </button>
+</form>
+
+  </div>
+</div>
+
+</body>

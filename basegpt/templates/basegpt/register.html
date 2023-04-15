@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+{% load static %}
+{% load widget_tweaks %}
+
+
+  <head>
+    <title></title>
+    <meta property="og:title" content="Trained All Capybara" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta property="twitter:card" content="summary_large_image" />
+<link href="{% static 'css/register.css' %}" rel="stylesheet" />
+<link href="{% static 'css/style.css' %}" rel="stylesheet" />
+
+  </head>
+<body>
+
+<div>
+
+  <div class="register-container">
+    <form class="form" method="POST">
+              <span class="signup">Зарегистрироваться</span>
+            {% csrf_token %}
+        {{form.email.label_tag}}
+        {{form.email|add_class:"form--input"}}
+        {{form.password1.label_tag}}
+        {{form.password1|add_class:"form--input"}}
+        {{form.password2.label_tag}}
+        {{form.password2|add_class:"form--input"}}
+<!--              {{ form.as_p }}-->
+
+<!--    <span class="signup">Зарегистрироваться</span>-->
+<!--    <input type="email" placeholder="Email" class="form&#45;&#45;input">-->
+<!--    <input type="password" placeholder="Пароль" class="form&#45;&#45;input">-->
+<!--    <input type="password" placeholder="Подтвердите пароль" class="form&#45;&#45;input">-->
+
+    <div class="form--marketing">
+        <input id="okayToEmail" type="checkbox" required>
+        <label for="okayToEmail" class="checkbox">
+            Я согласен с <a href="{{ STATIC }}file.pdf" >условиями</a> и с <a href= "{% static 'policy/brainstormai.pdf' %}">политикой конфиденциальности</a>
+        </label>
+    </div>
+    <button class="form--submit"  type="submit" value="Register">
+        Зарегистрироваться
+    </button>
+</form></div>
+
+</div>
+
+
+
+
+
+
+</body>

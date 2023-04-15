@@ -1,0 +1,319 @@
+.conactus-container {
+  width: 100%;
+  display: flex;
+  overflow: auto;
+  min-height: 100vh;
+  align-items: center;
+  flex-direction: column;
+}
+.conactus-container01 {
+  width: 98%;
+  height: auto;
+  display: flex;
+  padding: var(--dl-space-space-halfunit);
+  align-self: center;
+  margin-top: 5%;
+  align-items: flex-start;
+   margin-bottom:100px;
+  flex-direction: column;
+}
+.conactus-container02 {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+}
+.conactus-container03 {
+  flex: 0 0 auto;
+  width: 60%;
+  height: 928px;
+  margin: 1%;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+}
+.conactus-container04 {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+}
+.conactus-form {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  position: relative;
+  align-self: stretch;
+  align-items: stretch;
+  flex-direction: column;
+}
+.conactus-container05 {
+  width: 92%;
+  height: auto;
+  display: flex;
+  position: relative;
+  align-self: flex-start;
+  margin-top: var(--dl-space-space-halfunit);
+  text-align: left;
+  align-items: flex-end;
+  margin-right: var(--dl-space-space-halfunit);
+  margin-bottom: var(--dl-space-space-halfunit);
+  justify-content: flex-start;
+}
+.conactus-container06 {
+  flex: 0 0 auto;
+  width: auto;
+  height: auto;
+  display: flex;
+  align-items: flex-start;
+  margin-right: 2%;
+  flex-direction: column;
+}
+.conactus-text {
+  color: var(--dl-color-success-700);
+  height: auto;
+  font-size: 52px;
+  font-style: normal;
+  font-family: Comic Sans MS;
+  font-weight: 400;
+}
+.conactus-text1 {
+  text-transform: capitalize;
+}
+.conactus-text2 {
+  text-transform: lowercase;
+}
+.conactus-container07 {
+  width: 100%;
+  height: 332px;
+  display: flex;
+  margin-top: 5%;
+  align-items: center;
+  margin-bottom: 5%;
+  justify-content: flex-start;
+}
+.conactus-textarea {
+  width: 98%;
+  height: 100%;
+  margin: 1%;
+  resize: none;
+  outline: none;
+  box-shadow:  rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+  transition: 0.3s;
+  border-color: #f7f6f6;
+  border-width: 1px;
+  border-radius: var(--dl-radius-radius-radius8);
+  background-color: #f7f6f6;
+}
+.conactus-textarea:focus {
+  outline: none;
+  transform: scale(1.05);
+  box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+  border-color: #22a012;
+}
+.conactus-container08 {
+  flex: 0 0 auto;
+  width: var(--dl-size-size-large);
+  height: auto;
+  display: flex;
+  align-self: flex-end;
+  align-items: flex-end;
+  flex-direction: row;
+}
+.conactus-button {
+  width: 160px;
+  height: 50px;
+  align-self: center;
+  box-shadow:  rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+  transition: 0.3s;
+  border-width: 0px;
+  margin-right: var(--dl-space-space-unit);
+  background-color: #f7f6f6;
+}
+.conactus-button:hover {
+  cursor: pointer;
+}
+.conactus-image {
+  width: 485px;
+  align-self: center;
+  object-fit: cover;
+}
+.conactus-container09 {
+  flex: 0 0 auto;
+  width: 35%;
+  height: 898px;
+  display: flex;
+  margin-top: 1.5%;
+  align-items: flex-start;
+  padding-top: 5%;
+  margin-right: 1%;
+  border-radius: var(--dl-radius-radius-radius8);
+  margin-bottom: 1%;
+  flex-direction: column;
+}
+.conactus-container10 {
+  flex: 0 0 auto;
+  width: 100%;
+  height: auto;
+  display: flex;
+  margin-top: var(--dl-space-space-twounits);
+  align-items: flex-start;
+  margin-bottom: var(--dl-space-space-twounits);
+}
+.conactus-container11 {
+  flex: 0 0 auto;
+  width: 8px;
+
+  height: 55px;
+  display: flex;
+  align-self: center;
+  align-items: flex-start;
+  flex-direction: column;
+  background-color: #f78b55;
+}
+.conactus-container12 {
+  flex: 0 0 auto;
+  width: 95%;
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  background-color: var(--dl-color-gray-grey);
+}
+.conactus-text3 {
+  padding: var(--dl-space-space-unit);
+  font-style: normal;
+  font-family: Verdana;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.conactus-text4 {
+  color: #595959;
+  font-family: Noto Sans;
+}
+.conactus-container13 {
+  flex: 0 0 auto;
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: flex-start;
+}
+.conactus-container14 {
+  flex: 0 0 auto;
+  width: 8px;
+
+  height: 55px;
+  display: flex;
+  align-self: center;
+  align-items: flex-start;
+  flex-direction: column;
+  background-color: #f78b55;
+}
+.conactus-container15 {
+  flex: 0 0 auto;
+  width: 95%;
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+}
+.conactus-text6 {
+  color: var(--dl-color-gray-500);
+  width: 100%;
+  height: 100%;
+  padding: var(--dl-space-space-halfunit);
+  font-style: normal;
+  font-family: Noto Sans;
+  font-weight: 700;
+  line-height: 1.5;
+  background-color: var(--dl-color-gray-grey);
+}
+.conactus-container16 {
+  flex: 0 0 auto;
+  width: auto;
+  height: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.conactus-image1 {
+  width: 60%;
+  height: auto;
+  align-self: center;
+  margin-top: var(--dl-space-space-sixunits);
+  object-fit: cover;
+}
+@media(max-width: 1600px) {
+  .conactus-container01 {
+    margin-top: 6%;
+  }
+  .conactus-container07 {
+    align-items: stretch;
+    flex-direction: row;
+  }
+  .conactus-container08 {
+    width: 25%;
+  }
+}
+@media(max-width: 1200px) {
+  .conactus-text {
+    font-size: 42px;
+  }
+  .conactus-text3 {
+    font-family: Verdana;
+    line-height: 1.5;
+  }
+}
+@media(max-width: 479px) {
+  .conactus-container01 {
+    height: auto;
+    align-self: stretch;
+    margin-top: 10%;
+    align-items: stretch;
+    padding-bottom: 0px;
+    justify-content: space-between;
+  }
+  .conactus-container02 {
+    height: auto;
+    position: relative;
+    margin-top: 10%;
+    flex-direction: column;
+  }
+  .conactus-container03 {
+    width: 100%;
+    height: auto;
+    align-items: center;
+  }
+  .conactus-container04 {
+    height: 100%;
+  }
+  .conactus-form {
+    height: auto;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .conactus-container06 {
+    width: 100%;
+    height: 100%;
+  }
+  .conactus-container07 {
+    height: var(--dl-size-size-xxlarge);
+    justify-content: center;
+  }
+  .conactus-container08 {
+    width: 214px;
+    height: auto;
+    align-self: center;
+    align-items: flex-start;
+  }
+  .conactus-button {
+    align-self: flex-start;
+  }
+  .conactus-container09 {
+    width: 100%;
+    height: auto;
+    align-self: stretch;
+    align-items: stretch;
+    justify-content: space-between;
+  }
+}

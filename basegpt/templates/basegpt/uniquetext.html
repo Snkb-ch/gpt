@@ -1,0 +1,175 @@
+{% extends "main.html" %}
+{% load static %}
+{% block title %}Повышение оригинальности{% endblock %}
+{% block extra_css %}
+  <link href="{% static 'css/uniquetext.css' %}" rel="stylesheet" />
+<script src = "{% static 'js/uniquetext.js' %}"></script>
+{% endblock %}
+{% block content %}
+      <div class="page-container">
+        <div class="page-container01">
+          <div class="page-container02">
+            <div class="page-container03">
+              <div class="page-container04">
+                <form class="page-form" id="post-form-unique-text" method="post" action="">
+                  {% csrf_token %}
+                  <div id = "error">{{error}}</div>
+                  <div class="page-container05">
+                    <div class="page-container06">
+                      <h1 class="page-text">
+                        <span class="page-text01">Повышение</span>
+                        <span class="page-text02">УНИКАЛЬНОСТИ</span>
+                      </h1>
+                    </div>
+                    <div class="page-container07">
+                      <a
+                        href="{% url 'uniquefile' %}"
+
+                        rel="noreferrer noopener"
+                        class="page-link"
+                      >
+                        <span>Загрузить файл</span>
+                        <br />
+                      </a>
+                    </div>
+                  </div>
+                  <div class="page-container08">
+                    <img
+                      alt="pastedImage"
+                      src="{% static 'images/pastedimage-cf5b-200h.png' %}"
+                      class="page-pasted-image"
+                    />
+                  </div>
+                  <div class="page-container09">
+                    <div class="page-container10">
+                      <textarea
+                              id="rawtext"
+                              name="rawtext"
+                        placeholder="Введите текст "
+                        class="page-textarea textarea"
+                              required
+                      ></textarea>
+                    </div>
+                    <div class="page-container11">
+                      <div class="page-container12">
+                        <span class="page-text05">Выбор режима</span>
+                      </div>
+                      <div class="page-container13">
+                        <div class="page-div">
+
+
+<div class='checkbox-container'>
+  <label class='checkbox-label'>
+    <input type='radio' name='options' class='checkbox-input' value="red1" id = 'opt1ch' checked>
+    <div class='checkbox-style' id = 'opt1'></div>
+  </label>
+  <label class='checkbox-label'>
+    <input type='radio' name='options' class='checkbox-input' value="red2" id = 'opt2ch'>
+    <div class='checkbox-style' id = 'opt2'></div>
+  </label>
+  <label class='checkbox-label'>
+    <input type='radio' name='options' class='checkbox-input' value="red3" id = 'opt3ch'>
+    <div class='checkbox-style' id = 'opt3'></div>
+  </label>
+</div>
+
+
+                        </div>
+                      </div>
+                      <div class="page-container14">
+                        <div class="page-container15">
+                          <img
+                            alt="image"
+                             src="{% static 'images/dan%20good-200h.png' %}"
+                            class="page-image"
+                          />
+                        </div>
+                        <div class="page-container16">
+                          <img
+                            alt="image"
+                            src="{% static 'images/dan%20normal-200h.png' %}"
+                            class="page-image1"
+                          />
+                        </div>
+                        <div class="page-container17">
+                          <img
+                            alt="image"
+                            src="{% static 'images/dan%20so%20good-200h.png' %}"
+                            class="page-image2"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="page-container18">
+                    <div class="page-container19">
+                      <button class="btn-get-price" type="submit" value="Цена" id = "submitunique-text-price"  name = "getprice">Посчитать цену</button>
+                    </div>
+                    <div class="page-container20" id = "price">
+
+                    </div>
+                    <div class="page-container21">
+                      <button class="btn-pay" type="submit" value="Купить" id = "submitunique-order"  name = "pay">
+                        Купить
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div class="page-container22">
+              <div class="page-container23">
+                <span class="page-text07">
+                  <span class="page-text08">Легкий режим</span>
+                  <span class="page-text09">+10-60%</span>
+                  <span class="page-text10">&nbsp;</span>
+                  <br class="page-text11" />
+                  <span class="page-text12">7 руб - 2000 символов</span>
+                  <br class="page-text13" />
+                  <br class="page-text14" />
+                  <span class="page-text15">Средний режим +85-90%&nbsp;</span>
+                  <br class="page-text16" />
+                  <span class="page-text17">12 руб</span>
+                  <span class="page-text18">- 2000 символов</span>
+                  <br class="page-text19" />
+                  <br class="page-text20" />
+                  <span class="page-text21">Безумный режим +95-100%</span>
+                  <span class="page-text22">&nbsp;</span>
+                  <br class="page-text23" />
+                  <span class="page-text24">12 руб - 2000 символов</span>
+                  <br />
+                </span>
+              </div>
+              <div class="page-container24">
+                <div class="page-container25"></div>
+                <div class="page-container26">
+                  <span class="page-text26">
+                    <span>Советуем убирать названия глав и&nbsp;</span>
+                    <span>заголовки, также сноски и источники</span>
+                    <br />
+                    <span>Текст более 10 страниц рекомендуем делить</span>
+                  </span>
+                </div>
+              </div>
+              <div class="page-container27">
+                <div class="page-container28"></div>
+                <div class="page-container29">
+                  <span class="page-text31">
+                    <span>
+                      Нажимая кнопку купить вы соглашаетесь ,что контент
+                      генерируемый нейросетью может содержать ошибки,
+                      неточности, и быть неполным.
+                    </span>
+                    <br />
+                    <span>
+                      Мы не несем ответственности за контент, генерируемый
+                      нейросетью
+                    </span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+{% endblock %}

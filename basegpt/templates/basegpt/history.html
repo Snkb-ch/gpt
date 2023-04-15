@@ -1,0 +1,82 @@
+{% extends "main.html" %}
+{% load static %}
+{% block title %}История{% endblock %}
+{% block extra_css %}
+  <link href="{% static 'css/history.css' %}" rel="stylesheet" />
+<script src = "{% static 'js/history.js' %}"></script>
+{% endblock %}
+{% block content %}
+
+<div class="response-container">
+    <div class="response-container1">
+      <div class="response-container2">
+        <h1 class="response-text">История</h1>
+      </div>
+        {% for item in uniquetexts %}
+      <div class="response-container3">
+        <div class="response-container4">
+          <h1 class="response-text01">{{item.order}}</h1>
+        </div>
+        <div class="response-container5">
+
+          <div class="response-container6">
+            <span class="response-text02">
+                {% if item.responsefile  %}
+                <span class="response-text03">
+
+                    <a href = "{{item.responsefile.url}}" style="text-decoration: underline; "  download="">{{item.rawfile.name|cut:'rawfiles/'}}</a></span>
+
+
+
+              {% endif %}
+               {% if item.responsetext %}
+              <span>
+                <pre>
+                  {{item.responsetext}}
+
+                </pre></span>
+            </span>
+              {% endif %}
+          </div>
+        </div>
+        <div class="response-container7">
+{% if item.responsetext %}
+<button class='bottone5'>Скопировать</button>
+{% endif %}
+
+        </div>
+      </div>
+
+        {% endfor %}
+
+
+        {% for item in examtexts %}
+
+        <div class="response-container3">
+        <div class="response-container4">
+          <h1 class="response-text01">{{item.order}}</h1>
+        </div>
+        <div class="response-container5">
+
+          <div class="response-container6">
+            <span class="response-text02" >
+
+
+                <pre  name = {{item.order}}>{{item.responsetext}}</pre>
+            </span>
+
+          </div>
+        </div>
+        <div class="response-container7">
+
+<button class='bottone5' onclick="copyText('{{item.order}}')" name="{{item.order}}">Скопировать</button>
+
+
+        </div>
+      </div>
+
+        {% endfor %}
+
+    </div>
+  </div>
+{% endblock %}

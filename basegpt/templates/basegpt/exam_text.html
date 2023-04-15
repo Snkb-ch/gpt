@@ -1,0 +1,204 @@
+{% extends "main.html" %}
+{% load static %}
+{% block title %}Сочинение{% endblock %}
+{% block extra_css %}
+  <link href="{% static 'css/exam.css' %}" rel="stylesheet" />
+  <script src = "{% static 'js/exam_text.js' %}"></script>
+{% endblock %}
+{% block content %}
+
+{% csrf_token %}
+<div id="overlay" style="display: none;"></div>
+
+ <div id="loader-div" style="display: none;">
+
+<div class="loader">
+  <div>
+    <ul>
+      <li>
+        <svg fill="currentColor" viewBox="0 0 90 120">
+          <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z"></path>
+        </svg>
+      </li>
+      <li>
+        <svg fill="currentColor" viewBox="0 0 90 120">
+          <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z"></path>
+        </svg>
+      </li>
+      <li>
+        <svg fill="currentColor" viewBox="0 0 90 120">
+          <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z"></path>
+        </svg>
+      </li>
+      <li>
+        <svg fill="currentColor" viewBox="0 0 90 120">
+          <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z"></path>
+        </svg>
+      </li>
+      <li>
+        <svg fill="currentColor" viewBox="0 0 90 120">
+          <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z"></path>
+        </svg>
+      </li>
+      <li>
+        <svg fill="currentColor" viewBox="0 0 90 120">
+          <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z"></path>
+        </svg>
+      </li>
+    </ul>
+  </div><span>Loading</span></div>
+ </div>
+
+
+<div id = "error">{{error}}</div>
+<div>
+
+      <div class="exam-container">
+        <div class="exam-container01">
+          <div class="exam-container02">
+            <div class="exam-container03">
+              <div class="exam-container04">
+                <form class="exam-form"  id="post-form-unique-text" method="post" action="">
+                  <div class="exam-container05">
+                    <div class="exam-container06">
+                      <h1 class="exam-text">
+                        <span>Сочинение по русскому</span>
+                        <span class="exam-text02">BETA</span>
+                      </h1>
+                    </div>
+                  </div>
+                  <div class="exam-container07">
+                    <img
+                      alt="pastedImage"
+                      src="{% static 'images/pastedimage-8sd-200h.png' %}"
+                      class="exam-pasted-image"
+                    />
+                  </div>
+
+                  {% csrf_token %}
+                  <div class="exam-container08">
+                    <div class="exam-container09">
+                      <textarea
+                        placeholder="Введите текст "
+                        class="exam-textarea textarea"
+                        id="rawtext"
+                        name="rawtext"
+                        required
+                      ></textarea>
+                    </div>
+                  </div>
+                  <div class="exam-container10">
+                    <div class="exam-container11">
+                      <div class="exam-container12">
+                        <button class="btn-get-price" type="submit" id = "get_idea" name="get_idea" value="get idea">
+
+                            Определить проблему
+
+
+                        </button>
+                      </div>
+                    </div>
+                    <div class="exam-container13">
+                      <div class="exam-container14" id = idea-from-ai>
+
+                      </div>
+                      <div class="exam-container15">
+                        <div class="exam-container16"></div>
+                        <div class="exam-container17">
+                          <div class="exam-div">
+
+                              <link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0' />
+
+
+<button class='icon1-button' id = "copy" onclick="copyText()" style="display: none;">
+<span class='material-symbols-outlined'>
+keyboard_double_arrow_down
+</span>
+
+</button>
+
+                          </div>
+                        </div>
+                      </div>
+                      <div class="exam-container18">
+                        <textarea type = "text"
+                                  id = "idea"
+                                  name = "idea"
+                          placeholder="Введите идею текста"
+                          class="exam-textarea1 textarea"
+                                  required
+                        ></textarea>
+                      </div>
+                    </div>
+                    <div class="exam-container19">
+                      <div class="exam-container20">
+                        <div class="exam-div1">
+
+<button class="btn-pay" type="submit" value="Купить" id = "submitunique-order"  name = "pay">
+ Купить
+</button>
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div class="exam-container21">
+              <div class="exam-container22">
+                <span class="exam-text09">
+                  <span class="exam-text10">Рекомендации:</span>
+                  <br class="exam-text11" />
+                  <span class="exam-text12">Фиксированная цена 15 руб</span>
+                  <br class="exam-text13" />
+                  <br />
+                  <span class="exam-text15">
+                    Чтобы начать вставьте только текст по которому нужно
+                    написать сочинение в поле
+                  </span>
+                  <span class="exam-text16">"Введите текст"</span>
+                  <br class="exam-text17" />
+                  <br class="exam-text18" />
+                  <span class="exam-text19">После, нажав на кнопку</span>
+                  <span class="exam-text20">"Определить проблему"</span>
+                  <span class="exam-text21">
+                    , нейросеть выделит возможную проблематику сочинения
+                  </span>
+                  <br class="exam-text22" />
+                  <br class="exam-text23" />
+                  <span class="exam-text24">Нажав на</span>
+                  <span class="exam-text25">две зеленные стрелочки</span>
+                  <span class="exam-text26">
+                    вы скопируете проблему текса в поле для редактирования
+                  </span>
+                  <br class="exam-text27" />
+                  <span class="exam-text28"></span>
+                  <br class="exam-text29" />
+                  <span class="exam-text30">
+                    Отредактировав проблему нажмите
+                  </span>
+                  <span class="exam-text31">"Купить"</span>
+                  <br />
+                </span>
+              </div>
+              <div class="exam-container23">
+                <div class="exam-container24"></div>
+                <div class="exam-container25">
+                  <span class="exam-text33">
+                    Нажимая кнопку купить вы соглашаетесь ,что контент
+                    генерируемый нейросетью может содержать ошибки, неточности,
+                    и быть неполным. Мы не несем ответственности за контент,
+                    генерируемый нейросетью
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+</div>
+
+
+
+{% endblock %}
