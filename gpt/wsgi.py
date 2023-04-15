@@ -9,10 +9,6 @@ https://docs.djangoproject.com/en/4.1/howto/deployment/wsgi/
 
 
 import os, sys
-sys.path.insert(0, '/var/www/u2019785/data/www/brainstormai.ru/gpt')
-sys.path.insert(1, '/var/www/u2019785/data/djangoenv/lib/python3.7/site-packages')
-os.environ['DJANGO_SETTINGS_MODULE'] = 'gpt.settings'
-from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'gpt.settings')
 
