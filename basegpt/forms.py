@@ -1,6 +1,7 @@
 from .models import *
 from django.forms import ModelForm
-from django.contrib.auth.forms import UserCreationForm
+
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 # class RequestForm(ModelForm):
 #     class Meta:
 #         model = Request
@@ -26,11 +27,19 @@ class UniqueFileForm(ModelForm):
 
 
 class UserCreationForm(UserCreationForm):
+
     class Meta:
         model = User
+        fields = ("email",)
 
-        fields = ['email', 'password1', 'password2']
 
+
+
+class CustomUserChangeForm(UserChangeForm):
+
+    class Meta:
+        model = User
+        fields = ("email",)
 class ContactForm(ModelForm):
     class Meta:
         model = Contact_us

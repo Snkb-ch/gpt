@@ -38,7 +38,7 @@ def history(request):
 
 
 
-    return render(request, 'basegpt/history.html')
+   
 @login_required(login_url='login')
 def audio(request):
     transcript = "Здесь будет расшифровка"

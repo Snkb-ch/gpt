@@ -9,18 +9,26 @@ import uuid
 
 import random
 import string
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+from django.utils.translation import gettext_lazy as _
+
+from .managers import CustomUserManager
 class User(AbstractUser):
-    username = models.CharField(max_length=255, null=True, unique=True, blank=True)
-    name = models.CharField(max_length=255, null=True, blank=True)
-    email = models.EmailField(max_length=255, unique=True, null=True)
-    bio = models.TextField(blank=True, null=True)
-    avatar = models.ImageField(default= "avatar.svg", blank=True, null=True)
+    username = None
+    email = models.EmailField(_("email address"), unique=True)
+
+
     email_verified = models.BooleanField(default=False)
 
     code = models.CharField(max_length=50, unique=True, null=True, blank=True)
     friends = models.IntegerField(default=0)
-    # USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['email' ]
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+    objects = CustomUserManager()
+
+    def __str__(self):
+        return self.email
 
 
     def save(self, *args, **kwargs):
