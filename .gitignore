@@ -12,3 +12,4 @@ __pycache__
 /gpt/__pycache__/
 /basegpt/__pycache__
 /basegpt/__pycache__/
+/basegpt/migrations/__pycache__/
