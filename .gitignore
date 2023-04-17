@@ -5,3 +5,8 @@
 /secret_key.txt
 /openaikey.txt
 .idea
+**/__pycache__
+__pycache__
+*.pyc
+/gpt/__pycache__
+/gpt/__pycache__/
