@@ -10,3 +10,5 @@ __pycache__
 *.pyc
 /gpt/__pycache__
 /gpt/__pycache__/
+/basegpt/__pycache__
+/basegpt/__pycache__/
