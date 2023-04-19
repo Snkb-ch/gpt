@@ -422,7 +422,7 @@ def success_unique_file(request, order):
         delete_old_objects(UniqueText, 10, order.user)
         order.result = True
         order.save()
-        file_url = obj.responsefile.url
+        file_url = '/gpt/static' + obj.responsefile.url
         response = ({'type': 'file', 'file_url': file_url})
         return response
 
