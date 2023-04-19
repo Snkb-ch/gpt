@@ -410,21 +410,26 @@ def success_unique_file(request, order):
 
 
     elif response_file_text != 'error':
-        # UniqueText.objects.get_or_create(user=order.user, rawfile=order.rawfile, order=order)
-        obj = UniqueText.objects.get(user=order.user, order=order)
-        obj.responsefile.name = 'responsefiles/responsefile' + str(obj.order_id) + '.txt'
+        try:
+            # UniqueText.objects.get_or_create(user=order.user, rawfile=order.rawfile, order=order)
+            obj = UniqueText.objects.get(user=order.user, order=order)
+            obj.responsefile.name = 'responsefiles/responsefile' + str(obj.order_id) + '.txt'
 
-        obj.save()
+            obj.save()
 
-        with open(obj.responsefile.path, 'w') as f:
-            f.write(response_file_text)
+            with open(obj.responsefile.path, 'w') as f:
+                f.write(response_file_text)
 
-        delete_old_objects(UniqueText, 10, order.user)
-        order.result = True
-        order.save()
-        file_url = '/gpt/static' + obj.responsefile.url
-        response = ({'type': 'file', 'file_url': file_url})
-        return response
+            delete_old_objects(UniqueText, 10, order.user)
+            order.result = True
+            order.save()
+            file_url = '/gpt/static' + obj.responsefile.url
+            response = ({'type': 'file', 'file_url': file_url})
+            return response
+        except Exception as e:
+            response = ({'type': 'error', 'error': e})
+            return response
+
 
 
 def success_exam_text(request, order):

@@ -52,6 +52,7 @@ button.addEventListener('click', (event) => {
     submitButton.disabled = true;
     } else if (data['type'] === 'error') {
         responseDiv.textContent = data['error'];
+        console.log(data['error']);
         var submitButton = document.getElementById(buttonValue);
         submitButton.disabled = true;
 
