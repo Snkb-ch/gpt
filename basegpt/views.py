@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
 from django.conf import settings
+from .prompts import *
 
 from django.contrib import messages
 
@@ -25,6 +26,8 @@ from rest_framework.views import APIView
 from .models import *
 
 from django.shortcuts import render, redirect
+
+
 @login_required(login_url='login')
 def history(request):
 
@@ -52,7 +55,7 @@ def audio(request):
 
         )
 
-        print(transcript)
+
 
     return render(request, 'basegpt/audio.html', {'transcript': transcript})
 
@@ -68,8 +71,8 @@ def get_objects(request):
 
 
 def refund(order):
-    Configuration.account_id = '202517'
-    Configuration.secret_key = 'test_NaEt-DpTS6rVYC9KS6EmcNDbvAlXh5JNrSZUF4UvlWk'
+    Configuration.account_id = settings.YOOKASSA_SHOP_ID
+    Configuration.secret_key = settings.YOOKASSA_SECRET_KEY
     Refund.create({
         "amount": {
             "value": order.price,
@@ -114,7 +117,7 @@ def split_text_on_parts(text, max_length):
 def red1_for_unique_text(text):
     parts = split_text_on_parts(text, 1500)
     for i in range(len(parts)):
-        print('hey')
+
 
         openai.api_key = settings.OPENAI_API_KEY
 
@@ -123,7 +126,7 @@ def red1_for_unique_text(text):
             messages=[
                 {
                     "role": "system",
-                    "content": 'Очень сильно перефразируй текст. Наполни его синонимами. Добавь еще предложения и абзацы, но главное сохрани суть целого текста. Нельзя менять фамилии, даты, цифры, названия глав и произведений, а также цитаты. Будь многословным и абстрактным, но держись научного стиля. Не повторяйся. Нельзя использовать одинаковые и однокоренные слова в соседних предложениях.'
+                    "content": Prompts.red1
                 },
 
                 {"role": "user",
@@ -135,14 +138,14 @@ def red1_for_unique_text(text):
         parts[i] = ans.choices[0]['message']['content']
 
     response_text = ''.join(parts)
-    print('end')
+
     return response_text
 
 
 def red2_for_unique_text(text):
     parts = split_text_on_parts(text, 1500)
     for i in range(len(parts)):
-        print('hey')
+
 
         openai.api_key = settings.OPENAI_API_KEY
 
@@ -151,7 +154,7 @@ def red2_for_unique_text(text):
             messages=[
                 {
                     "role": "system",
-                    "content": 'Создай новый уникальный научный текст основываясь на этом исходном тексте. Используй научный стиль. Используй разные конструкции предложений разной длины. Используй разные неочевидные синонимы. Если в исходном тексте есть фамилии, цитаты, названия произведений, цифры, даты используй их в своем тексте. Это значит, что информация из исходного текста обязана быть в твоем в том или ином виде. Будь многословным. Не повторяйся. Не используй одинаковые и однокоренные слова в соседних предложениях.Не пиши заключение.'
+                    "content": Prompts.red2
                 },
 
                 {"role": "user",
@@ -163,14 +166,14 @@ def red2_for_unique_text(text):
         parts[i] = ans.choices[0]['message']['content']
 
     response_text = ''.join(parts)
-    print('end')
+
     return response_text
 
 
 def red3_for_unique_text(text):
     parts = split_text_on_parts(text, 1500)
     for i in range(len(parts)):
-        print('hey')
+
 
         openai.api_key = settings.OPENAI_API_KEY
 
@@ -179,7 +182,7 @@ def red3_for_unique_text(text):
             messages=[
                 {
                     "role": "system",
-                    "content": '.Создай новый уникальный научный текст основываясь на этом исходном тексте. Используй научный стиль. Используй разные конструкции предложений разной длины. Используй разные неочевидные синонимы. Если в исходном тексте есть фамилии, цитаты, названия произведений, цифры используй их в своем. Будь многословным. Не повторяйся. Не используй одинаковые и однокоренные слова в соседних предложениях. Не пиши заключение.'
+                    "content": Prompts.red3
                 },
 
                 {"role": "user",
@@ -191,12 +194,12 @@ def red3_for_unique_text(text):
         parts[i] = ans.choices[0]['message']['content']
 
     response_text = ''.join(parts)
-    print('end')
+
     return response_text
 
 
 def exam_text_result(text, idea):
-    print('start exam_text_result')
+
 
     openai.api_key = settings.OPENAI_API_KEY
     answer = idea + '\n'
@@ -206,8 +209,7 @@ def exam_text_result(text, idea):
         messages=[
             {
                 "role": "system",
-                "content": 'Идея текста:' + idea + 'Тебе нужно привести два примера из текста подтверждающих философскую идею  текста. После каждого из  примеров напиши свой комментарий объясняющий как именно пример подтверждает философскую идею текста . В качестве примера можно использовать короткие цитаты, короткий пересказ истории, размышления автора и т.п. Приведенные примеры должны иметь логическую связь (можно их сравнить или противопоставить). После в самом конце своего текста свяжи примеры, обобщи их, расскажи как два этих примера подтверждают философскую идею текста. Нельзя использовать вводные слова и конструкции. Пиши свой текст цельно, так как будто ты пишешь сочинение на тему. Используй художественный стиль изложения. Чтобы не повторяться используй синонимы. Если хочешь написать слово или словосочетание, которое было в текст замени его на синоним. Пиши как человек. Используй разную длину предложений. Пиши ярко. Не пиши "Пример 1:" или "Пример 2:". Старайся писать по сути и немногослвоно'
-            },
+                "content": 'Идея текста:' + idea + Prompts.red2_for_exam_text },
 
             {"role": "user",
              "content": text},
@@ -217,8 +219,6 @@ def exam_text_result(text, idea):
     )
 
     red2 = red2.choices[0]['message']['content']
-    print('red2')
-    print(red2)
 
     # red3 = openai.ChatCompletion.create(
     #     model="gpt-3.5-turbo",
@@ -236,8 +236,7 @@ def exam_text_result(text, idea):
     # )
 
     # red3 = red3.choices[0]['message']['content']
-    # print('red3')
-    # print(red3)
+
     answer += (red2 + '\n')
 
     red4 = openai.ChatCompletion.create(
@@ -245,7 +244,7 @@ def exam_text_result(text, idea):
         messages=[
             {
                 "role": "system",
-                "content": 'Идея текста:' + idea + 'тебе нужно написать Отношение автора подтверждающее эту идею. Здесь нужно подвести текст к следующей части сочинения — выражение собственного мнения. Отношение автора — это его ответ на сформулированные вами вопросы, его видение проблемы. В этой части стоит изложить мысль, которая соотносится с общепринятой позицией, но не нужно вдаваться в спорные утверждения. Для выражения отношения автора также можно использовать клише, например:Позиция автора такова: он считает...Авторская позиция состоит в том, что...ПИШИ МАКСИМАЛЬНО КРАТКО. Одна максимум два коротких предложения. Свою позицию писать не надоОтвет на проблемный вопрос, данный автором текста	В начале текста обязательно используй одну из этих фраз на выборАвтор подводит читателя к выводу о том, что…Рассуждая над проблемой, автор приходит к следующему выводу…Так автор убеждает нас в том, что…'
+                "content": 'Идея текста:' + idea + Prompts.red4_for_exam_text
             },
 
             {"role": "user",
@@ -256,15 +255,13 @@ def exam_text_result(text, idea):
     )
 
     red4 = red4.choices[0]['message']['content']
-    print('red4')
-    print(red4)
 
     red5 = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
             {
                 "role": "system",
-                "content": 'Сократи заметно текст замени слова на синонимы, не меняя фразы: Рассуждая над проблемой, автор приходит к следующему выводу'
+                "content": Prompts.red5_for_exam_text
             },
 
             {"role": "user",
@@ -275,8 +272,6 @@ def exam_text_result(text, idea):
     )
 
     red5 = red5.choices[0]['message']['content']
-    print('red5')
-    print(red5)
 
     answer += (red5 + '\n')
 
@@ -285,7 +280,7 @@ def exam_text_result(text, idea):
         messages=[
             {
                 "role": "system",
-                "content": 'Идея текста:' + idea + 'Преврати текст в собственную позицию и добавь аргументацию этой позиции из литературы, которая не указана в тексте. Перефразируй.Текст должен быть максимум на 3-4 коротких предложения.Текст начинай со слов "Я согласен с автором"'
+                "content": 'Идея текста:' + idea + Prompts.red6_for_exam_text
             },
 
             {"role": "user",
@@ -296,8 +291,6 @@ def exam_text_result(text, idea):
     )
 
     red6 = red6.choices[0]['message']['content']
-    print('red6')
-    print(red6)
 
     answer += (red6 + '\n')
 
@@ -306,7 +299,7 @@ def exam_text_result(text, idea):
         messages=[
             {
                 "role": "system",
-                "content": 'Идея текста:' + idea + 'Заключение. Напиши максимум 1 предложения.  В этой части постройте заключение в обратной последовательности вступительной части, начав кратко и закончив развернуто. Обобщение всего написанного должно быть кратким и емким, отражать концентрированно проблему, позицию автора и собственное мнение. Простой пересказ текста вступления не подойдет, проведите параллель с ним, поделитесь впечатлением. В заключении должна быть проведена логическая связь между всеми частями и сделан общий вывод. Сделать это помогут клише:После прочтения этого произведения становится понятно...Подводя итоги сказанного, можно сделать вывод...Этот текст заставил меня еще раз убедиться...'
+                "content": 'Идея текста:' + idea + Prompts.red7_for_exam_text
             },
 
             {"role": "user",
@@ -317,8 +310,7 @@ def exam_text_result(text, idea):
     )
 
     red7 = red7.choices[0]['message']['content']
-    print('red7')
-    print(red7)
+
 
     answer += (red7 + '\n')
 
@@ -367,11 +359,9 @@ def getresultfromtext(text, type, order):
     except Exception as e:
         # if runtime error, say try later
         # if token error, do it again but with a different limits
-        print(e)
-        traceback.print_exc()
 
         response = 'error except'
-        print(response)
+
         return response
 
 
@@ -385,9 +375,9 @@ def success_unique_text(request, order):
 
     obj = UniqueText.objects.get(user=order.user, order=order)
     if response_text == 'error' and obj.complete == False:
-        print('error success')
+
         refund(order)
-        response = ({'type': 'error', 'error': 'error payment canceled'})
+        response = ({'type': 'error', 'error': 'К сожалению произошла ошибка, попробуйте позже. Платеж будет возвращен. Приносим свои извинения'})
 
 
 
@@ -413,9 +403,9 @@ def success_unique_file(request, order):
     response_file_text = getresultfromtext(file_content, order.type2, order)
 
     if response_file_text == 'error' and obj.complete == False:
-        print('error')
+
         refund(order)
-        response = ({'type': 'error', 'error': 'error payment canceled'})
+        response = ({'type': 'error', 'error': 'К сожалению произошла ошибка, попробуйте позже. Платеж будет возвращен. Приносим свои извинения'})
         return response
 
 
@@ -444,9 +434,9 @@ def success_exam_text(request, order):
     response_text = getresultfromtext(order.rawtext, order.type, order)
     obj = ExamText.objects.get(user=order.user, order=order)
     if response_text == 'error' and obj.complete == False:
-        print('error')
+
         refund(order)
-        response = ({'type': 'error', 'error': 'error payment canceled'})
+        response = ({'type': 'error', 'error': 'К сожалению произошла ошибка, попробуйте позже. Платеж будет возвращен. Приносим свои извинения'})
 
 
 
@@ -467,7 +457,7 @@ def success_exam_text(request, order):
 @login_required(login_url='login')
 def success(request):
     if request.method == 'POST':
-        print('post')
+
         data = json.loads(request.body)
         button_value = data.get('buttonValue')
         order = Order.objects.get(id=button_value, user=request.user)
@@ -499,7 +489,7 @@ def success(request):
 def delete_old_objects(model, limit, user):
     #
     count = model.objects.filter(user=user).count()
-    print(count)
+
     if count > limit:
         oldest = model.objects.earliest('created_at')
         oldest.delete()
@@ -523,7 +513,7 @@ def exam_text(request):
 
         text = request.POST.get('rawtext')
         if moderation(text) == True:
-            return JsonResponse({'type': 'error', 'error': 'error text is not allowed'})
+            return JsonResponse({'type': 'error', 'error': 'Текст не прошел модерацию'})
 
         else:
 
@@ -536,8 +526,8 @@ def exam_text(request):
                     messages=[
                         {
                             "role": "system",
-                            "content": 'Какая философская проблема текста которую можно считать вечной и глобальной в литературе в литературе? Не привязывайся к личности. Мысли широко. Обобщи. Не углубляясь в детали, не используя цитаты и пересказ.  Ответ должен быть максимум в 10 слов. А после напиши: "Именно над этим предлагает задуматься автор". Проблема должна быть понятна каждому человеку на планете  который сможет примерить эту идею на свою жизнь.'
-                                       },
+                            "content":  Prompts.idea_for_exam_text
+                        },
 
                         {"role": "user",
                          "content": text},
@@ -547,7 +537,7 @@ def exam_text(request):
                 )
 
                 idea = idea.choices[0]['message']['content']
-                print(idea)
+
 
                 return JsonResponse({'idea': idea})
             except:
@@ -560,7 +550,7 @@ def exam_text(request):
         type = 'exam_text'
 
         if moderation(obj) == True:
-            return render(request, 'basegpt/exam_text.html', {'error': 'error'})
+            return render(request, 'basegpt/exam_text.html', {'error': 'Текст не прошел модерацию'})
         else:
             if code and is_valid_promo_code(code, request):
                 promo = PromoCode.objects.get(code=code)
@@ -569,8 +559,8 @@ def exam_text(request):
             else:
                 price = 15
 
-            Configuration.account_id = '202517'
-            Configuration.secret_key = 'test_NaEt-DpTS6rVYC9KS6EmcNDbvAlXh5JNrSZUF4UvlWk'
+            Configuration.account_id = settings.YOOKASSA_SHOP_ID
+            Configuration.secret_key = settings.YOOKASSA_SECRET_KEY
             payment = Payment.create({
                 "amount": {
                     "value": price,
@@ -578,10 +568,28 @@ def exam_text(request):
                 },
                 "confirmation": {
                     "type": "redirect",
-                    "return_url": "https://127.0.0.1/success"
+                    "return_url": "https://brainstormai.ru/success"
                 },
                 "capture": True,
-                "description": "сочинение егэ по русскому "
+                "description": "сочинение егэ по русскому ",
+                "receipt": {
+                    "customer": {
+
+                        "email": request.user.email,
+                    },
+                    "items": [
+                        {
+                            "description": "Cочинение егэ по русскому",
+                            "quantity": "1",
+                            "amount": {
+                                "value": price,
+                                "currency": "RUB"
+                            },
+                            "vat_code": 1
+
+                        }
+                    ]
+                }
             }, uuid.uuid4())
 
             if code and is_valid_promo_code(code, request):
@@ -612,7 +620,7 @@ def get_text_from_file(file):
 
 
 def get_price_text(text, code, request, type):
-    print(type)
+
     price = 0
 
 
@@ -626,7 +634,7 @@ def get_price_text(text, code, request, type):
         discount = 0
 
     if type == 'red1':
-        print('red1')
+
         price = int(len(text) * 0.0037 * (100 - discount) / 100)
     elif type == 'red2':
         price = int(len(text) * 0.0063 * (100 - discount) / 100)
@@ -663,8 +671,8 @@ def uniquetext(request):
 
             price = str(get_price_text(obj, code, request, type))
 
-            Configuration.account_id = '202517'
-            Configuration.secret_key = 'test_NaEt-DpTS6rVYC9KS6EmcNDbvAlXh5JNrSZUF4UvlWk'
+            Configuration.account_id = settings.YOOKASSA_SHOP_ID
+            Configuration.secret_key = settings.YOOKASSA_SECRET_KEY
             payment = Payment.create({
                 "amount": {
                     "value": price,
@@ -672,10 +680,29 @@ def uniquetext(request):
                 },
                 "confirmation": {
                     "type": "redirect",
-                    "return_url": "https://127.0.0.1/success"
+                    "return_url": "https://brainstormai.ru/success"
                 },
                 "capture": True,
-                "description": "oreder unique text " + str(type)
+                "description": "oreder unique text " + str(type),
+                "receipt": {
+                    "customer": {
+
+                        "email": request.user.email,
+                    },
+                    "items": [
+                        {
+                            "description": "Повышение уникальности" + str(type),
+                            "quantity": "1",
+                            "amount": {
+                                "value": price,
+                                "currency": "RUB"
+                            },
+                            "vat_code": 1
+
+                        }
+                    ]
+                }
+
             }, uuid.uuid4())
 
             if code and is_valid_promo_code(code, request):
@@ -708,7 +735,7 @@ def uniquefile(request):
             code = request.POST.get('code')
 
             text = get_text_from_file(obj)
-            print(text)
+
 
             if moderation(text) == True:
                 return JsonResponse({'type': 'error', 'error': 'Текст не прошел модерацию'})
@@ -719,7 +746,8 @@ def uniquefile(request):
 
 
                 price = str(get_price_text(text, code, request, type))
-                print(price)
+
+
 
                 return JsonResponse({'price': price})
 
@@ -739,8 +767,8 @@ def uniquefile(request):
 
                 price = str(get_price_text(text, code, request, type))
 
-                Configuration.account_id = '202517'
-                Configuration.secret_key = 'test_NaEt-DpTS6rVYC9KS6EmcNDbvAlXh5JNrSZUF4UvlWk'
+                Configuration.account_id = settings.YOOKASSA_SHOP_ID
+                Configuration.secret_key = settings.YOOKASSA_SECRET_KEY
                 payment = Payment.create({
                     "amount": {
                         "value": price,
@@ -748,7 +776,7 @@ def uniquefile(request):
                     },
                     "confirmation": {
                         "type": "redirect",
-                        "return_url": "https://127.0.0.1/success"
+                        "return_url": "https://brainstormai.ru/success"
                     },
                     "capture": True,
 
@@ -756,11 +784,11 @@ def uniquefile(request):
                     "receipt": {
                         "customer": {
 
-                            "email": "snk2032@gmail.com"
+                            "email": request.user.email,
                         },
                         "items": [
                             {
-                                "description": "Повышение уникальности",
+                                "description": "Повышение уникальности" + str(type),
                                 "quantity": "1",
                                 "amount": {
                                     "value": price,
@@ -790,7 +818,7 @@ class notifications(APIView):
 
     def post(self, request):
         status = request.data['object']['status']
-        print(status)
+
         payment_id = request.data['object']['id']
 
         if status == 'succeeded':
@@ -803,7 +831,7 @@ class notifications(APIView):
                     user = User.objects.get(code=PromoCode.objects.get(code=order.promo_code))
                     user.friends += 1
                     user.save()
-                    print('friends')
+
 
                 PromoCodeUsage.objects.create(user=order.user, promo_code=PromoCode.objects.get(code=order.promo_code))
 
@@ -850,7 +878,7 @@ class RegisterPage(FormView):
     success_url = reverse_lazy('home')
 
     def form_valid(self, form):
-        print('test')
+
         user = form.save()
         if user is not None:
             login(self.request, user)

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import os
 from pathlib import Path
+from .secret import Key
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,8 +22,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-with open("secret_key.txt") as f:
-    SECRET_KEY = f.read().strip()
+SECRET_KEY = Key.django_key
+YOOKASSA_SECRET_KEY = Key.yookassa_key
+YOOKASSA_SHOP_ID = Key.yookassa_shop_id
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -39,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'basegpt.apps.BasegptConfig',
+
 
 'widget_tweaks',
 
@@ -141,8 +144,9 @@ STATICFILES_DIRS = [
 ]
 
 
-with open("openaikey.txt") as f:
-    OPENAI_API_KEY = f.read().strip()
+
+OPENAI_API_KEY = Key.openai_key
+# ALLOWED_HOSTS = ['*']
 ALLOWED_HOSTS = ['www.brainstormai.ru', 'brainstormai.ru']
 ACCOUNT_AUTHENTICATION_METHOD ="email"
 

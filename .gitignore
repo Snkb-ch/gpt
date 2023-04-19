@@ -13,3 +13,5 @@ __pycache__
 /basegpt/__pycache__
 /basegpt/__pycache__/
 /basegpt/migrations/__pycache__/
+/gpt/secret.py
+/basegpt/prompts.py
