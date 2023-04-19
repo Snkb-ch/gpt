@@ -70,7 +70,7 @@
              {% if object.rawfile %}
 
             <div class="succes-container08">
-              <a href = "{{object.rawfile.url}}" style="text-decoration: underline;" download="">{{object.rawfile.name|cut:'rawfiles/'}}</a>
+              <a href = "/gpt/static{{object.rawfile.url}}" style="text-decoration: underline;" download="">{{object.rawfile.name|cut:'rawfiles/'}}</a>
             </div>
             {% endif %}
             <div class="succes-container09">
