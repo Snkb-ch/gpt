@@ -413,7 +413,9 @@ def success_unique_file(request, order):
         try:
             # UniqueText.objects.get_or_create(user=order.user, rawfile=order.rawfile, order=order)
             obj = UniqueText.objects.get(user=order.user, order=order)
-            obj.responsefile.name = 'responsefiles/responsefile' + str(obj.order_id) + '.txt'
+            # random string uuid
+
+            obj.responsefile.name = 'responsefiles/responsefile' + str(uuid.uuid4()) + '.txt'
 
             obj.save()
 
