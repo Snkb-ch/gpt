@@ -91,11 +91,11 @@
 
 
             <div class="succes-container08">
-              <span>{{object.rawtext|truncatewords:50}}</span>
+              <span>{{object.rawtext|truncatewords:5}}</span>
             </div>
 
             <div class="succes-container09">
-               <input type="submit" class="submitexe" value="{{object.order}}" id = "{{object.order}}"  name = "{{object.id}}"/>
+                <button type="submit" class="submitexe" value="{{object.order}}" id = "{{object.order}}"  name = "{{object.id}}" >Выполнить</button>
             </div>
             <div class="succes-container10">
               {{object.created_at}}
