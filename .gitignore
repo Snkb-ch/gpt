@@ -16,3 +16,4 @@ __pycache__
 /gpt/secret.py
 /basegpt/prompts.py
 /gpt/settings.py
+/media/

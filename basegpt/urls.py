@@ -22,6 +22,8 @@ urlpatterns = [
  path('login/', views.CustomLoginView.as_view(), name='login'),
 
 path('register/', views.RegisterPage.as_view(), name='register'),
+    path('success_api', views.success_api, name='success_api'),
+
 
 
 

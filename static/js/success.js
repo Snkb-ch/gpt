@@ -19,7 +19,7 @@ button.addEventListener('click', (event) => {
   overlayDiv.style.display = 'block';
 
 
-  fetch('/success', {
+  fetch('/success_api', {
     method: 'POST',
     body: JSON.stringify({ buttonValue }),
     headers: {
