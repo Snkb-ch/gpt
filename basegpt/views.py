@@ -1,6 +1,7 @@
 import json
 import traceback
-
+import  threading
+import asyncio
 
 from asgiref.sync import sync_to_async
 from django.contrib.auth import authenticate, login, logout
@@ -100,7 +101,7 @@ def refund(order):
 def home(request):
     return render(request, 'basegpt/home.html')
 
-@sync_to_async
+
 def split_text_on_parts(text, max_length):
     sentences =  text.split(". ")
     current_part = None
@@ -118,19 +119,16 @@ def split_text_on_parts(text, max_length):
     return parts
 
 
-async def red1_for_unique_text(text):
-    parts = await split_text_on_parts(text, 1500)
+def red1_for_unique_text(text):
+    parts =  split_text_on_parts(text, 1500)
     for i in range(len(parts)):
 
 
         openai.api_key = settings.OPENAI_API_KEY
 
-        ans = await  openai_async.chat_complete(
-            settings.OPENAI_API_KEY,
-            timeout=60,
-            payload={
-            "model":"gpt-3.5-turbo",
-            "messages":[
+        ans = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
                 {
                     "role": "system",
                     "content": Prompts.red1
@@ -139,12 +137,10 @@ async def red1_for_unique_text(text):
                 {"role": "user",
                  "content": parts[i]},
             ],
-            "temperature":0.7,
-            "max_tokens":2048,
-        },
+            temperature=0.7,
+            max_tokens=2048,
         )
-
-        parts[i] =(ans.json()["choices"][0]["message"]["content"])
+        parts[i] = ans.choices[0]['message']['content']
 
     response_text = ''.join(parts)
 
@@ -341,13 +337,13 @@ def exam_text_result(text, idea):
     return answer
 
 
-async def getresultfromtext(text, type, order):
+def getresultfromtext(text, type, order):
     try:
 
 
 
         if type == 'red1':
-            response_text = await red1_for_unique_text(text)
+            response_text =  red1_for_unique_text(text)
         elif type == 'red2':
             response_text =  red2_for_unique_text(text)
         elif type == 'red3':
@@ -355,7 +351,7 @@ async def getresultfromtext(text, type, order):
         elif type == 'exam_text':
             response_text =   exam_text_result(text, order.idea)
 
-        if await moderationas(response_text) == True:
+        if  moderation(response_text) == True:
             raise Exception('moderation error')
         else:
 
@@ -404,7 +400,7 @@ def success_unique_text(request, order):
 
     return response
 
-@sync_to_async()
+
 def get_file_contetnt(request, order):
     file_content = order.rawfile.read().decode('utf-8')
     obj = UniqueText.objects.get(user=order.user, order=order)
@@ -413,7 +409,7 @@ def get_file_contetnt(request, order):
     obj.save()
     return file_content
 
-@sync_to_async()
+
 def check_complete(order):
     obj = UniqueText.objects.get(user=order.user, order=order)
     if obj.complete == True:
@@ -421,7 +417,7 @@ def check_complete(order):
     else:
         return False
 
-@sync_to_async()
+
 def create_file(order, response_file_text):
     obj = UniqueText.objects.get(user=order.user, order=order)
     # random string uuid
@@ -440,12 +436,13 @@ def create_file(order, response_file_text):
     response = ({'type': 'file', 'file_url': file_url})
     return response
 
-async def success_unique_file(request, order):
-    file_content = await get_file_contetnt(request, order)
+def success_unique_file(request, order):
+    print('success_unique_file')
+    file_content =  get_file_contetnt(request, order)
 
-    response_file_text = await getresultfromtext(file_content, order.type2, order)
+    response_file_text =  getresultfromtext(file_content, order.type2, order)
 
-    if  response_file_text == 'error' and await check_complete(order) == False:
+    if  response_file_text == 'error' and  check_complete(order) == False:
 
         refund(order)
         response = ({'type': 'error', 'error': 'К сожалению произошла ошибка, попробуйте позже. Платеж будет возвращен. Приносим свои извинения'})
@@ -455,7 +452,7 @@ async def success_unique_file(request, order):
     elif response_file_text != 'error':
         try:
             # UniqueText.objects.get_or_create(user=order.user, rawfile=order.rawfile, order=order)
-            response = await create_file(order, response_file_text)
+            response =  create_file(order, response_file_text)
             return response
         except Exception as e:
             response = ({'type': 'error', 'error': e})
@@ -490,34 +487,39 @@ def success_exam_text(request, order):
 
     return response
 
-@sync_to_async()
+
 def get_order(button_value, request):
     order = Order.objects.get(id=button_value, user=request.user)
     return order
 
-async def  success_api(request):
+def  success_api(request):
 
 
     if request.method == 'POST':
         data =  json.loads(request.body)
         button_value =  data.get('buttonValue')
 
-        order = await get_order(button_value, request)
+        order = get_order(button_value, request)
 
         if order.type == 'unique_text':
-            response = await success_unique_text(request, order)
-            return JsonResponse(response, safe=False)
+            t = threading.Thread(target=success_unique_text, args=(request, order), daemon=True)
+            t.start()
+
+            return JsonResponse({'type': 'text', 'response_text': 'Ваш заказ обрабатывается, пожалуйста подождите...'})
 
 
         elif order.type == 'unique_file':
-            response = await success_unique_file(request, order)
+            t = threading.Thread(target=success_unique_file, args=(request, order), daemon=True)
+            t.start()
 
-            return JsonResponse(response)
+            return JsonResponse({'type': 'text', 'response_text': 'Ваш заказ обрабатывается, пожалуйста подождите...'})
 
 
         elif order.type == 'exam_text':
-            response = await success_exam_text(request, order)
-            return JsonResponse(response, safe=False)
+            t = threading.Thread(target=success_exam_text, args=(request, order), daemon=True)
+            t.start()
+
+            return JsonResponse({'type': 'text', 'response_text': 'Ваш заказ обрабатывается, пожалуйста подождите...'})
 
 
 @login_required(login_url='/login/')
@@ -540,14 +542,6 @@ def delete_old_objects(model, limit, user):
         return True
     return False
 
-@sync_to_async()
-def moderationas(text):
-    openai.api_key = settings.OPENAI_API_KEY
-
-    moderation =  openai.Moderation.create(
-        input=text,
-    )
-    output = moderation["results"][0]["flagged"]
 
 
     return output
