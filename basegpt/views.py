@@ -36,8 +36,9 @@ from django.shortcuts import render, redirect
 @login_required(login_url='login')
 def history(request):
 
-    uniquetexts = UniqueText.objects.filter(user=request.user)
-    examtexts = ExamText.objects.filter(user=request.user)
+    uniquetexts = UniqueText.objects.filter(user=request.user).order_by('-created_at')
+
+    examtexts = ExamText.objects.filter(user=request.user).order_by('-created_at')
 
     return render(request, 'basegpt/history.html', {'uniquetexts': uniquetexts, 'examtexts': examtexts})
 
