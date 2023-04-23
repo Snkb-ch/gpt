@@ -446,6 +446,7 @@ def success_unique_file(request, order):
 
         refund(order)
         response = ({'type': 'error', 'error': 'К сожалению произошла ошибка, попробуйте позже. Платеж будет возвращен. Приносим свои извинения'})
+
         return response
 
 
