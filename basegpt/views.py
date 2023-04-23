@@ -494,6 +494,44 @@ def get_order(button_value, request):
     order = Order.objects.get(id=button_value, user=request.user)
     return order
 
+def success_result(request):
+    if request.method == 'POST':
+        print(request)
+        print(request.POST)
+        button_value = request.POST.get('order')
+        print(button_value)
+
+
+
+        order = get_order(button_value, request)
+        if order.result == True:
+            if order.type == 'unique_text':
+                obj = UniqueText.objects.get(user=order.user, order=order)
+                response_text = obj.responsetext
+                response = ({'type': 'text', 'response_text': response_text, 'status': 'ok'})
+                return JsonResponse(response)
+
+            elif order.type == 'unique_file':
+                obj = UniqueText.objects.get(user=order.user, order=order)
+                file_url = obj.responsefile.url
+                response = ({'type': 'file', 'file_url': file_url, 'status': 'ok'})
+                return JsonResponse(response)
+
+            elif order.type == 'exam_text':
+                obj = ExamText.objects.get(user=order.user, order=order)
+                response_text = obj.responsetext
+                response = ({'type': 'text', 'response_text': response_text, 'status': 'ok'})
+                return JsonResponse(response)
+        elif order.refund == True:
+            response = ({'type': 'error', 'error': 'К сожалению произошла ошибка во время обработки заказа, попробуйте позже. Платеж будет возвращен. Приносим свои извинения', 'status': 'error'})
+            return JsonResponse(response)
+        elif order.result == False and order.refund == False:
+            response = ({'type': 'wait', 'status': 'wait'})
+            return JsonResponse(response)
+
+
+
+
 def  success_api(request):
 
 
@@ -507,21 +545,21 @@ def  success_api(request):
             t = threading.Thread(target=success_unique_text, args=(request, order), daemon=True)
             t.start()
 
-            return JsonResponse({'type': 'text', 'response_text': 'Ваш заказ обрабатывается, пожалуйста подождите...'})
+            return JsonResponse({'status':'ok'})
 
 
         elif order.type == 'unique_file':
             t = threading.Thread(target=success_unique_file, args=(request, order), daemon=True)
             t.start()
 
-            return JsonResponse({'type': 'text', 'response_text': 'Ваш заказ обрабатывается, пожалуйста подождите...'})
+            return JsonResponse({'status':'ok'})
 
 
         elif order.type == 'exam_text':
             t = threading.Thread(target=success_exam_text, args=(request, order), daemon=True)
             t.start()
 
-            return JsonResponse({'type': 'text', 'response_text': 'Ваш заказ обрабатывается, пожалуйста подождите...'})
+            return JsonResponse({'status':'ok'})
 
 
 @login_required(login_url='/login/')

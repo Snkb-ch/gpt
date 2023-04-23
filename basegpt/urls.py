@@ -23,6 +23,7 @@ urlpatterns = [
 
 path('register/', views.RegisterPage.as_view(), name='register'),
     path('success_api', views.success_api, name='success_api'),
+    path('success_result', views.success_result, name='success_result'),
 
 
 
