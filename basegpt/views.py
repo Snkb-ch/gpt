@@ -463,6 +463,7 @@ def success_unique_file(request, order):
 
 
 
+
 def success_exam_text(request, order):
     result_obj = ExamText.objects.get(user=order.user, rawtext=order.rawtext, order=order)
     result_obj.complete = True
@@ -584,7 +585,7 @@ def delete_old_objects(model, limit, user):
 
 
 
-    return output
+    
 def moderation(text):
     openai.api_key = settings.OPENAI_API_KEY
 
@@ -596,41 +597,79 @@ def moderation(text):
 
     return output
 
-@login_required(login_url='login')
-def exam_text(request):
-    if request.method == 'POST' and 'get_idea' in request.POST:
+def generate_idea(text, id):
+    openai.api_key = settings.OPENAI_API_KEY
+    try:
+
+        idea = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {
+                    "role": "system",
+                    "content": Prompts.idea_for_exam_text
+                },
+
+                {"role": "user",
+                 "content": text},
+            ],
+            temperature=1,
+            max_tokens=1000,
+        )
+
+        idea = idea.choices[0]['message']['content']
+        task = Crawl.objects.get(pk=id)
+
+
+        task.result = idea
+
+        task.status = 'done'
+        task.save()
+    except:
+        task = Crawl.objects.get(pk=id)
+        task.status = 'error'
+        task.save()
+
+def check_idea(request, id):
+    task = Crawl.objects.get(pk=id)
+    if task.status == 'done':
+        idea = task.result
+        task.delete()
+
+        return JsonResponse({'status': 'done', 'idea': idea})
+    elif task.status == 'error':
+
+        task.delete()
+        return JsonResponse({'status': 'error'})
+
+    else:
+        return JsonResponse({'status': 'wait'})
+
+
+
+
+
+def exam_text_get_idea(request):
+    if request.method == 'POST':
 
         text = request.POST.get('rawtext')
         if moderation(text) == True:
+
             return JsonResponse({'type': 'error', 'error': 'Текст не прошел модерацию'})
+
 
         else:
 
-            try:
-
-                openai.api_key = settings.OPENAI_API_KEY
-
-                idea = openai.ChatCompletion.create(
-                    model="gpt-3.5-turbo",
-                    messages=[
-                        {
-                            "role": "system",
-                            "content":  Prompts.idea_for_exam_text
-                        },
-
-                        {"role": "user",
-                         "content": text},
-                    ],
-                    temperature=1,
-                    max_tokens=1000,
-                )
-
-                idea = idea.choices[0]['message']['content']
+            task = Crawl()
+            task.save()
 
 
-                return JsonResponse({'idea': idea})
-            except:
-                return JsonResponse({'type': 'error', 'error': 'Сократите текст'})
+
+            t = threading.Thread(target=generate_idea, args=(text,task.id), daemon=True)
+            t.start()
+            return JsonResponse({'id': task.id, 'type': 'ok'})
+
+@login_required(login_url='login')
+def exam_text(request):
 
     if request.method == 'POST' and 'pay' in request.POST:
         idea = request.POST.get('idea')

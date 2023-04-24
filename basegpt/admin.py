@@ -11,6 +11,7 @@ admin.site.register(Order)
 admin.site.register(Contact_us)
 admin.site.register(PromoCode)
 admin.site.register(PromoCodeUsage)
+admin.site.register(Crawl)
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin

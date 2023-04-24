@@ -163,3 +163,12 @@ class VerificationToken(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     token = models.CharField(max_length=32)
     created_at = models.DateTimeField(auto_now_add=True)
+
+from django.db import models
+
+class Crawl(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    result = models.TextField(blank=True, default='wait')
+
+    status = models.CharField(max_length=100, blank=True)
+
