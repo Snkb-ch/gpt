@@ -585,7 +585,7 @@ def delete_old_objects(model, limit, user):
 
 
 
-    
+
 def moderation(text):
     openai.api_key = settings.OPENAI_API_KEY
 

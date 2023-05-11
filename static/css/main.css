@@ -1,4 +1,6 @@
-
+*{
+  font-family: Bahnschrift;
+}
 .component-header {
   top: 0px;
   left: 0px;
@@ -13,7 +15,9 @@
   padding-right: 13px;
   padding-bottom: var(--dl-space-space-halfunit);
   justify-content: flex-end;
-  background-color: #d3edf3;
+  background-color: #94e0f2;
+
+  color: white;
 }
 .component-container1 {
   flex: 0 0 auto;
@@ -46,6 +50,7 @@
   flex-direction: column;
   justify-content: space-between;
   background-color: #fff;
+  color: Black;
 }
 .component-nav {
   display: flex;
@@ -119,6 +124,7 @@
 }
 .component-text:hover {
   background-color: #98e4fd;
+  color:black;
 }
 .component-text1 {
   cursor: pointer;
@@ -133,6 +139,7 @@
 }
 .component-text1:hover {
   background-color: #98e4fd;
+    color:black;
 }
 .component-text2 {
   cursor: pointer;
@@ -147,6 +154,7 @@
 }
 .component-text2:hover {
   background-color: #98e4fd;
+    color:black;
 }
 .component-text3 {
   cursor: pointer;
@@ -161,6 +169,7 @@
 }
 .component-text3:hover {
   background-color: #98e4fd;
+    color:black;
 }
 .component-btn-group {
   display: flex;
@@ -216,6 +225,7 @@
   display: flex;
   align-items: flex-start;
   flex-direction: column;
+  color: Black;
 }
 .component-text4 {
   margin-bottom: var(--dl-space-space-unit);
@@ -313,7 +323,7 @@
     top: 0px;
     left: 0px;
     right: 0px;
-    height: auto;
+    height: 80px;
     
 	width: 100%;
     
@@ -443,11 +453,10 @@ border: 2px solid #177509;
 }
 @media(max-width: 479px) {
   .component1-footer {
-    left: 0px;
-    bottom: 0px;
-    height: var(--dl-size-size-medium);
+
+    height: auto;
     padding: var(--dl-space-space-unit);
-    position: absolute;
+
     flex-direction: column;
   }
   .component1-image {
