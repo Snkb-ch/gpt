@@ -124,8 +124,12 @@
                     <div class="file-container20" id = "price">
                     </div>
                     <div class="file-div2">
+                      {% if user.is_authenticated %}
                       <button class="btn-pay" type="submit" value="Submit" id = "submitunique-order" name=" pay ">Купить</button>
 
+                        {% else %}
+                      <a href="{% url 'login' %}" class="btn-pay">Зарегистрироваться</a>
+                      {% endif %}
                     </div>
                   </div>
                 </form>

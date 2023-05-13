@@ -773,7 +773,7 @@ def get_price_text(text, code, request, type):
     return price
 
 
-@login_required(login_url='login')
+
 def uniquetext(request):
     if request.method == 'POST' and 'getprice' in request.POST:
         obj = request.POST.get('rawtext')
@@ -846,7 +846,7 @@ def uniquetext(request):
     return render(request, 'basegpt/uniquetext.html')
 
 
-@login_required(login_url='login')
+
 def uniquefile(request):
     if request.method == 'POST' and 'getprice' in request.POST:
         obj = request.FILES['rawfile']
