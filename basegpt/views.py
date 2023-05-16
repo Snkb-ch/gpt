@@ -774,7 +774,7 @@ def get_price_text(text, code, request, type):
     return price
 
 
-@login_required(login_url='/login')
+
 def uniquetext(request):
     if request.method == 'POST' and 'getprice' in request.POST:
         obj = request.POST.get('rawtext')
@@ -848,7 +848,7 @@ def uniquetext(request):
 
 
 
-@login_required(login_url='/login')
+
 def uniquefile(request):
     if request.method == 'POST' and 'getprice' in request.POST:
         obj = request.FILES['rawfile']
