@@ -2,73 +2,59 @@
 {% load static %}
 {% block title %}Повышение оригинальности{% endblock %}
 {% block extra_css %}
-  <link href="{% static 'css/file.css' %}" rel="stylesheet" />
+<link href="{% static 'css/uniquefile.css' %}" rel="stylesheet" xmlns="http://www.w3.org/1999/html"/>
 <script src = "{% static 'js/uniquefile.js' %}"></script>
+
 {% endblock %}
 
 {% block content %}
 
+
 <div>
-      <div class="file-container">
-        <div class="file-container01">
-          <div class="file-container02">
-            <div class="file-container03">
-              <div class="file-container04">
-                <form class="file-form" enctype="multipart/form-data" id="post-form-unique-file" method="post">
-                  {% csrf_token %}
-                  <div id = "error">{{error}}</div>
-                  <div class="file-container05">
-                    <div class="file-container06">
-                      <h1 class="file-text">
-                        <span class="file-text01">Повышение</span>
-                        <span class="file-text02">УНИКАЛЬНОСТИ</span>
-                      </h1>
-                    </div>
-                    <div class="file-container07">
-                      <a
-                        href="{% url 'uniquetext' %}"
+ <form class="file-form" enctype="multipart/form-data" id="post-form-unique-file" method="post">
+                     {% csrf_token %}
 
-                        rel="noreferrer noopener"
-                        class="file-link"
-                      >
-                        Ввести вручную
-                      </a>
-                    </div>
-                  </div>
-                  <div class="file-container08">
-                    <img
-                      alt="pastedImage"
-                      src="{% static 'images/pastedimage-cf5b-200h.png' %}"
-                      class="file-pasted-image"
-                    />
-                  </div>
-                  <div class="file-container09">
-                    <div class="file-container10">
-                      <div class="file-div">
+  <div class="filev2-container">
+    <div class="filev2-container01">
+      <div class="filev2-container02">
+        <div class="filev2-container03">
+          <div class="filev2-container04">
+            <h1 class="filev2-text">Загрузите файл</h1>
+          </div>
+
+          <div class="filev2-container05">
+
+            <div class="filev2-container06">
+              <div class="filev2-container07">
+                <div class="filev2-div">
 
 
 
 
 
 
-<div class='file-input'>
- 
-   <label for='rawfile' class='drop-container'>
-  <span class='drop-title'>Загрузите файл .txt</span>
-  
-  <input type='file' required=''  accept='.txt' id="rawfile" name="rawfile">
-</label>
+
+
+
+
+<div class='form'>
+
+
+
+  <input type='file' required=''  accept='.txt'  id="rawfile" name="rawfile">
+
 </div>
-                      </div>
-                    </div>
-                    <div class="file-container11">
-                      <div class="file-container12">
-                        <span class="file-text03">Выбор режима</span>
-                      </div>
-                      <div class="file-container13">
-                        <div class="file-div1">
+
+                </div>
+              </div>
 
 
+              <div class="filev2-container08">
+                <h1 class="filev2-text01">Выберите режим</h1>
+              </div>
+              <div class="filev2-container09">
+                <div class="filev2-container10">
+                  <div class="filev2-div1">
 
 
 
@@ -81,7 +67,7 @@
     <div class='checkbox-style' id = 'opt1'></div>
   </label>
   <label class='checkbox-label'>
-    <input type='radio' value="red2"  name='options' class='checkbox-input' id = 'opt2ch'>
+    <input type='radio' value="red2" name='options' class='checkbox-input' id = 'opt2ch'>
     <div class='checkbox-style' id = 'opt2'></div>
   </label>
   <label class='checkbox-label'>
@@ -90,107 +76,105 @@
   </label>
 </div>
 
-                      </div>
-                      </div>
-                      <div class="file-container14">
-                        <div class="file-container15">
-                          <img
-                            alt="image"
-                            src="{% static 'images/dangood-200h.png' %}"
-                            class="file-image"
-                          />
-                        </div>
-                        <div class="file-container16">
-                          <img
-                            alt="image"
-                            src="{% static 'images/dannormal-200h.png' %}"
-                            class="file-image1"
-                          />
-                        </div>
-                        <div class="file-container17">
-                          <img
-                            alt="image"
-                            src="{% static 'images/dansogood-200h.png' %}"
-                            class="file-image2"
-                          />
-                        </div>
-                      </div>
-                    </div>
                   </div>
-                  <div class="file-container18">
-                    <div class="file-container19">
-                      <button class="btn-get-price" type="submit" value="Submit" id = "submitunique-file-price" name = "getprice">Посчитать цену</button>
-                    </div>
-                    <div class="file-container20" id = "price">
-                    </div>
-                    <div class="file-div2">
-                      {% if user.is_authenticated %}
+                </div>
+              </div>
+              <div class="filev2-container11">
+                <ul class="filev2-ul list">
+                  <li class="filev2-li list-item">
+                    <span class="filev2-text02">
+                      <span class="filev2-text03">Легкий режим добавляет</span>
+                      <span class="filev2-text04">2-10%</span>
+                      <span class="filev2-text05">- Бесплатно</span>
+                    </span>
+                  </li>
+                  <li class="filev2-li1 list-item">
+                    <span class="filev2-text06">
+                      <span class="filev2-text07">
+                        Средний режим повышает до 
+                      </span>
+                      <span class="filev2-text08">60-90%</span>
+                      <span class="filev2-text09">
+                        - 10 руб за 2000 символов
+                      </span>
+                    </span>
+                  </li>
+                  <li class="filev2-li2 list-item">
+                    <span class="filev2-text10">
+                      <span class="filev2-text11">
+                        Безумный режим повышает до 
+                      </span>
+                      <span class="filev2-text12">85-95%</span>
+                      <span class="filev2-text13">- 15 </span>
+                      <span class="filev2-text14">руб за 2000 символов</span>
+                    </span>
+                  </li>
+                </ul>
+              </div>
+              <img
+
+                src=" {% static 'images/lampicon.png' %}"
+                class="filev2-image"
+              />
+            </div>
+
+          </div>
+          <div class="filev2-container12">
+            <div class="filev2-container13">
+              <button class="btn-get-price" type="submit" value="Submit" id = "submitunique-file-price" name = "getprice">Посчитать цену</button>
+            </div>
+            <div class="filev2-container14"  id = "price">
+                <div id = "error">{{error}}</div>
+
+            </div>
+            <div class="filev2-container15">
+              {% if user.is_authenticated %}
                       <button class="btn-pay" type="submit" value="Submit" id = "submitunique-order" name=" pay ">Купить</button>
 
                         {% else %}
-                      <a href="{% url 'login' %}" class="btn-pay">Зарегистрироваться</a>
+                      <a href="{% url 'login' %}" class="btn-pay">Купить</a>
                       {% endif %}
-                    </div>
-                  </div>
-                </form>
-              </div>
-            </div>
-            <div class="file-container21">
-              <div class="file-container22">
-                <span class="file-text05">
-                  <span class="file-text06">Легкий режим</span>
-                  <span class="file-text07">+10-60%</span>
-                  <span class="file-text08">&nbsp;</span>
-                  <br class="file-text09" />
-                  <span class="file-text10">7 руб - 2000 символов</span>
-                  <br class="file-text11" />
-                  <br class="file-text12" />
-                  <span class="file-text13">Средний режим +85-90%&nbsp;</span>
-                  <br class="file-text14" />
-                  <span class="file-text15">12 руб</span>
-                  <span class="file-text16">- 2000 символов</span>
-                  <br class="file-text17" />
-                  <br class="file-text18" />
-                  <span class="file-text19">Безумный режим +95-100%</span>
-                  <span class="file-text20">&nbsp;</span>
-                  <br class="file-text21" />
-                  <span class="file-text22">12 руб - 2000 символов</span>
-                  <br />
-                </span>
-              </div>
-              <div class="file-container23">
-                <div class="file-container24"></div>
-                <div class="file-container25">
-                  <span class="file-text24">
-                    <span>Советуем убирать названия глав и&nbsp;</span>
-                    <span>заголовки, также сноски и источники</span>
-                    <br />
-                    <span>Текст более 10 страниц рекомендуем делить</span>
-                  </span>
-                </div>
-              </div>
-              <div class="file-container26">
-                <div class="file-container27"></div>
-                <div class="file-container28">
-                  <span class="file-text29">
-                    <span>
-                      Нажимая кнопку купить вы соглашаетесь ,что контент
-                      генерируемый нейросетью может содержать ошибки,
-                      неточности, и быть неполным.
-                    </span>
-                    <br />
-                    <span>
-                      Мы не несем ответственности за контент, генерируемый
-                      нейросетью
-                    </span>
-                  </span>
-                </div>
-              </div>
             </div>
           </div>
+          <div class="filev2-container16">
+            <h1 class="filev2-text16">Важно знать</h1>
+          </div>
+          <div class="filev2-container17">
+            <img
+              alt="image"
+              src=" {% static 'images/iconimportant.png' %}"
+              class="filev2-image1"
+            />
+            <span class="filev2-text17">
+              <span><span class ="highlight">Первый режим</span> перефразирует текст и наполняет его синонимами. Почти не добавляет информации.
+</span>
+<br />
+              <br />
+              <span><span class ="highlight">Второй режим</span> не только перефразирует текст, но и добавляет информацию. В соотношении примерно два к одному.
+</span>
+              <br />
+              <br />
+              <span><span class ="highlight">Третий режим</span> самый жестокий. Он работает как создатель текстов на основе исходника. Выделив тему и основные тезисы, он создаст новый текст.</span>
+              <br />
+              <br />
+              <span>Советуем убирать названия глав и  заголовки, также сноски и источники.</span>
+              <br />
+              <br />
+              <span>Текст более 10 страниц рекомендуем делить. Чем больше файл, тем дольше время ожидания ответа.</span>
+              <br />
+              <span></span>
+            </span>
+          </div>
         </div>
+
       </div>
+    </div>
+  </div>
+ </form>
 </div>
+
+
+
 
 
     {% endblock %}

@@ -15,7 +15,7 @@
   padding-right: 13px;
   padding-bottom: var(--dl-space-space-halfunit);
   justify-content: flex-end;
-  background-color: #94e0f2;
+  background-color: rgb(172, 39, 191);
 
   color: white;
 }

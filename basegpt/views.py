@@ -763,17 +763,18 @@ def get_price_text(text, code, request, type):
 
     if type == 'red1':
 
-        price = int(len(text) * 0.0037 * (100 - discount) / 100)
+        price = 0
+        print(price)
     elif type == 'red2':
-        price = int(len(text) * 0.0063 * (100 - discount) / 100)
+        price = int(len(text) * 0.005 * (100 - discount) / 100)
     elif type == 'red3':
-        price = int(len(text) * 0.0063 * (100 - discount) / 100)
+        price = int(len(text) * 0.0075 * (100 - discount) / 100)
 
 
     return price
 
 
-
+@login_required(login_url='/login')
 def uniquetext(request):
     if request.method == 'POST' and 'getprice' in request.POST:
         obj = request.POST.get('rawtext')
@@ -847,6 +848,7 @@ def uniquetext(request):
 
 
 
+@login_required(login_url='/login')
 def uniquefile(request):
     if request.method == 'POST' and 'getprice' in request.POST:
         obj = request.FILES['rawfile']
@@ -877,15 +879,20 @@ def uniquefile(request):
 
 
 
+
                 return JsonResponse({'price': price})
 
     if request.method == 'POST' and 'pay' in request.POST:
         obj = request.FILES['rawfile']
+
         if obj.name.split('.')[-1] != 'txt':
             return render(request, 'basegpt/uniquefile.html', {'error': 'Файл должен быть в формате txt'})
         else:
             code = request.POST.get('code')
-            text = get_text_from_file(obj)
+            try:
+                text = get_text_from_file(obj)
+            except:
+                return render(request, 'basegpt/uniquefile.html', {'error': 'Ошибка чтения файла, создайте новый файл'})
             if  moderation(text) == True:
                 return render(request, 'basegpt/uniquefile.html', {'error': 'Текст не прошел модерацию'})
             else:
@@ -893,50 +900,68 @@ def uniquefile(request):
     
                 type = request.POST.get('options')
 
-                price = str(get_price_text(text, code, request, type))
-
-                Configuration.account_id = settings.YOOKASSA_SHOP_ID
-                Configuration.secret_key = settings.YOOKASSA_SECRET_KEY
-                payment = Payment.create({
-                    "amount": {
-                        "value": price,
-                        "currency": "RUB"
-                    },
-                    "confirmation": {
-                        "type": "redirect",
-                        "return_url": "https://brainstormai.ru/success"
-                    },
-                    "capture": True,
-
-                    "description": "oreder unique file "+ str(type),
-                    "receipt": {
-                        "customer": {
-
-                            "email": request.user.email,
-                        },
-                        "items": [
-                            {
-                                "description": "Повышение уникальности" + str(type),
-                                "quantity": "1",
-                                "amount": {
-                                    "value": price,
-                                    "currency": "RUB"
-                                },
-                                "vat_code": 1
+                if type == 'red1':
+                    price  =0
+                    order = Order.objects.create(user=request.user, price=price, rawfile=obj, type='unique_file',
+                                         type2=type, complete = True)
 
 
-                            }
-                        ]
-                    }
-                }, uuid.uuid4())
-                if code and is_valid_promo_code(code, request):
-                    Order.objects.create(user=request.user, price=price, rawfile=obj, type='unique_file', type2=type,
-                                         transaction_id=payment.id, promo_code=PromoCode.objects.get(code=code))
+
+
+
+
+                    UniqueText.objects.get_or_create(user=order.user, rawfile=order.rawfile, order=order,
+                                                         type=order.type2)
+                    delete_old_objects(UniqueText, 10, order.user)
+                    return redirect('success')
+
+
                 else:
-                    Order.objects.create(user=request.user, price=price, rawfile=obj, type='unique_file',
-                                         transaction_id=payment.id, type2=type)
 
-                return HttpResponseRedirect(payment.confirmation.confirmation_url)
+                    price = str(get_price_text(text, code, request, type))
+
+                    Configuration.account_id = settings.YOOKASSA_SHOP_ID
+                    Configuration.secret_key = settings.YOOKASSA_SECRET_KEY
+                    payment = Payment.create({
+                        "amount": {
+                            "value": price,
+                            "currency": "RUB"
+                        },
+                        "confirmation": {
+                            "type": "redirect",
+                            "return_url": "https://brainstormai.ru/success"
+                        },
+                        "capture": True,
+
+                        "description": "oreder unique file "+ str(type),
+                        "receipt": {
+                            "customer": {
+
+                                "email": request.user.email,
+                            },
+                            "items": [
+                                {
+                                    "description": "Повышение уникальности" + str(type),
+                                    "quantity": "1",
+                                    "amount": {
+                                        "value": price,
+                                        "currency": "RUB"
+                                    },
+                                    "vat_code": 1
+
+
+                                }
+                            ]
+                        }
+                    }, uuid.uuid4())
+                    if code and is_valid_promo_code(code, request):
+                        Order.objects.create(user=request.user, price=price, rawfile=obj, type='unique_file', type2=type,
+                                             transaction_id=payment.id, promo_code=PromoCode.objects.get(code=code))
+                    else:
+                        Order.objects.create(user=request.user, price=price, rawfile=obj, type='unique_file',
+                                             transaction_id=payment.id, type2=type)
+
+                    return HttpResponseRedirect(payment.confirmation.confirmation_url)
 
     return render(request, 'basegpt/uniquefile.html')
 

@@ -1,6 +1,4 @@
-.component-header {
-background-color: #94e0f2;
-}
+
 
 .conactus-container {
   width: 100%;
@@ -74,11 +72,11 @@ background-color: #94e0f2;
   flex-direction: column;
 }
 .conactus-text {
-  color: var(--dl-color-success-700);
+
   height: auto;
   font-size: 52px;
   font-style: normal;
-  font-family: Comic Sans MS;
+
   font-weight: 400;
 }
 .conactus-text1 {

@@ -61,7 +61,7 @@
   height: auto;
   font-size: 42px;
   font-style: normal;
-font-family: Comic Sans MS;
+
   font-weight: 400;
 
 }
@@ -119,7 +119,7 @@ font-family: Comic Sans MS;
   width: 35%;
   height: 661px;
   display: flex;
-  margin-top: 5%;
+  margin-top: 8%;
   align-items: flex-start;
   margin-right: 1%;
   border-radius: var(--dl-radius-radius-radius8);
