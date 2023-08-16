@@ -15,6 +15,8 @@ urlpatterns = [
     path('logout/', views.logoutUser, name='logout'),
 
     path('', views.home, name='home'),
+    path('unique', views.unique, name='unique'),
+
     path('contact/', views.contact, name='contact'),
     path('error/', views.error, name='error'),
     path('audio/', views.audio, name='audio'),

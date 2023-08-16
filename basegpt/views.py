@@ -100,8 +100,10 @@ def refund(order):
 
 
 def home(request):
-    return render(request, 'basegpt/home.html')
+    return render(request, 'basegpt/homev4.html')
 
+def unique(request):
+    return render(request, 'basegpt/home.html')
 
 def split_text_on_parts(text, max_length):
     sentences =  text.split(". ")

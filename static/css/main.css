@@ -1,6 +1,61 @@
 *{
   font-family: Bahnschrift;
 }
+.large-header {
+  position: relative;
+  width: 100%;
+
+   height: 100vh;
+
+  background: #333;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center center;
+  z-index: 1;
+
+}
+.homev4-container {
+  width: 100%;
+  display: flex;
+  overflow: auto;
+  min-height: 100vh;
+  align-items: center;
+  flex-direction: column;
+  margin-top: -300px;
+}
+@media(max-width: 479px) {
+
+.homev4-container{
+margin-top: -350px;
+}
+}
+
+.main-title {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  color: #f9f1e9;
+  width:90%;
+  top: 20%;
+  left: 10%;
+
+
+  max-height: 50vh;
+}
+.demo-1 .main-title {
+  text-transform: uppercase;
+  font-size: 4.2em;
+  letter-spacing: 0.1em;
+  width:100%;
+}
+.main-title .thin {
+  font-weight: 200;
+}
+@media only screen and (max-width: 768px) {
+  .demo-1 .main-title {
+    font-size: 3em;
+  }
+}
 .component-header {
   top: 0px;
   left: 0px;
@@ -16,6 +71,8 @@
   padding-bottom: var(--dl-space-space-halfunit);
   justify-content: flex-end;
   background-color: rgb(172, 39, 191);
+
+  z-index: 100;
 
   color: white;
 }
@@ -121,6 +178,8 @@
   border-radius: 16px;
   padding-right: var(--dl-space-space-unit);
   padding-bottom: var(--dl-space-space-halfunit);
+   color: white;
+   margin-left: var(--dl-space-space-twounits);
 }
 .component-text:hover {
   background-color: #98e4fd;
@@ -136,6 +195,7 @@
   border-radius: 16px;
   padding-right: var(--dl-space-space-unit);
   padding-bottom: var(--dl-space-space-halfunit);
+   color: white;
 }
 .component-text1:hover {
   background-color: #98e4fd;
@@ -151,6 +211,7 @@
   border-radius: 16px;
   padding-right: var(--dl-space-space-unit);
   padding-bottom: var(--dl-space-space-halfunit);
+   color: white;
 }
 .component-text2:hover {
   background-color: #98e4fd;
@@ -166,6 +227,7 @@
   border-radius: 16px;
   padding-right: var(--dl-space-space-unit);
   padding-bottom: var(--dl-space-space-halfunit);
+  color: white;
 }
 .component-text3:hover {
   background-color: #98e4fd;
@@ -238,6 +300,13 @@
 }
 .component-text7 {
   font-family: Verdana;
+  margin-bottom: var(--dl-space-space-unit);
+  margin-top: var(--dl-space-space-unit);
+}
+.component-text8 {
+  font-family: Verdana;
+  margin-bottom: var(--dl-space-space-unit);
+  margin-top: var(--dl-space-space-unit);
 }
 .component-container5 {
   flex: 0 0 auto;
@@ -318,16 +387,27 @@
   }
 }
 @media(max-width: 479px) {
+  .main-title{
+  top: 5%;
+  left: 5%;
+  }
+
   .component-header {
-	padding:5px;
+
     top: 0px;
     left: 0px;
     right: 0px;
-    height: 80px;
+
+    height: 50px;
     
 	width: 100%;
+
     
   }
+  .component-container1, .component-container2 {
+
+   display:none;
+   }
   .component-mobile-menu {
     padding: 16px;
   }
@@ -337,7 +417,7 @@
 	margin-left:15px;
     
     height: auto;
-    
+    color: white;
     position: absolute;
     justify-content: flex-start;
   }
@@ -368,32 +448,33 @@
   transition: all 0.3s ease;
   position: relative;
   display: inline-block;
-  outline: none;
-  border-radius: 20px;
-  border: 2px solid #57cc99;
+
+
+
 
   font-family: 'Open Sans', sans-serif;
-  background: #fff;
-  color: #57cc99
+
+  color: white;
 }
 .css-buttonin-fully-rounded--green:hover {
-color:#177509;
-border: 2px solid #177509;
+
+  color:   white;
 }
 .css-button-fully-rounded--green {
-	max-height:100%;
+
 	max-width:100%;
+	  color: white;
 	
-	padding-left:30px;
-	padding-right:30px;
+	padding-left:25px;
+	padding-right:25px;
 	
 	
 	
-	padding-bottom: 10px;
-	padding-top:10px;
+	padding-bottom: 7px;
+	padding-top:7px;
 	
   
-  color: #fff;
+
   
   font-weight: bold;
   cursor: pointer;
@@ -403,14 +484,15 @@ border: 2px solid #177509;
   outline: none;
   border-radius: 20px;
   border: 2px solid #57cc99;
-  background: #57cc99;
+
   font-family: 'Open Sans', sans-serif;
 
 }
 .css-button-fully-rounded--green:hover {
-  background: #fff;
-  color: #57cc99;
+  background-color:#57cc99;
+  color:white;
   cursor: pointer;
+
 }
 .signup{
  cursor: pointer;
@@ -434,7 +516,7 @@ border: 2px solid #177509;
   align-items: center;
   flex-direction: row;
   justify-content: center;
-  background-color: #d3edf3;
+  background-color: #EBF2FD;
 }
 .component1-image {
   height: 100%;
