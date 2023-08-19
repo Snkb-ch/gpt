@@ -35,7 +35,7 @@ class BotAdmin(MultiDBModelAdmin):
     using = 'bottg'
 
 
-admin.site.register(Subscription, BotAdmin)
+admin.site.register(Subscriptions, BotAdmin)
 admin.site.register(User, BotAdmin)
 admin.site.register(Period, BotAdmin)
 admin.site.register(AnalyticsForMonth, BotAdmin)

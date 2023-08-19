@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'basegpt.apps.BasegptConfig',
-
+    'bot.apps.BotConfig',
 
 'widget_tweaks',
 
@@ -85,19 +85,22 @@ WSGI_APPLICATION = 'gpt.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'brainstormai',
+        'USER': 'snk',
+        'PASSWORD': '99679926',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    },
+    'bottg': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'bottg',
+        'USER': 'snk',
+        'PASSWORD': '99679926',
+        'HOST': 'localhost',
+        'PORT': '5432',
 }
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'u2019785_default',
-#         'USER': 'u2019785_default',
-#         'PASSWORD': 'Y1ZvgYSJdTj43Jy9',
-#         'HOST': 'localhost',
-#     }
-# }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
