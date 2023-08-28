@@ -174,9 +174,9 @@ class ChatGPTTelegramBot:
         date = date[8:10] + '.' + date[5:7] + '.' + date[0:4]
 
         await update.message.reply_text(
-            text='Осталось ' + str(
-                remain_tokens) + ' токенов' + '\n' + 'Подписка ' + await self.db.get_sub_name_from_user(
-                update.message.from_user.id) + '\n' + 'Закончится ' +
+            text='Осталось: ' + str(
+                remain_tokens) + ' токенов' + '\n' + 'Подписка: ' + await self.db.get_sub_name_from_user(
+                update.message.from_user.id) + '\n' + 'Закончится: ' +
                  date,
         )
 
@@ -269,7 +269,7 @@ class ChatGPTTelegramBot:
         try:
             for sub in subs:
 
-                button_text = sub['sub_name'] + ' ' + str(sub['price']) + ' рублей'
+                button_text = sub['sub_name'] + ' ' + str(sub['price']) + ' руб'
                 button_callback = sub['sub_id']
                 reply_markup_buttons.append([InlineKeyboardButton(text=button_text, callback_data=button_callback)])
         except Exception as e:
@@ -438,7 +438,8 @@ class ChatGPTTelegramBot:
         if await self.db.get_email(update.callback_query.from_user.id) == None:
             await update.effective_message.reply_text(
                 message_thread_id=get_thread_id(update),
-                text='''Пожалуйста, введите email, на который будет выслан чек. 
+                parse_mode = 'HTML',
+                text='''Пожалуйста, <b>введите email</b>, на который будет выслан чек. 
                 
 С политикой кофиденциальности можно ознакомится на сайте https://brainstormai.ru/privacy-policy''',
 
