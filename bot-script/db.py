@@ -163,7 +163,9 @@ class Database:
 
     @sync_to_async
     def get_subs_for_sale(self):
-        subs_dict = Subscriptions.objects.filter(for_sale=True).values('sub_id', 'sub_name', 'price')
+        # по возрастанию цены
+        subs_dict = Subscriptions.objects.filter(for_sale=True).order_by('price').values('sub_id', 'sub_name', 'price')
+
 
         return list(subs_dict)
 
