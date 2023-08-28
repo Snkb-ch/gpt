@@ -17,3 +17,5 @@ __pycache__
 /basegpt/prompts.py
 /gpt/settings.py
 /media/
+
+.env
