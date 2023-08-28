@@ -44,7 +44,7 @@ class DBanalytics_for_month:
     @sync_to_async
     def add_input_tokens(self, sub_id, input_tokens):
         obj, created =AnalyticsForMonth.objects.get_or_create(
-            sub_type=sub_id,
+            sub_type=Subscriptions.objects.get(sub_id=sub_id),
             begin_date=self.begin_date(),
             defaults={'input_tokens': input_tokens}
         )
@@ -59,7 +59,7 @@ class DBanalytics_for_month:
     @sync_to_async
     def add_output_tokens(self, sub_id, output_tokens):
         obj, created = AnalyticsForMonth.objects.get_or_create(
-            sub_type=sub_id,
+            sub_type=Subscriptions.objects.get(sub_id=sub_id),
             begin_date=self.begin_date(),
             defaults={'output_tokens': output_tokens}
         )
@@ -73,7 +73,7 @@ class DBanalytics_for_month:
     @sync_to_async
     def add_total_tokens(self, sub_id, total_tokens):
         obj, created = AnalyticsForMonth.objects.get_or_create(
-            sub_type=sub_id,
+            sub_type=Subscriptions.objects.get(sub_id=sub_id),
             begin_date=self.begin_date(),
             defaults={'total_tokens': total_tokens}
         )
@@ -88,7 +88,7 @@ class DBanalytics_for_month:
     @sync_to_async
     def add_expired_time(self, sub_id):
         obj, created = AnalyticsForMonth.objects.get_or_create(
-            sub_type=sub_id,
+            sub_type=Subscriptions.objects.get(sub_id=sub_id),
             begin_date=self.begin_date(),
             defaults={'expired_time': 1}
         )
@@ -102,7 +102,7 @@ class DBanalytics_for_month:
     @sync_to_async
     def add_expired_tokens(self, sub_id):
         obj, created = AnalyticsForMonth.objects.get_or_create(
-            sub_type=sub_id,
+            sub_type=Subscriptions.objects.get(sub_id=sub_id),
             begin_date=self.begin_date(),
             defaults={'expired_tokens': 1}
         )
@@ -126,7 +126,7 @@ class DBanalytics_for_month:
     @sync_to_async
     def add_expired(self, sub_id):
         obj, created = AnalyticsForMonth.objects.get_or_create(
-            sub_type=sub_id,
+            sub_type=Subscriptions.objects.get(sub_id=sub_id),
             begin_date=self.begin_date(),
             defaults={'expired': 1}
         )
@@ -156,7 +156,7 @@ class DBanalytics_for_month:
     @sync_to_async
     def add_temp_edited(self, sub_id):
         obj, created = AnalyticsForMonth.objects.get_or_create(
-            sub_type=sub_id,
+            sub_type=Subscriptions.objects.get(sub_id=sub_id),
             begin_date=self.begin_date(),
             defaults={'temp_edited': 1}
         )
@@ -170,7 +170,7 @@ class DBanalytics_for_month:
     @sync_to_async
     def add_role_edited(self, sub_id):
         obj, created = AnalyticsForMonth.objects.get_or_create(
-            sub_type=sub_id,
+            sub_type=Subscriptions.objects.get(sub_id=sub_id),
             begin_date=self.begin_date(),
             defaults={'role_edited': 1}
         )
