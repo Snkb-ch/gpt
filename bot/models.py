@@ -40,6 +40,7 @@ class User(models.Model):
     sub_type = models.ForeignKey(Subscriptions, on_delete=models.RESTRICT, null=True)
     custom_temp = models.FloatField(default=1, null=True)
     email = models.CharField(max_length=50, null=True)
+    # date to remind user about expiring subscription
     expired_date = models.DateField(null=True)
     admin = models.BooleanField(default=False, null=True)
 

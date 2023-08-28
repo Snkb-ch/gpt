@@ -528,8 +528,8 @@ display:none;
 }
 .homev4-imagemain {
   top: 24px;
-  right: 450px;
-  width: 300px;
+    right: 15%;
+  width: 20%;
   position: absolute;
   align-self: flex-end;
   object-fit: cover;
@@ -782,6 +782,16 @@ display:none;
 .homev4-text52 {
   font-size: 30px;
   font-weight: 400;
+      align-self: center;
+    text-align: center;
+}
+.dur-text{
+
+height:auto;
+align-self: center;
+margin-right:20px;
+
+
 }
 .homev4-text55 {
   font-size: 21px;
