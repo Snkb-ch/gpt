@@ -169,7 +169,16 @@ class Database:
 
         return list(subs_dict)
 
-#
+    @sync_to_async
+    def get_last_message(self, user_id):
+        return User.objects.get(user_id=user_id).last_message
+
+    @sync_to_async
+    def set_last_message(self, user_id, date):
+        user = User.objects.get(user_id=user_id)
+        user.last_message = date
+        user.save()
+
 db = Database()
 
 

@@ -42,6 +42,7 @@ class User(models.Model):
     email = models.CharField(max_length=50, null=True)
     # date to remind user about expiring subscription
     expired_date = models.DateField(null=True)
+    last_message = models.DateField(null=True)
     admin = models.BooleanField(default=False, null=True)
 
     class Meta:

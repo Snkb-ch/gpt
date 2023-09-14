@@ -152,9 +152,9 @@ class ChatGPTTelegramBot:
 
 ⏬ Вам доступно ⏬
 
-✅ Дней: 3 дня
+✅ Дней: 30 дня
 ✅ Модель: GPT-3.5
-✅ Токенов: 2000''',
+✅ Токенов: 2000 в день''',
             )
             return
 
@@ -610,6 +610,12 @@ class ChatGPTTelegramBot:
             elif self.status[user_id] == 'prompt':
 
                 plan = await self.db.get_sub_type(user_id)
+                plan_name = await self.db.get_sub_name_from_user(user_id)
+                date = datetime.now().date()
+                last_message = await self.db.get_last_message(user_id)
+                if plan_name== 'trial' and last_message != date:
+                    await self.db.set_last_message(user_id, date)
+                    await self.db.set_used_tokens(user_id, 0)
 
                 self.last_message[chat_id] = prompt
                 model_config = await self.db.get_model_config(update.effective_chat.id)
