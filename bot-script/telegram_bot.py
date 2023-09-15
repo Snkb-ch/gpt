@@ -254,13 +254,14 @@ class ChatGPTTelegramBot:
         user_id = update.message.from_user.id
 
         sub = await self.db.get_sub_type(user_id)
-
         if await  self.db.get_status(user_id) == 'active' and sub != 1:
             await update.message.reply_text(
                 message_thread_id=get_thread_id(update),
-                text='У вас уже есть активная подписка',
+                text='''У вас уже есть активная подписка.
+
+При повторной покупке неиспользованные токены не переносятся''',
             )
-            return
+
 
         subs = await  self.db.get_subs_for_sale()
 
@@ -617,6 +618,7 @@ class ChatGPTTelegramBot:
                     await self.db.set_last_message(user_id, date)
                     await self.db.set_used_tokens(user_id, 0)
 
+
                 self.last_message[chat_id] = prompt
                 model_config = await self.db.get_model_config(update.effective_chat.id)
                 tokens_input = self.openai.count_tokens(([{"role": "user", "content": prompt}]), model_config['model'])
@@ -733,17 +735,25 @@ class ChatGPTTelegramBot:
                         print(total_tokens)
 
                         if await self.is_in_tokens(update, context, user_id) == False:
-                            await update.effective_message.reply_text(
-                                message_thread_id=get_thread_id(update),
-                                text='Ваш лимит токенов закончился, купите подписку',
-                            )
 
-                            await self.db.set_inactive(user_id)
+                            plan = await self.db.get_sub_type(user_id)
+                            if plan == 1:
+                                await update.effective_message.reply_text(
+                                    message_thread_id=get_thread_id(update),
+                                    text='Ваш лимит токенов на сегодня закончился, купите подписку или подождите до завтра',
+                                )
+                            else:
+                                await update.effective_message.reply_text(
+                                    message_thread_id=get_thread_id(update),
+                                    text='Ваш лимит токенов закончился, купите подписку',
+                                )
 
-                            await  self.db_analytics_for_month.add_expired(plan)
-                            await self.db_analytics_for_month.add_expired_tokens(plan)
+                                await self.db.set_inactive(user_id)
 
-                            await self.buy(update, context)
+                                await  self.db_analytics_for_month.add_expired(plan)
+                                await self.db_analytics_for_month.add_expired_tokens(plan)
+
+                                await self.buy(update, context)
 
 
 
