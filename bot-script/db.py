@@ -149,14 +149,14 @@ class Database:
 
 
 
-        # # set expired_date for users
-        User.objects.filter(status='inactive', expired_date=date).update(expired_date=date + timedelta(days=30))
-        return list(User.objects.filter(status='inactive', expired_date=date).values_list('user_id', flat=True))
+        # # set reminder_date for users
+        User.objects.filter(status='inactive', reminder_date=date).update(reminder_date=date + timedelta(days=30))
+        return list(User.objects.filter(status='inactive', reminder_date=date).values_list('user_id', flat=True))
 
     @sync_to_async
     def set_inactive(self, user_id):
         date = datetime.now()
-        User.objects.filter(user_id=user_id).update(status='inactive', expired_date=date + timedelta(days=14))
+        User.objects.filter(user_id=user_id).update(status='inactive', reminder_date=date + timedelta(days=14))
     @sync_to_async
     def is_admin(self, user_id):
         return User.objects.get(user_id=user_id).admin
