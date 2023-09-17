@@ -158,6 +158,25 @@ class ChatGPTTelegramBot:
             )
             return
 
+
+
+    async def save(self, update:Update, context: ContextTypes.DEFAULT_TYPE):
+        if await self.is_active(update, context, update.message.from_user.id) == False:
+            await update.message.reply_text(
+                message_thread_id=get_thread_id(update),
+                text='Ваша подписка закончилась, купите подписку',
+            )
+            return
+        user_id = update.message.from_user.id
+
+        # pin last bot message
+        if update.message.reply_to_message:
+            await update.message.reply_to_message.pin()
+
+
+
+
+
     async def stats(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         # send message hello
         if await self.is_active(update, context, update.message.from_user.id) == False:
@@ -807,6 +826,7 @@ class ChatGPTTelegramBot:
         application.add_handler(CommandHandler('send_to_all', self.send_to_all))
         application.add_handler(CommandHandler('send_reminder', self.send_reminder))
         application.add_handler(CommandHandler('admin', self.admin))
+        application.add_handler(CommandHandler('save', self.save))
 
         application.add_handler(CommandHandler('temperature', self.temperature))
 
