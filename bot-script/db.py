@@ -156,7 +156,8 @@ class Database:
     @sync_to_async
     def set_inactive(self, user_id):
         date = datetime.now()
-        User.objects.filter(user_id=user_id).update(status='inactive', reminder_date=date + timedelta(days=14))
+        User.objects.filter(user_id=user_id).update(status='inactive', reminder_date=date + timedelta(days=14), sub_type = Subscriptions.objects.get(sub_name='free'))
+
     @sync_to_async
     def is_admin(self, user_id):
         return User.objects.get(user_id=user_id).admin
