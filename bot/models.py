@@ -46,6 +46,7 @@ class User(models.Model):
     active_days = models.IntegerField(default=0, null=True)
     sold = models.IntegerField(default=0, null=True)
     admin = models.BooleanField(default=False, null=True)
+    blocked = models.BooleanField(default=False, null=True)
 
     class Meta:
         constraints = [

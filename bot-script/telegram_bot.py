@@ -844,12 +844,22 @@ class ChatGPTTelegramBot:
 
                 self.status[user_id] = 'prompt'
                 users = await self.db.get_all_users()
+                k = 0
                 for user in users:
                     try:
                         await self.bot.send_message(chat_id=user, text=update.message.text,parse_mode = 'HTML')
+                        k+=1
                     except Exception as e:
-                        await self.send_to_admin('error in send message to all users' + '\n' + str(e))
+
+                        await self.db.set_blocked_user(user)
+                        await self.send_to_admin('error in send message to all users' + '\n' + str(e) + '\n' + str(user))
+
+
+
                         pass
+
+                print(k)
+                await self.send_to_admin('send message to all users' + '\n' + str(k))
                 return
 
             elif not await self.is_active(update, context, user_id):

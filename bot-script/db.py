@@ -217,6 +217,12 @@ class Database:
 
 
     @sync_to_async
+    def set_blocked_user(self, user_id):
+        user = User.objects.get(user_id=user_id)
+        user.blocked = True
+        user.save()
+
+    @sync_to_async
     def get_users_for_reset_history(self):
         date = datetime.now()
         return list(User.objects.filter(status='active', last_message__lt=date - timedelta(days=2)).values_list('user_id', flat=True))
