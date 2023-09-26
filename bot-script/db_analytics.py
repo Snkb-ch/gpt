@@ -4,14 +4,14 @@ import psycopg2 as pg
 
 import os
 import sys
-
+from db import Database
 from asgiref.sync import sync_to_async
 from django.db.models import F
 from django.forms import model_to_dict
 
 # Получаем путь к текущему скрипту
 script_path = os.path.abspath(__file__)
-
+import openai_helper
 # Получаем путь к директории, содержащей текущий скрипт
 script_dir = os.path.dirname(script_path)
 
@@ -29,7 +29,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gpt.settings")
 # Импортируем и настраиваем Django настройки
 import django
 django.setup()
-from bot.models import User, Subscriptions, Period, AnalyticsForMonth, AnalyticsPeriods
+from bot.models import User, Subscriptions, Period, AnalyticsForMonth, AnalyticsPeriods, Session, Subscriptions_statistics
 
 
 class DBanalytics_for_month:
@@ -70,21 +70,8 @@ class DBanalytics_for_month:
     @sync_to_async
     def get_output_tokens(self, sub_id):
         return AnalyticsForMonth.objects.get(sub_type=sub_id, begin_date=self.begin_date()).output_tokens
-    @sync_to_async
-    def add_total_tokens(self, sub_id, total_tokens):
-        obj, created = AnalyticsForMonth.objects.get_or_create(
-            sub_type=Subscriptions.objects.get(sub_id=sub_id),
-            begin_date=self.begin_date(),
-            defaults={'total_tokens': total_tokens}
-        )
 
-        if not created:
-            obj.total_tokens = F('total_tokens') + total_tokens
-            obj.save()
 
-    @sync_to_async
-    def get_total_tokens(self, sub_id):
-        return AnalyticsForMonth.objects.get(sub_type=sub_id, begin_date=self.begin_date()).total_tokens
     @sync_to_async
     def add_expired_time(self, sub_id):
         obj, created = AnalyticsForMonth.objects.get_or_create(
@@ -226,6 +213,84 @@ class DBanalytics_for_periods:
             obj.users = F('users') + 1
             obj.save()
 
+class DBanalytics_for_sessions:
+
+    @sync_to_async
+    def new_sub_stats(self, user_id, sub_type):
+        Subscriptions_statistics.objects.create(
+            user_id = user_id,
+            sub_type = Subscriptions.objects.get(sub_id=sub_type),
+            start_date = datetime.now()
+        )
+
+
+    @sync_to_async
+    def set_inactive(self, user_id, expired_reason):
+
+        if expired_reason == 'time':
+            Subscriptions_statistics.objects.filter(user_id=user_id, active=True).update(active=False, end_date=User.objects.get(user_id=user_id).end_time, expired_reason=expired_reason)
+        else:
+            Subscriptions_statistics.objects.filter(user_id=user_id, active=True).update(active=False, end_date=datetime.now(),  expired_reason=expired_reason)
+
+
+
+
+    @sync_to_async
+    def add_session(self,user_id,  sub_type, start_time):
+
+        Session.objects.create(
+            sub_stat = Subscriptions_statistics.objects.get(user_id=user_id, active=True),
+
+            start_time = start_time)
+
+
+
+    @sync_to_async
+    def close_session(self, user_id, end_time):
+        if Subscriptions_statistics.objects.filter(user_id=user_id, active=True).exists():
+            sub_stat = Subscriptions_statistics.objects.get(user_id=user_id, active=True)
+            Session.objects.filter(sub_stat=sub_stat, closed=False).update(closed=True, end_time=end_time)
+
+
+
+
+
+    @sync_to_async
+    def update_session_input(self, chat_id, input_tokens, input_tokens_before_sum):
+        active_session = Session.objects.get(sub_stat=Subscriptions_statistics.objects.get(user_id=chat_id, active=True), closed=False)
+        active_session.input_tokens = F('input_tokens') + input_tokens
+        active_session.input_tokens_before_sum = F('input_tokens') + input_tokens_before_sum
+
+        active_session.messages = F('messages') + 1
+
+
+
+
+        active_session.save()
+
+
+
+
+
+    @sync_to_async
+    def update_session_output(self, chat_id, output_tokens):
+        active_session = Session.objects.get(sub_stat=Subscriptions_statistics.objects.get(user_id=chat_id, active=True), closed=False)
+        active_session.output_tokens = F('output_tokens') + output_tokens
+
+        active_session.save()
+
+
+    @sync_to_async
+    def role_edited(self, chat_id):
+        sub_active = Subscriptions_statistics.objects.get(user_id=chat_id, active=True)
+        sub_active.role_edited = F('role_edited') + 1
+        sub_active.save()
+
+    @sync_to_async
+    def temp_edited(self, chat_id):
+        sub_active = Subscriptions_statistics.objects.get(user_id=chat_id, active=True)
+        sub_active.temp_edited = F('temp_edited') + 1
+        sub_active.save()
 
 
 
@@ -240,10 +305,6 @@ class DBanalytics_for_periods:
 
 
 
-
-
-
-db = DBanalytics_for_month()
 
 
 

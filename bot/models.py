@@ -43,6 +43,8 @@ class User(models.Model):
     # date to remind user about expiring subscription
     reminder_date = models.DateField(null=True, blank=True)
     last_message = models.DateField(null=True, blank=True)
+    active_days = models.IntegerField(default=0, null=True)
+    sold = models.IntegerField(default=0, null=True)
     admin = models.BooleanField(default=False, null=True)
 
     class Meta:
@@ -76,17 +78,10 @@ class AnalyticsForMonth(models.Model):
     id = models.AutoField(primary_key=True)
     sub_type = models.ForeignKey(Subscriptions, on_delete=models.CASCADE)
     begin_date = models.DateField()
-    active = models.IntegerField(default=1)
+
     input_tokens = models.BigIntegerField(default=0)
     output_tokens = models.BigIntegerField(default=0)
-    total_tokens = models.BigIntegerField(default=0)
-    expired_time = models.IntegerField(default=0)
-    expired_tokens = models.IntegerField(default=0)
-    sold = models.IntegerField(default=0)
-    expired = models.IntegerField(default=0)
-    income = models.IntegerField(default=0)
-    temp_edited = models.IntegerField(default=0)
-    role_edited = models.IntegerField(default=0)
+
     objects = BotTGUserManager()
 
     class Meta:
@@ -124,3 +119,54 @@ class AnalyticsPeriods(models.Model):
 
     def __str__(self):
         return str(self.sub_type)
+
+
+class Subscriptions_statistics(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    sub_type = models.ForeignKey(Subscriptions, on_delete=models.CASCADE)
+    start_date = models.DateField()
+    end_date = models.DateField(null=True)
+
+    active = models.BooleanField(default=True)
+    expired_reason = models.CharField(max_length=50, null=True)
+    role_edited = models.IntegerField(default=0)
+    temp_edited = models.IntegerField(default=0)
+    objects = BotTGUserManager()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['id'], name='subscriptions_statistics_pkey'),
+        ]
+
+
+
+class Session(models.Model):
+    id = models.AutoField(primary_key=True)
+    closed = models.BooleanField(default=False)
+    sub_stat = models.ForeignKey(Subscriptions_statistics, on_delete=models.CASCADE)
+    start_time = models.DateField()
+    end_time = models.DateField(null=True)
+    input_tokens = models.IntegerField(null=True, default=0)
+    input_tokens_before_sum = models.IntegerField(null=True, default=0)
+    output_tokens = models.IntegerField(null=True, default=0)
+
+
+
+
+    messages = models.IntegerField(null=True, default=0)
+    # контекст и вход отдельно?
+
+
+
+    objects = BotTGUserManager()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['id'], name='sessions_pkey'),
+        ]
+
+    def __str__(self):
+        return str(self.id)
+
+

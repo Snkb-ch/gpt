@@ -5,10 +5,13 @@ import asyncio
 import json
 import logging
 import os
+import re
 import threading
 import time
 import traceback
 from datetime import datetime, timedelta
+
+from openai_helper import default_max_tokens
 
 import schedule
 import telegram
@@ -35,7 +38,7 @@ from openai_helper import OpenAIHelper, localized_text
 
 from aiogram import Bot, Dispatcher, executor, types
 from db import Database
-from db_analytics import DBanalytics_for_month, DBanalytics_for_periods
+from db_analytics import DBanalytics_for_month, DBanalytics_for_periods, DBanalytics_for_sessions
 
 import os
 import sys
@@ -64,7 +67,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gpt.settings")
 import django
 
 django.setup()
-from bot.models import User, Subscriptions, Period, AnalyticsForMonth, AnalyticsPeriods
+from bot.models import User, Subscriptions, Period, AnalyticsForMonth, AnalyticsPeriods,Session
 
 
 class ChatGPTTelegramBot:
@@ -82,11 +85,13 @@ class ChatGPTTelegramBot:
         self.db = Database()
         self.db_analytics_for_month = DBanalytics_for_month()
         self.db_analytics_for_periods = DBanalytics_for_periods()
+        self.db_analytics_for_sessions = DBanalytics_for_sessions()
 
         self.config = config
         self.openai = openai
 
         self.status = {}
+        self.prompts: dict[int: list] = {}
         bot_language = self.config['bot_language']
         self.commands = [
             BotCommand(command='help', description='Помощь/описание'),
@@ -94,6 +99,7 @@ class ChatGPTTelegramBot:
             BotCommand(command='buy', description='Купить подписку'),
             BotCommand(command='stats', description='Моя Статистика'),
             BotCommand(command='resend', description='Переслать последний запрос'),
+            BotCommand(command='save', description='Закрепить выбранное сообщение'),
 
         ]
         self.commands.append(BotCommand(command='role', description='Изменить роль  PRO'))
@@ -120,20 +126,48 @@ class ChatGPTTelegramBot:
     async def help(self, update: Update, _: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text(
             message_thread_id=get_thread_id(update),
+            parse_mode='HTML',
             text='''Если возникли вопросы, столкнулись с ошибкой напишите нам brainshtorm@gmail.com
             
-После ввода команды /role вы пишете условия, которые нейросеть должна соблюдать. Например, если нужны краткие ответы без пояснений, можно попросить ИИ отвечать только "да" или "нет".
+<b>Как считаются токены</b>
 
-Команда /temperature для того, чтобы регулировать креативность от 0 до 2. Чем меньше температура, тем чаще ИИ повторяется, но уменьшается шанс ошибки.
+1 тыс. токенов примерно равна 1.5 стр. А4. Но!
+Потраченные токены зависят от длины вопроса и ответа GPT. Всё вместе называется история или же контекст. Это третий параметр, который влияет на потраченные токены. И тратит он больше всех.
 
-Подробнее на сайте: brainstormai.ru''',
+Поэтому не забывайте сбрасывать историю командой /reset. Так вы «прочистите мозги» нейросети, а еще сэкономите токены.
+
+Под каждым ответом GPT написано количество токенов, которые находятся в контексте, по-другому – истории чата.
+
+<b>Как считается история</b>
+
+Вопрос + Ответ = История 1 запроса; История 1 запроса + Вопрос 2 + Ответ 2 = История 2 запроса.
+
+Короче говоря, каждый следующий запрос к нейросети включает в себя все предыдущие вопросы и ответы.
+
+Не ругайтесь на нас. Это придумали не мы. Убрать это нельзя. Мы же хотим предупредить вас об этом. Поэтому чистите историю чаще /reset :)
+
+<b>Команда role</b>
+
+После ввода команды /role вы пишете условия, которые нейросеть должна соблюдать. Например, если нужны краткие ответы без пояснений, можно попросить нейросеть отвечать только "да" или "нет".
+
+<b>Команда temperature</b>
+
+Команда /temperature для того, чтобы регулировать креативность от 0 до 1.25. Чем меньше температура, тем чаще GPT повторяется, но уменьшается шанс ошибки.  Чем выше, тем креативнее и безумнее нейросеть. Начальное, самое стабильное значение 1
+
+<b>Команда save</b>
+
+Команда /save – это просто закреплённые сообщения. Например, чтобы не листать весь диалог с ответами на экзамене теперь можно сделать «точки» навигации. И вот как:
+
+- Свайпните влево сообщение, которое хотите закрепить. На ПК – кликнуть правой кнопкой по сообщению и нажать в списке «ответить»
+- Введите команду /save и отправьте её
+- Всё, готово :)
+
+Закрепить можно любые сообщения: свои и GPT. Количество не ограничено.
+
+Подробнее на сайте: brainstormai.ru
+''',
 
         )
-
-    def bold(self, text):
-        return f'<b>{text}</b>'
-
-    # Применение функции для выделения названий
 
     async def start(self, update: Update, _: ContextTypes.DEFAULT_TYPE) -> None:
 
@@ -146,15 +180,30 @@ class ChatGPTTelegramBot:
 
             await update.message.reply_text(
                 message_thread_id=get_thread_id(update),
-                text='''Добро пожаловать! 
+                parse_mode='HTML',
+
+                text='''Добро пожаловать!
 
 🆓 Активная подписка: Пробный период
 
 ⏬ Вам доступно ⏬
 
-✅ Дней: 30 дней
+✅ Дней: 14
+
 ✅ Модель: GPT-3.5
-✅ Токенов: 2000 в день''',
+
+✅ Токенов: 4000 в день
+
+<b>Важно</b>🔻
+
+Потраченные токены зависят от длины вопроса и ответа GPT. Всё вместе называется история или контекст. Это третий параметр, который влияет на потраченные токены. И тратит он больше всех.
+
+Поэтому не забывайте сбрасывать историю командой /reset. Так вы «прочистите мозги» нейросети, а еще сэкономите токены.
+
+Под каждым ответом GPT написано количество токенов, которые находятся в контексте, по-другому истории чата.
+
+Подробнее /help
+''',
             )
             return
 
@@ -172,6 +221,11 @@ class ChatGPTTelegramBot:
         # pin last bot message
         if update.message.reply_to_message:
             await update.message.reply_to_message.pin()
+        else:
+            await update.message.reply_text(
+                message_thread_id=get_thread_id(update),
+                text='Вы не выбрали сообщение. Для выбора свайпните его влево. На ПК – 2 раза кликнуть по сообщению',
+            )
 
 
 
@@ -196,7 +250,7 @@ class ChatGPTTelegramBot:
             text='Осталось: ' + str(
                 remain_tokens) + ' токенов' + '\n' + 'Подписка: ' + await self.db.get_sub_name_from_user(
                 update.message.from_user.id) + '\n' + 'Закончится: ' +
-                 date,
+                 date
         )
 
     async def resend(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -237,6 +291,18 @@ class ChatGPTTelegramBot:
             text='История чата сброшена',
         )
 
+
+
+    async def send_to_admin(self, text):
+
+        admins = await self.db.get_admin_users()
+        for admin in admins:
+            await self.bot.send_message(chat_id=admin,
+                                        text=text)
+
+
+
+
     async def send_to_all(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         if not await  self.db.is_admin(update.message.from_user.id):
             return
@@ -247,25 +313,118 @@ class ChatGPTTelegramBot:
         )
 
     async def send_reminder(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        try:
-            users = await self.db.get_all_inactive_users()
+        admin = await self.db.get_admin_users()
+        if not await  self.db.is_admin(update.message.from_user.id):
+            return
+        while True:
+            try:
+                users = await self.db.get_all_inactive_users()
 
-            for user in users:
+                for user in users:
+                    try:
+                        await self.bot.send_message(chat_id=user,
+                                                    text='Привет, ты давно не заходил к нам, наш бот всегда готов помочь, надеемся увидеть тебя снова')
+
+                    except:
+                        pass
+                await asyncio.sleep(60*60*24)
+            except Exception as e:
+                print(traceback.format_exc())
+                await self.send_to_admin( 'error in send reminder' + '\n' + str(e))
+
+    async def send_notif(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        admin = await self.db.get_admin_users()
+        if not await self.db.is_admin(update.message.from_user.id):
+            return
+        time_flag = True
+        while True:
+
+            while datetime.now().time() > datetime.strptime('2:00', '%H:%M').time() and time_flag:
+                # remove in prod
+                # time_flag = False
+                await asyncio.sleep(60*60)
+
+            time_flag = False
+
+            try:
+
+                await self.db.set_inactive_auto()
+
+                # users = await self.db.get_users_for_reset_history()
+                #
+                # self.openai.clean_all_chat_history(users)
+
+                users = await self.db.get_trial_ending_users()
+
+                # объедини все списки внутри  users
+
+                print(users)
+
+                k1 = str(len(users))
+                for user in users:
+
+
+                        try:
+                            await self.bot.send_message(chat_id=user,
+                                                        text='Привет, твой пробный период скоро закончится, ты можешь продолжить общение с ИИ, купив подписку')
+
+
+
+                        except:
+                            pass
+
+
+
+                users = await self.db.get_trial_users()
+                k2 = str(len(users))
+                for user in users:
+
+                    try:
+
+                        date = str(await self.db.get_end_time(update.message.from_user.id))[0:10]
+                        date = date[8:10] + '.' + date[5:7] + '.' + date[0:4]
+                        await self.bot.send_message(chat_id=user,
+                                                    text='Привет, история чата сброшена, токены обнулены, ты можешь продолжить общение с ИИ' + '\n' +
+                                                    'Ваша подписка : ' + await self.db.get_sub_name_from_user(
+                    update.message.from_user.id) + '\n' + 'Закончится: ' +
+                     date)
+
+
+
+
+
+                    except:
+                        pass
                 try:
-                    await self.bot.send_message(chat_id=user,
-                                                text='Привет, ты давно не заходил к нам, наш бот всегда готов помочь, надеемся увидеть тебя снова')
-                    await asyncio.sleep(60 * 60 * 60 * 24)
+                    count_new_users = str( await self.db.count_new_users_trial())
+                    count_sold = str(await self.db.count_new_users_not_trial())
                 except:
-                    pass
-        except Exception as e:
-            print(traceback.format_exc())
+                    count_new_users = '0'
+                    count_sold = '0'
+                for admin_id in admin:
+                    await self.bot.send_message(chat_id=admin_id,
+                                                text='Отправили уведомление о пробном периоде' + '\n' + 'Количество пользователей: ' + k1)
+                    await self.bot.send_message(chat_id=admin_id,
+                                                text='Отправили уведомление о сбросе истории чата' + '\n' + 'Количество пользователей: ' + k2)
+
+
+                    await self.bot.send_message(chat_id=admin_id,
+                                                text='новых пользователей: ' + count_new_users + '\n' + 'продано подписок: ' + count_sold)
+
+                await asyncio.sleep(60*60*24)
+
+            except Exception as e:
+                print('error in clean history')
+                await self.send_to_admin('error in clean history' + '\n' + str(e))
+
+
 
     async def admin(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         if not await  self.db.is_admin(update.message.from_user.id):
             return
         await update.message.reply_text(
             message_thread_id=get_thread_id(update),
-            text='Команды: /send_to_all  , /send_reminder',
+            text='Команды: /send_to_all  , /send_reminder, /send_notif',
         )
 
     async def buy(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -284,7 +443,7 @@ class ChatGPTTelegramBot:
 
         subs = await  self.db.get_subs_for_sale()
 
-        reply_markup_buttons = []  # Здесь будем хранить кнопки для разметки
+        reply_markup_buttons = []
 
         try:
             for sub in subs:
@@ -321,38 +480,39 @@ class ChatGPTTelegramBot:
         text = '''
 Описание подписок:
 
-<b>GPT-3.5 Ultimate</b>
+<b>Скидка 20% до 3 октября</b>
 
-Цена: 90 руб / 30 дней
+
+<b>GPT-3.5 Standart</b>
+Цена: <s><i>50</i></s> 40 руб / 30 дней
 Модель: GPT-3.5
-100 000 токенов - около 150 стр. А4
+40 000 токенов - около 20 стр. А4
 Настройка роли и креативности: ❌
 
-<b>GPT-4 Basic</b>
 
-Цена: 110 руб / 30 дней
-Модель: GPT-4
-10 000 токенов - около 15 стр. А4
+<b>GPT-3.5 PRO</b>
+Цена: <s><i>90</i></s> 72 руб / 30 дней
+Модель: GPT-3.5
+200 000 токенов - около 100 стр. А4
 Настройка роли и креативности: ❌
+
 
 <b>GPT-4 Standart</b>
-
-Цена: 350 руб / 30 дней
+Цена: <s><i>290</i></s> 232 руб / 30 дней
 Модель: GPT-4
-40 000 токенов - около 60 стр. А4
+40 000 токенов - около 20 стр. А4
 Настройка роли и креативности: ✅
 
-<b>GPT-4 PRO</b>
 
-Цена: 700 руб / 30 дней
+<b>GPT-4 PRO</b>
+Цена: <s><i>700</i></s> 560 руб / 30 дней
 Модель: GPT-4
-100 000 токенов - около 150 стр. А4
+100 000 токенов - около 50 стр. А4
 Настройка роли и креативности: ✅
 
 <b>Важно🔻</b>
-
-Один токен не равен одному символу. Точного отношения токена к символу нет. 
-Приблизительно 1000 токенов – 300 слов или 2300 символов с пробелами. 
+Один токен не равен одному символу. Точного отношения токена к символу нет.
+Приблизительно 1000 токенов – 300 слов или 2300 символов с пробелами.
 Проще говоря 1 тыс. равна 1.5 стр. А4.
 
 Подробнее на сайте: brainstormai.ru
@@ -393,7 +553,7 @@ class ChatGPTTelegramBot:
 
         await update.message.reply_text(
             message_thread_id=get_thread_id(update),
-            text='Введите температуру от 0 до 2. Например, 1.25',
+            text='Введите температуру от 0 до 1.25',
         )
         user_id = update.message.from_user.id
         self.status[user_id] = 'set_temperature'
@@ -431,11 +591,20 @@ class ChatGPTTelegramBot:
         self.openai.reset_chat_history(chat_id=update.effective_chat.id, content=message_text(update.message))
         self.openai.add_role_to_history(chat_id=update.effective_chat.id, content=role)
 
-        await self.db_analytics_for_month.add_role_edited(await self.db.get_sub_type(user_id))
+        sub_name = await self.db.get_sub_name_from_user(user_id)
+        try:
+            if sub_name == 'trial':
+                pass
+            else:
+                await self.db_analytics_for_sessions.role_edited(user_id)
+        except Exception as e:
+            print(traceback.format_exc())
+            pass
+        # await self.db_analytics_for_month.add_role_edited(await self.db.get_sub_type(user_id))
 
     async def set_temperature(self, update: Update, context: ContextTypes.DEFAULT_TYPE, temperature):
         try:
-            if float(temperature) <= 2.0 or float(temperature) >= 0.0:
+            if float(temperature) <= 1.25 or float(temperature) >= 0.0:
 
                 await update.message.reply_text(
                     message_thread_id=get_thread_id(update),
@@ -444,27 +613,39 @@ class ChatGPTTelegramBot:
                 await self.db.set_custom_temp(update.message.from_user.id, temperature)
                 user_id = update.message.from_user.id
                 self.status[user_id] = 'prompt'
-                await self.db_analytics_for_month.add_temp_edited(await self.db.get_sub_type(user_id))
+                sub_name = await self.db.get_sub_name_from_user(user_id)
+                try:
+                    if sub_name == 'trial':
+                        pass
+                    else:
+
+                        await self.db_analytics_for_sessions.temp_edited(user_id)
+                except Exception as e:
+                    print(traceback.format_exc())
+                    pass
+
+                # await self.db_analytics_for_month.add_temp_edited(await self.db.get_sub_type(user_id))
 
         except Exception as e:
+            print(traceback.format_exc())
             await update.message.reply_text(
                 message_thread_id=get_thread_id(update),
-                text='Введите температуру от 0 до 2 или введите /cancel для отмены',
+                text='Введите температуру от 0 до 1.25 или /cancel для отмены',
             )
 
 
     async def button(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-
+        user_id = update.callback_query.from_user.id
         if await self.db.get_email(update.callback_query.from_user.id) == None:
             await update.effective_message.reply_text(
                 message_thread_id=get_thread_id(update),
                 parse_mode = 'HTML',
-                text='''Пожалуйста, <b>введите email</b>, на который будет выслан чек. 
+                text='''Пожалуйста, <b>введите email</b>, на который будет выслан чек или /cancel для отмены. 
                 
 С политикой кофиденциальности можно ознакомится на сайте https://brainstormai.ru/privacy-policy''',
 
             )
-            user_id = update.callback_query.from_user.id
+
             self.status[user_id] = 'set_email'
             return
         await update.effective_message.reply_text(
@@ -479,8 +660,30 @@ class ChatGPTTelegramBot:
         price = await self.db.get_price(query.data)
         sub_name = await self.db.get_sub_name(query.data)
         email = await self.db.get_email(query.from_user.id)
+        try:
+            payment_details =  payment.payment(price, sub_name, email)
+        except Exception as e:
+            print(e)
+            if 'email' in str(e):
 
-        payment_details =  payment.payment(price, sub_name, email)
+                await self.db.reset_email(query.from_user.id)
+                await update.effective_message.reply_text(
+                    message_thread_id=get_thread_id(update),
+                    parse_mode = 'HTML',
+                    text='''Некорректный email, пожалуйста, <b>введите email</b>, на который будет выслан чек.'''
+                )
+                self.status[user_id] = 'set_email'
+                return
+
+            else:
+                await self.send_to_admin( 'error in create payment' + '\n' + str(e))
+                await update.effective_message.reply_text(
+                    message_thread_id=get_thread_id(update),
+                    text='Ошибка при создании платежа, обратитесь в поддержку',
+                )
+
+                return
+
 
         await update.effective_message.reply_text(
             (payment_details['confirmation'])['confirmation_url'])
@@ -492,27 +695,37 @@ class ChatGPTTelegramBot:
             sub_id = query.data
             await self.activate_sub(user_id, query.data)
 
-            await self.db_analytics_for_month.add_income(sub_id, await self.db.get_price(sub_id))
-            await self.db_analytics_for_month.add_sold(sub_id)
-
-
-
-
-
-
-
-
+            # await self.db_analytics_for_month.add_income(sub_id, await self.db.get_price(sub_id))
+            # await self.db_analytics_for_month.add_sold(sub_id)
 
         else:
             await update.message.reply_text("Платеж не прошёл, попробуйте ещё раз")
 
     async def activate_sub(self, user_id, sub_id):
-        await self.db.set_sub_type(user_id, sub_id)
-        await self.db.set_status(user_id, 'active')
-        await self.db.set_time_sub(user_id, datetime.now().date())
-        await self.calc_end_time(user_id)
-        await self.db.set_used_tokens(user_id, 0)
-        await self.db.set_custom_temp(user_id, 1)
+
+        try:
+            await self.db_analytics_for_sessions.close_session(user_id, datetime.now())
+            await self.db_analytics_for_sessions.set_inactive(user_id, 'new_sub')
+        except Exception as e:
+            print(traceback.format_exc())
+            await self.send_to_admin( 'error in activate sub' + '\n' + str(e))
+
+            pass
+        self.openai.reset_chat_history(chat_id=user_id)
+
+        # await self.db.set_sub_type(user_id, sub_id)
+        # await self.db.set_status(user_id, 'active')
+        # await self.db.set_time_sub(user_id, datetime.now().date())
+        # await self.calc_end_time(user_id)
+        # await self.db.set_used_tokens(user_id, 0)
+        await self.db.update_user(user_id, sub_id)
+        try:
+            await self.db_analytics_for_sessions.new_sub_stats(user_id, sub_id)
+        except Exception as e:
+            print(traceback.format_exc())
+            await self.send_to_admin( 'error in activate sub' + '\n' + str(e))
+            pass
+        # await self.db.add_sold(sub_id)
 
     async def is_in_time(self, update: Update, context: ContextTypes.DEFAULT_TYPE, user_id) -> bool:
         if await self.db.get_sub_type(user_id) == 2:
@@ -528,10 +741,28 @@ class ChatGPTTelegramBot:
         elif await self.db.get_status(user_id) == 'inactive':
             return False
         elif await self.is_in_time(update, context, user_id) == False:
-            sub_type = await self.db.get_sub_type(user_id)
+
             await self.db.set_inactive(user_id)
-            await self.db_analytics_for_month.add_expired(sub_type)
-            await self.db_analytics_for_month.add_expired_time(sub_type)
+
+
+
+            self.openai.reset_chat_history(chat_id=user_id)
+            sub_name = await self.db.get_sub_name_from_user(user_id)
+
+            try:
+                if sub_name == 'trial':
+                    pass
+                else:
+                    await self.db_analytics_for_sessions.close_session(user_id, datetime.now())
+                    await self.db_analytics_for_sessions.set_inactive(user_id, 'time')
+
+            except Exception as e:
+                print(traceback.format_exc())
+                await self.send_to_admin( 'error in is active' + '\n' + str(e))
+                pass
+
+            # await self.db_analytics_for_month.add_expired(sub_type)
+            # await self.db_analytics_for_month.add_expired_time(sub_type)
 
             return False
 
@@ -539,7 +770,9 @@ class ChatGPTTelegramBot:
             return True
 
     def is_email(self, email):
-        if email.count('@') == 1 and email.count('.') >= 1:
+
+
+        if re.match(r"[^@]+@[^@]+\.[^@]+", email) and len(email) > 5:
             return True
         else:
             return False
@@ -556,9 +789,11 @@ class ChatGPTTelegramBot:
                                  tokens_input) -> bool:
         if await self.db.get_sub_type(user_id) == 2:
             return True
-        elif await self.db.get_used_tokens(user_id) + tokens_input >= await self.db.get_max_tokens(user_id):
+        elif   await self.db.get_max_tokens(user_id) - (await self.db.get_used_tokens(user_id) + tokens_input) <= 10:
 
             return False
+        else:
+            return True
 
     async def calc_end_time(self, user_id):
         current_date = datetime.now().date()
@@ -583,35 +818,13 @@ class ChatGPTTelegramBot:
         chat_id = update.effective_chat.id
         user_id = update.message.from_user.id
 
+
         prompt = message_text(update.message)
         if user_id not in self.status:
             self.status[user_id] = 'prompt'
 
         if update.message.text:
-
-            if not await self.is_active(update, context, user_id):
-                await self.send_end_of_subscription_message(update, context)
-                return
-
-            if self.status[user_id] == 'set_role':
-                await self.set_role(update, context, update.message.text)
-
-                return
-            elif self.status[user_id] == 'set_temperature':
-
-                await self.set_temperature(update, context, update.message.text)
-
-            elif self.status[user_id] == 'admin_message':
-
-                self.status[user_id] = 'prompt'
-                users = await self.db.get_all_users()
-                for user in users:
-                    try:
-                        await self.bot.send_message(chat_id=user, text=update.message.text)
-                    except:
-                        pass
-                return
-            elif self.status[user_id] == 'set_email':
+            if self.status[user_id] == 'set_email':
                 if self.is_email(update.message.text) == False:
                     await update.message.reply_text(
                         message_thread_id=get_thread_id(update),
@@ -624,36 +837,102 @@ class ChatGPTTelegramBot:
                     text='Email установлен, выберите подписку',
                 )
                 self.status[user_id] = 'prompt'
+
                 await self.buy(update, context)
+                return
+            elif self.status[user_id] == 'admin_message':
+
+                self.status[user_id] = 'prompt'
+                users = await self.db.get_all_users()
+                for user in users:
+                    try:
+                        await self.bot.send_message(chat_id=user, text=update.message.text,parse_mode = 'HTML')
+                    except Exception as e:
+                        await self.send_to_admin('error in send message to all users' + '\n' + str(e))
+                        pass
+                return
+
+            elif not await self.is_active(update, context, user_id):
+                await self.send_end_of_subscription_message(update, context)
+                return
+
+            if self.status[user_id] == 'set_role':
+                await self.set_role(update, context, update.message.text)
+
+                return
+            elif self.status[user_id] == 'set_temperature':
+
+                await self.set_temperature(update, context, update.message.text)
+
+
+
 
 
             elif self.status[user_id] == 'prompt':
 
                 plan = await self.db.get_sub_type(user_id)
                 plan_name = await self.db.get_sub_name_from_user(user_id)
+                model = await self.db.get_model(user_id)
                 date = datetime.now().date()
                 last_message = await self.db.get_last_message(user_id)
-                if plan_name== 'trial' and last_message != date:
+
+
+
+                self.prompts[chat_id] = self.prompts.get(chat_id, 0) + 1
+
+                if self.prompts[chat_id] >1:
+                    available_tokens = await self.db.get_max_tokens(user_id) - await self.db.get_used_tokens(user_id)
+                    if (default_max_tokens(model) + self.openai.count_tokens(([{"role": "user", "content": prompt}]), model) ) * self.prompts[chat_id] > available_tokens:
+                        await update.effective_message.reply_text(
+                            message_thread_id=get_thread_id(update),
+                            text='К сожалению у вас заканчиваются токены, поэтому мы не можем выполнить ваши запросы параллельно. Пожалуйста, подождите ответа на прошлое сообщение и попробуйте снова',
+                        )
+                        self.prompts[chat_id] -= 1
+                        return
+
+                if  last_message != date:
+                    await self.db.add_active_day(user_id)
+
+
+
+
+                    if plan_name == 'trial':
+                        await self.db.set_used_tokens(user_id, 0)
+                        self.openai.reset_chat_history(chat_id=user_id)
+                    elif  last_message == date - timedelta(days=2):
+                        self.openai.reset_chat_history(chat_id=user_id)
+
                     await self.db.set_last_message(user_id, date)
-                    await self.db.set_used_tokens(user_id, 0)
 
 
                 self.last_message[chat_id] = prompt
                 model_config = await self.db.get_model_config(update.effective_chat.id)
-                tokens_input = self.openai.count_tokens(([{"role": "user", "content": prompt}]), model_config['model'])
-                tokens_input += self.openai.get_conversation_stats(chat_id=chat_id, model=model_config['model'])[1]
+                tokens_in_message = self.openai.count_tokens(([{"role": "user", "content": prompt}]), model_config['model'])
+                tokens_input = tokens_in_message + self.openai.get_conversation_stats(chat_id=chat_id, model=model_config['model'])[1]
 
-                if await  self.is_input_in_tokens(update, context, user_id, tokens_input) == False:
-                    await update.effective_message.reply_text(
-                        message_thread_id=get_thread_id(update),
-                        text='Осталось ' + ' ' + str(
-                            await self.db.get_max_tokens(user_id) - await self.db.get_used_tokens(
-                                user_id)) + ' токенов' + '\n' + 'Ваше сообщение слишком длинное, сократите его',
-                    )
-                    return
+                while not await  self.is_input_in_tokens(update, context, user_id, tokens_input):
+                    try:
+                        if self.openai.remove_messages(chat_id):
+                            tokens_input = tokens_in_message + self.openai.get_conversation_stats(chat_id=chat_id, model=model_config['model'])[1]
+                        else:
+
+                            await update.effective_message.reply_text(
+                                message_thread_id=get_thread_id(update),
+                                text='Осталось ' + ' ' + str(
+                                    await self.db.get_max_tokens(user_id) - await self.db.get_used_tokens(
+                                        user_id)) + ' токенов' + '\n' + 'Ваше сообщение слишком длинное, сократите его ',
+                            )
+                            self.prompts[chat_id] -= 1
+                            return
+                    except Exception as e:
+                        await self.send_to_admin('error in remove messages' + '\n' + str(e))
+                        break
+
+
 
                 try:
                     total_tokens = 0
+                    input_tokens = 0
 
                     if self.config['stream']:
                         async def _reply():
@@ -664,8 +943,12 @@ class ChatGPTTelegramBot:
                             )
                             model_config = await  self.db.get_model_config(update.effective_chat.id)
 
+                            used_tokens = await self.db.get_used_tokens(user_id)
+                            max_tokens = await self.db.get_max_tokens(user_id)
+
+
                             stream_response = self.openai.get_chat_response_stream(chat_id=chat_id, query=prompt,
-                                                                                   model_config=model_config)
+                                                                                   model_config=model_config, sub_type = plan)
 
                             i = 0
                             prev = ''
@@ -742,25 +1025,26 @@ class ChatGPTTelegramBot:
                                 if tokens != 'not_finished':
                                     total_tokens = int(tokens)
 
+
                         await wrap_with_indicator(update, context, _reply, constants.ChatAction.TYPING)
+                        self.prompts[chat_id] -= 1
+                        # await self.db.update_used_tokens(user_id, total_tokens)
 
-                        await self.db.set_used_tokens(user_id, total_tokens + await self.db.get_used_tokens(user_id))
+                        # await self.db_analytics_for_month.add_input_tokens(plan, input_tokens)
+                        # await self.db_analytics_for_month.add_total_tokens(plan, total_tokens)
+                        # await self.db_analytics_for_month.add_output_tokens(plan, total_tokens - input_tokens)
+                        # await self.db_analytics_for_periods.add(plan, total_tokens)
 
-                        await self.db_analytics_for_month.add_input_tokens(plan, tokens_input)
-                        await self.db_analytics_for_month.add_total_tokens(plan, total_tokens)
-                        await self.db_analytics_for_month.add_output_tokens(plan, total_tokens - tokens_input)
-                        await self.db_analytics_for_periods.add(plan, total_tokens)
-                        print(tokens_input)
-                        print(total_tokens)
 
                         if await self.is_in_tokens(update, context, user_id) == False:
 
-                            plan = await self.db.get_sub_type(user_id)
-                            if plan == 1:
+                            plan = await self.db.get_sub_name_from_user(user_id)
+                            if plan == 'trial':
                                 await update.effective_message.reply_text(
                                     message_thread_id=get_thread_id(update),
                                     text='Ваш лимит токенов на сегодня закончился, купите подписку или подождите до завтра',
                                 )
+
                             else:
                                 await update.effective_message.reply_text(
                                     message_thread_id=get_thread_id(update),
@@ -768,9 +1052,24 @@ class ChatGPTTelegramBot:
                                 )
 
                                 await self.db.set_inactive(user_id)
+                                self.openai.reset_chat_history(chat_id=user_id)
 
-                                await  self.db_analytics_for_month.add_expired(plan)
-                                await self.db_analytics_for_month.add_expired_tokens(plan)
+
+                                try:
+                                    sub_name = await self.db.get_sub_name_from_user(chat_id)
+                                    if sub_name == 'trial':
+                                        pass
+                                    else:
+                                        await self.db_analytics_for_sessions.close_session(user_id, datetime.now())
+                                        await self.db_analytics_for_sessions.set_inactive(user_id, 'tokens')
+
+                                except Exception as e:
+                                    print(traceback.format_exc())
+                                    await self.send_to_admin( 'error in is active' + '\n' + str(e))
+                                    pass
+
+                                # await  self.db_analytics_for_month.add_expired(plan)
+                                # await self.db_analytics_for_month.add_expired_tokens(plan)
 
                                 await self.buy(update, context)
 
@@ -788,7 +1087,7 @@ class ChatGPTTelegramBot:
 
                 except Exception as e:
                     # traceback
-
+                    await self.send_to_admin('error in prompt' + '\n' + str(e))
                     print(traceback.format_exc())
 
                     logging.exception(e)
@@ -827,6 +1126,7 @@ class ChatGPTTelegramBot:
         application.add_handler(CommandHandler('send_reminder', self.send_reminder))
         application.add_handler(CommandHandler('admin', self.admin))
         application.add_handler(CommandHandler('save', self.save))
+        application.add_handler(CommandHandler('send_notif', self.send_notif))
 
         application.add_handler(CommandHandler('temperature', self.temperature))
 

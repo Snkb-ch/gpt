@@ -40,3 +40,6 @@ admin.site.register(User, BotAdmin)
 admin.site.register(Period, BotAdmin)
 admin.site.register(AnalyticsForMonth, BotAdmin)
 admin.site.register(AnalyticsPeriods, BotAdmin)
+admin.site.register(Session, BotAdmin)
+
+admin.site.register(Subscriptions_statistics, BotAdmin)

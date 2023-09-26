@@ -311,6 +311,13 @@ display: flex;
 .homev4-text09 {
   font-size: 48px;
   margin-right: var(--dl-space-space-unit);
+  margin-left: 8px;
+}
+s
+{
+font-size:20px;
+font-weight: 200;
+color: grey;
 }
 .homev4-text10 {
   align-self: flex-end;
@@ -364,6 +371,7 @@ display: flex;
 .homev4-text12 {
   font-size: 48px;
   margin-right: var(--dl-space-space-unit);
+  margin-left: 8px;
 }
 .homev4-text13 {
   align-self: flex-end;
@@ -424,6 +432,7 @@ display: flex;
 .homev4-text15 {
   font-size: 48px;
   margin-right: var(--dl-space-space-unit);
+  margin-left: 8px;
 }
 .homev4-text16 {
   align-self: flex-end;
@@ -477,6 +486,7 @@ display: flex;
 .homev4-text18 {
   font-size: 48px;
   margin-right: var(--dl-space-space-unit);
+  margin-left: 8px;
 }
 .homev4-text19 {
   align-self: flex-end;
