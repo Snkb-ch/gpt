@@ -8,6 +8,11 @@ from .models import *
 
 from django.contrib import admin
 
+from django import forms
+
+
+
+
 class MultiDBModelAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         # Tell Django to save objects to the 'other' database.
@@ -36,10 +41,37 @@ class BotAdmin(MultiDBModelAdmin):
 
 
 admin.site.register(Subscriptions, BotAdmin)
-admin.site.register(User, BotAdmin)
+
 admin.site.register(Period, BotAdmin)
 admin.site.register(AnalyticsForMonth, BotAdmin)
 admin.site.register(AnalyticsPeriods, BotAdmin)
 admin.site.register(Session, BotAdmin)
 
 admin.site.register(Subscriptions_statistics, BotAdmin)
+
+class CustomSearchFields(admin.SimpleListFilter):
+    title = 'Search Field'
+    parameter_name = 'search_field'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('user_id', 'User ID'),
+            ('email', 'Email'),
+            ('sub_type__sub_name', 'Subscription Type'),
+            ('last_message', 'Last Message'),
+            ('time_sub', 'Subscription Time'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(
+                **{f'{self.value()}__icontains': request.GET.get('q', '')}
+            )
+        return queryset
+
+class UserAdmin(admin.ModelAdmin):
+    list_display = ('user_id', 'status', 'used_tokens', 'time_sub', 'end_time', 'sub_type', 'email', 'last_message', 'active_days', 'sold', 'admin', 'blocked')
+    list_filter = ('status', 'sub_type', 'blocked', 'time_sub', 'last_message', CustomSearchFields)
+    search_fields = ('user_id', 'email', 'sub_type__sub_name', 'last_message', 'time_sub')
+
+admin.site.register(User, UserAdmin)

@@ -187,7 +187,7 @@ class OpenAIHelper:
         tokens_in_answer = self.count_tokens([{"role": "assistant", "content": answer}], model_config['model'])
         sub_name = await self.db.get_sub_name_from_user(chat_id)
         try:
-            if sub_name == 'trial':
+            if sub_name == 'trial' or 'admin':
                 await self.db_analytics_for_month.add_output_tokens(sub_type, tokens_in_answer)
             else:
                 await self.db_analytics_for_sessions.update_session_output(chat_id, tokens_in_answer)
@@ -307,7 +307,7 @@ class OpenAIHelper:
 
             try:
                 sub_name = await self.db.get_sub_name_from_user(chat_id)
-                if sub_name == 'trial':
+                if sub_name == 'trial' or 'admin':
                     sub_id = await self.db.get_sub_type(chat_id)
                     await self.db_analytics_for_month.add_input_tokens(sub_id, input_tokens)
                 else:

@@ -206,7 +206,8 @@ class ChatGPTTelegramBot:
 ''',
             )
             return
-
+        else:
+            await self.db.set_unblocked_user(user_id)
 
 
     async def save(self, update:Update, context: ContextTypes.DEFAULT_TYPE):
@@ -323,7 +324,7 @@ class ChatGPTTelegramBot:
                 for user in users:
                     try:
                         await self.bot.send_message(chat_id=user,
-                                                    text='Привет, ты давно не заходил к нам, наш бот всегда готов помочь, надеемся увидеть тебя снова')
+                                                    text='Привет! Ты давно не заходил к нам. Наш бот всегда готов помочь тебе! Надеемся увидеть тебя снова')
 
                     except:
                         pass
@@ -342,6 +343,7 @@ class ChatGPTTelegramBot:
             while datetime.now().time() > datetime.strptime('2:00', '%H:%M').time() and time_flag:
                 # remove in prod
                 # time_flag = False
+
                 await asyncio.sleep(60*60)
 
             time_flag = False
@@ -356,27 +358,36 @@ class ChatGPTTelegramBot:
 
                 users = await self.db.get_trial_ending_users()
 
-                # объедини все списки внутри  users
+
 
                 print(users)
 
                 k1 = str(len(users))
+                k1_errors = 0
+                k1_error_messages = []
                 for user in users:
 
 
                         try:
                             await self.bot.send_message(chat_id=user,
-                                                        text='Привет, твой пробный период скоро закончится, ты можешь продолжить общение с ИИ, купив подписку')
+                                                        text='Привет, твой пробный период скоро закончится. Можешь продолжить общение с нейросетью, купив подписку')
 
 
 
-                        except:
+                        except Exception as e:
+                            await self.db.set_blocked_user(user)
+                            k1_errors += 1
+                            k1_error_messages.append(str(e))
                             pass
 
 
 
                 users = await self.db.get_trial_users()
+
                 k2 = str(len(users))
+                count_error = 0
+                count_send = 0
+                error_messages = []
                 for user in users:
 
                     try:
@@ -384,28 +395,39 @@ class ChatGPTTelegramBot:
                         date = str(await self.db.get_end_time(update.message.from_user.id))[0:10]
                         date = date[8:10] + '.' + date[5:7] + '.' + date[0:4]
                         await self.bot.send_message(chat_id=user,
-                                                    text='Привет, история чата сброшена, токены обнулены, ты можешь продолжить общение с ИИ' + '\n' +
+                                                    text='История чата автоматически сброшена. Токены обнулены, а ты можешь продолжить задавать вопросы GPT' + '\n' +
                                                     'Ваша подписка : ' + await self.db.get_sub_name_from_user(
                     update.message.from_user.id) + '\n' + 'Закончится: ' +
                      date)
+                        count_send += 1
 
 
 
 
 
-                    except:
+                    except Exception as e:
+                        count_error += 1
+                        error_messages.append(str(e))
+                        await self.db.set_blocked_user(user)
                         pass
+                unique_error_messages = (set(error_messages))
+                k1_error_messages = (set(k1_error_messages))
+
                 try:
                     count_new_users = str( await self.db.count_new_users_trial())
                     count_sold = str(await self.db.count_new_users_not_trial())
                 except:
                     count_new_users = '0'
                     count_sold = '0'
+                    pass
                 for admin_id in admin:
                     await self.bot.send_message(chat_id=admin_id,
-                                                text='Отправили уведомление о пробном периоде' + '\n' + 'Количество пользователей: ' + k1)
+                                                text='Отправили уведомление о пробном периоде' + '\n' + 'Количество пользователей: ' + k1 + '\n'+
+                                                'Количество пользователей с ошибкой: ' + str(k1_errors) + '\n' + 'Уникальные ошибки: ' + str(k1_error_messages))
                     await self.bot.send_message(chat_id=admin_id,
-                                                text='Отправили уведомление о сбросе истории чата' + '\n' + 'Количество пользователей: ' + k2)
+                                                text='Отправили уведомление о сбросе истории чата' + '\n' + 'Количество пользователей подошло: ' + k2 + '\n'+
+                                                'Количество пользователей с ошибкой: ' + str(count_error) + '\n' + 'Уникальные ошибки: ' + str(unique_error_messages))
+
 
 
                     await self.bot.send_message(chat_id=admin_id,
@@ -593,7 +615,7 @@ class ChatGPTTelegramBot:
 
         sub_name = await self.db.get_sub_name_from_user(user_id)
         try:
-            if sub_name == 'trial':
+            if sub_name == 'trial' or 'admin':
                 pass
             else:
                 await self.db_analytics_for_sessions.role_edited(user_id)
@@ -615,7 +637,7 @@ class ChatGPTTelegramBot:
                 self.status[user_id] = 'prompt'
                 sub_name = await self.db.get_sub_name_from_user(user_id)
                 try:
-                    if sub_name == 'trial':
+                    if sub_name == 'trial' or 'admin':
                         pass
                     else:
 
@@ -1067,7 +1089,7 @@ class ChatGPTTelegramBot:
 
                                 try:
                                     sub_name = await self.db.get_sub_name_from_user(chat_id)
-                                    if sub_name == 'trial':
+                                    if sub_name == 'trial' or 'admin':
                                         pass
                                     else:
                                         await self.db_analytics_for_sessions.close_session(user_id, datetime.now())

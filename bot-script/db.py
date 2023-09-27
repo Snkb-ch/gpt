@@ -297,3 +297,9 @@ class Database:
 
         return not_trial_or_free
 
+    @sync_to_async
+    def set_unblocked_user(self, user_id):
+
+        User.objects.filter(user_id=user_id).update(blocked=False)
+
+
