@@ -40,6 +40,7 @@ class BotAdmin(MultiDBModelAdmin):
     using = 'bottg'
 
 
+
 admin.site.register(Subscriptions, BotAdmin)
 
 admin.site.register(Period, BotAdmin)
@@ -69,7 +70,8 @@ class CustomSearchFields(admin.SimpleListFilter):
             )
         return queryset
 
-class UserAdmin(admin.ModelAdmin):
+class UserAdmin(BotAdmin, admin.ModelAdmin):
+    using = 'bottg'
     list_display = ('user_id', 'status', 'used_tokens', 'time_sub', 'end_time', 'sub_type', 'email', 'last_message', 'active_days', 'sold', 'admin', 'blocked')
     list_filter = ('status', 'sub_type', 'blocked', 'time_sub', 'last_message', CustomSearchFields)
     search_fields = ('user_id', 'email', 'sub_type__sub_name', 'last_message', 'time_sub')

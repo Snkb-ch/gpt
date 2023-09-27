@@ -155,7 +155,7 @@ class Database:
     def get_all_users(self):
         # list of users_id
 
-        return list(User.objects.all().values_list('user_id', flat=True))
+        return list(User.objects.filter(blocked = False).values_list('user_id', flat=True))
 
     @sync_to_async
     def get_trial_ending_users(self):
@@ -165,10 +165,10 @@ class Database:
         list = []
         for i in sub_trial_id:
 
-            users = User.objects.filter(sub_type=i, status='active', end_time=date + timedelta(days= 2)).values_list('user_id', flat=True)
-            print(users)
+            users = User.objects.filter(sub_type=i, status='active', end_time=date + timedelta(days= 3), blocked = False).values_list('user_id', flat=True)
+
             list.append(users)
-        print(list)
+
         list = [item for sublist in list for item in sublist]
         return list
     @sync_to_async
@@ -177,7 +177,7 @@ class Database:
 
 
 
-        users = list(User.objects.filter(status='inactive', reminder_date=date).values_list('user_id', flat=True))
+        users = list(User.objects.filter(status='inactive', reminder_date=date, blocked = False).values_list('user_id', flat=True))
         print(users)
         # # set reminder_date for users
         User.objects.filter(status='inactive', reminder_date=date).update(reminder_date=date + timedelta(days=30))
@@ -234,7 +234,7 @@ class Database:
         sub_trial_id = Subscriptions.objects.filter(sub_name='trial').values_list('sub_id', flat=True)
         list = []
         for i in sub_trial_id:
-            list.append(User.objects.filter(sub_type=i, status='active', last_message = date - timedelta(days=1)).values_list('user_id', flat=True))
+            list.append(User.objects.filter(sub_type=i, status='active', blocked = False, last_message = date - timedelta(days=1)).values_list('user_id', flat=True))
 
         list = [item for sublist in list for item in sublist]
 
@@ -278,7 +278,7 @@ class Database:
 
     @sync_to_async
     def get_admin_users(self):
-        return list(User.objects.filter(admin=True).values_list('user_id', flat=True))
+        return list(User.objects.filter(admin=True, blocked = False).values_list('user_id', flat=True))
 
 
     @sync_to_async

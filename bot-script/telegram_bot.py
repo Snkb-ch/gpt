@@ -295,11 +295,13 @@ class ChatGPTTelegramBot:
 
 
     async def send_to_admin(self, text):
-
-        admins = await self.db.get_admin_users()
-        for admin in admins:
-            await self.bot.send_message(chat_id=admin,
-                                        text=text)
+        try:
+            admins = await self.db.get_admin_users()
+            for admin in admins:
+                await self.bot.send_message(chat_id=admin,
+                                            text=text)
+        except:
+            pass
 
 
 
@@ -340,11 +342,11 @@ class ChatGPTTelegramBot:
         time_flag = True
         while True:
 
-            while datetime.now().time() > datetime.strptime('2:00', '%H:%M').time() and time_flag:
-                # remove in prod
+            while datetime.now().time() > datetime.strptime('6:00', '%H:%M').time() and time_flag:
+                # comment in prod
                 # time_flag = False
 
-                await asyncio.sleep(60*60)
+                await asyncio.sleep(60*15)
 
             time_flag = False
 
@@ -360,7 +362,7 @@ class ChatGPTTelegramBot:
 
 
 
-                print(users)
+
 
                 k1 = str(len(users))
                 k1_errors = 0
@@ -421,23 +423,30 @@ class ChatGPTTelegramBot:
                     count_sold = '0'
                     pass
                 for admin_id in admin:
-                    await self.bot.send_message(chat_id=admin_id,
-                                                text='Отправили уведомление о пробном периоде' + '\n' + 'Количество пользователей: ' + k1 + '\n'+
-                                                'Количество пользователей с ошибкой: ' + str(k1_errors) + '\n' + 'Уникальные ошибки: ' + str(k1_error_messages))
-                    await self.bot.send_message(chat_id=admin_id,
-                                                text='Отправили уведомление о сбросе истории чата' + '\n' + 'Количество пользователей подошло: ' + k2 + '\n'+
-                                                'Количество пользователей с ошибкой: ' + str(count_error) + '\n' + 'Уникальные ошибки: ' + str(unique_error_messages))
+                    try:
+                        await self.bot.send_message(chat_id=admin_id,
+                                                    text='Отправили уведомление о пробном периоде' + '\n' + 'Количество пользователей: ' + k1 + '\n'+
+                                                    'Количество пользователей с ошибкой: ' + str(k1_errors) + '\n' + 'Уникальные ошибки: ' + str(k1_error_messages))
+                        await self.bot.send_message(chat_id=admin_id,
+                                                    text='Отправили уведомление о сбросе истории чата' + '\n' + 'Количество пользователей подошло: ' + k2 + '\n'+
+                                                    'Количество пользователей с ошибкой: ' + str(count_error) + '\n' + 'Уникальные ошибки: ' + str(unique_error_messages))
 
 
 
-                    await self.bot.send_message(chat_id=admin_id,
-                                                text='новых пользователей: ' + count_new_users + '\n' + 'продано подписок: ' + count_sold)
+                        await self.bot.send_message(chat_id=admin_id,
+                                                    text='новых пользователей: ' + count_new_users + '\n' + 'продано подписок: ' + count_sold)
+                    except:
+                        print('error in send notif to admin')
+                        pass
 
                 await asyncio.sleep(60*60*24)
 
             except Exception as e:
                 print('error in clean history')
+                print(e)
+
                 await self.send_to_admin('error in clean history' + '\n' + str(e))
+                await asyncio.sleep(60*60*24)
 
 
 
