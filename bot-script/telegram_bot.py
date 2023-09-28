@@ -339,6 +339,10 @@ class ChatGPTTelegramBot:
                 print(traceback.format_exc())
                 await self.send_to_admin( 'error in send reminder' + '\n' + str(e))
 
+
+
+
+
     async def send_notif(self):
         print('notif')
 
@@ -361,15 +365,15 @@ class ChatGPTTelegramBot:
         self.notif_run = True
 
         async def job():
-            await self.send_notifications()
+            await self.send_to_admin('test')
 
         def run_job():
             self.tasks.append(asyncio.create_task(job()))
-            print(self.tasks)
 
 
-        schedule.every().day.at('15:19').do(run_job)
 
+        # schedule.every().day.at('15:19').do(run_job)
+        schedule.every(1).minutes.do(run_job)
         try:
             while not self.interrupt_flag:
                 schedule.run_pending()
@@ -1232,7 +1236,7 @@ class ChatGPTTelegramBot:
         try:
             # do other async stuff, just sleeping here
             # await self.send_notif()
-            await asyncio.sleep(10000)
+            await self.send_notif()
             log.info(f"Other {name} started")
         except asyncio.CancelledError:
             log.info(f"Other {name} got cancelled")
@@ -1245,15 +1249,22 @@ class ChatGPTTelegramBot:
                 asyncio.create_task(self.run_other("send_notif"))
             ]
 
-
-            # for sig in (signal.SIGINT, signal.SIGTERM):
-            #     loop = asyncio.get_event_loop()
-            #     loop.add_signal_handler(sig, lambda sig=sig: asyncio.create_task(self.shutdown(tasks)))
+            # linux
+            for sig in (signal.SIGINT, signal.SIGTERM):
+                loop = asyncio.get_event_loop()
+                loop.add_signal_handler(sig, lambda sig=sig: asyncio.create_task(self.shutdown(tasks)))
             asyncio.get_event_loop() \
                 .add_signal_handler(signal.SIGTERM,
                                     lambda: asyncio.create_task(self.shutdown(tasks)))
 
             await asyncio.gather(*tasks)
+
+        # windows
+        # try:
+        #     await asyncio.gather(*tasks)
+        # except KeyboardInterrupt:
+        #     logging.info("Received Ctrl+C, shutting down gracefully.")
+        #     await self.shutdown(tasks)
 
 
     async def shutdown(self,tasks):
