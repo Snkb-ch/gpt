@@ -168,45 +168,45 @@ class OpenAIHelper:
                     pass
 
         response = await self.__common_get_chat_response(chat_id, query,model_config = model_config, stream=True)
+        if response != False:
+
+            answer = ''
+            async for item in response:
+
+                if 'choices' not in item or len(item.choices) == 0:
+                    continue
+                delta = item.choices[0].delta
+                if 'content' in delta:
+                    answer += delta.content
+                    yield answer, 'not_finished'
+            answer = answer.strip()
+
+            tokens_in_answer = self.count_tokens([{"role": "assistant", "content": answer}], model_config['model'])
+            sub_name = await self.db.get_sub_name_from_user(chat_id)
+            try:
+                if sub_name == 'trial' or 'admin':
+                    await self.db_analytics_for_month.add_output_tokens(sub_type, tokens_in_answer)
+                else:
+                    await self.db_analytics_for_sessions.update_session_output(chat_id, tokens_in_answer)
+            except Exception as e:
+                print(traceback.format_exc())
+                pass
+            await self.db.update_used_tokens(chat_id, tokens_in_answer)
+
+            self.__add_to_history(chat_id, role="assistant", content=answer)
+            tokens_in_history= self.count_tokens(self.conversations[chat_id], model_config['model'])
+
+            tokens_used = tokens_in_history
+
+            if self.config['show_usage']:
 
 
+                answer += f"\n\n---\nИстория диалога: {tokens_in_history} ток."
 
+            yield answer, tokens_used
 
-
-        answer = ''
-        async for item in response:
-
-            if 'choices' not in item or len(item.choices) == 0:
-                continue
-            delta = item.choices[0].delta
-            if 'content' in delta:
-                answer += delta.content
-                yield answer, 'not_finished'
-        answer = answer.strip()
-
-        tokens_in_answer = self.count_tokens([{"role": "assistant", "content": answer}], model_config['model'])
-        sub_name = await self.db.get_sub_name_from_user(chat_id)
-        try:
-            if sub_name == 'trial' or 'admin':
-                await self.db_analytics_for_month.add_output_tokens(sub_type, tokens_in_answer)
-            else:
-                await self.db_analytics_for_sessions.update_session_output(chat_id, tokens_in_answer)
-        except Exception as e:
-            print(traceback.format_exc())
-            pass
-        await self.db.update_used_tokens(chat_id, tokens_in_answer)
-
-        self.__add_to_history(chat_id, role="assistant", content=answer)
-        tokens_in_history= self.count_tokens(self.conversations[chat_id], model_config['model'])
-
-        tokens_used = tokens_in_history
-
-        if self.config['show_usage']:
-
-
-            answer += f"\n\n---\nИстория диалога: {tokens_in_history} ток."
-
-        yield answer, tokens_used
+        else:
+            yield 'Произошла ошибка при обработке запроса, приносим извенения', 0
 
     @retry(
         reraise=True,
@@ -263,32 +263,6 @@ class OpenAIHelper:
 
 
 
-                    # try:
-                    #     input_sum = self.count_tokens(self.conversations[chat_id], model_config['model'])
-                    #
-                    #     summary = await self.__summarise(self.conversations[chat_id][:-1])
-                    #     output_sum = self.count_tokens([{"role": "assistant", "content": summary}], model_config['model'])
-                    #
-                    #     logging.debug(f'Summary: {summary}')
-                    #     self.reset_chat_history(chat_id, self.conversations[chat_id][0]['content'])
-                    #     self.__add_to_history(chat_id, role="assistant", content=summary)
-                    #
-                    #     self.__add_to_history(chat_id, role="user", content=query)
-                    #     sub_name = self.db.get_sub_name_from_user(chat_id)
-                    #     try:
-                    #         if sub_name == 'trial':
-                    #             pass
-                    #         else:
-                    #             await self.db_analytics_for_sessions.update_session_sum(chat_id, input_sum, output_sum)
-                    #     except Exception as e:
-                    #         print(traceback.format_exc())
-                    #         pass
-                    #
-                    #
-                    # except Exception as e:
-                    #     logging.warning(f'Error while summarising chat history: {str(e)}. Popping elements instead...')
-                    #     self.conversations[chat_id] = self.conversations[chat_id][-self.config['max_history_size']:]
-
             except Exception as e:
                 print(traceback.format_exc())
                 pass
@@ -296,7 +270,7 @@ class OpenAIHelper:
 
 
             available_tokens = await self.db.get_max_tokens(chat_id) - await self.db.get_used_tokens(chat_id)
-            if available_tokens < default_max_tokens(model=model_config['model']) and available_tokens > 0:
+            if available_tokens < default_max_tokens(model=model_config['model']) and available_tokens > 10:
                 max_tokens = available_tokens
 
             else:
@@ -316,18 +290,27 @@ class OpenAIHelper:
                 print(traceback.format_exc())
 
                 pass
-            await self.db.update_used_tokens(chat_id, input_tokens)
 
-            return await openai.ChatCompletion.acreate(
-                model=model_config['model'],
-                messages=self.conversations[chat_id],
-                temperature=model_config['custom_temp'],
-                n=self.config['n_choices'],
-                max_tokens=max_tokens,
-                presence_penalty=self.config['presence_penalty'],
-                frequency_penalty=self.config['frequency_penalty'],
-                stream=stream
-            )
+
+            try:
+
+                result =await openai.ChatCompletion.acreate(
+                    model=model_config['model'],
+                    messages=self.conversations[chat_id],
+                    temperature=model_config['custom_temp'],
+                    n=self.config['n_choices'],
+                    max_tokens=max_tokens,
+                    presence_penalty=self.config['presence_penalty'],
+                    frequency_penalty=self.config['frequency_penalty'],
+                    stream=stream
+                )
+                await self.db.update_used_tokens(chat_id, input_tokens)
+                return result
+            except Exception as e:
+
+
+                return False
+
 
         except openai.error.RateLimitError as e:
             raise e

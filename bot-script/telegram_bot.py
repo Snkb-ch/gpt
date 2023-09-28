@@ -319,22 +319,31 @@ class ChatGPTTelegramBot:
             text='Введите сообщение',
         )
 
-    async def send_reminder(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        admin = await self.db.get_admin_users()
-        if not await  self.db.is_admin(update.message.from_user.id):
-            return
-        while True:
+    async def send_reminder(self):
+
+
+
             try:
                 users = await self.db.get_all_inactive_users()
+                count = len(users)
+                count_error = 0
+                error_messages = []
 
                 for user in users:
                     try:
                         await self.bot.send_message(chat_id=user,
                                                     text='Привет! Ты давно не заходил к нам. Наш бот всегда готов помочь тебе! Надеемся увидеть тебя снова')
 
-                    except:
+                    except Exception as e:
+                        count_error += 1
+                        error_messages.append(str(e))
+                        await self.db.set_blocked_user(user)
                         pass
-                await asyncio.sleep(60*60*24)
+
+                unique_error_messages = (set(error_messages))
+                await self.send_to_admin('Отправили напоминание' + '\n' + 'Количество пользователей подошло: ' + str(count) + '\n'+
+                                                    'Количество пользователей с ошибкой: ' + str(count_error) + '\n' + 'Уникальные ошибки: ' + str(unique_error_messages))
+
             except Exception as e:
                 print(traceback.format_exc())
                 await self.send_to_admin( 'error in send reminder' + '\n' + str(e))
@@ -348,19 +357,22 @@ class ChatGPTTelegramBot:
 
 
         async def job():
-            await self.send_to_admin('start send notif test')
+            await self.send_to_admin('start send notif')
+            await self.send_notifications()
+            await self.send_to_admin('start send reminders')
+            await self.send_reminder()
 
         def run_job():
             asyncio.create_task(job())
 
 
 
-        schedule.every().day.at('16:21').do(run_job)
+        schedule.every().day.at('00:00').do(run_job)
 
         try:
             while True:
                 schedule.run_pending()
-                await asyncio.sleep(1)
+                await asyncio.sleep(60)
         except KeyboardInterrupt:
             log.info('Exiting...')
 
@@ -375,16 +387,8 @@ class ChatGPTTelegramBot:
                 admin = await self.db.get_admin_users()
                 await self.db.set_inactive_auto()
 
-                # users = await self.db.get_users_for_reset_history()
-                #
-                # self.openai.clean_all_chat_history(users)
 
                 users = await self.db.get_trial_ending_users()
-
-
-
-
-
                 k1 = str(len(users))
                 k1_errors = 0
                 k1_error_messages = []
@@ -394,16 +398,12 @@ class ChatGPTTelegramBot:
                         try:
                             await self.bot.send_message(chat_id=user,
                                                         text='Привет, твой пробный период скоро закончится. Можешь продолжить общение с нейросетью, купив подписку')
-
-
-
                         except Exception as e:
                             await self.db.set_blocked_user(user)
                             k1_errors += 1
                             k1_error_messages.append(str(e))
+
                             pass
-
-
 
                 users = await self.db.get_trial_users()
 
@@ -422,10 +422,6 @@ class ChatGPTTelegramBot:
                                                     'Ваша подписка : ' + await self.db.get_sub_name_from_user(user) + '\n' + 'Закончится: ' +
                      date)
                         count_send += 1
-
-
-
-
 
                     except Exception as e:
                         count_error += 1
@@ -459,14 +455,13 @@ class ChatGPTTelegramBot:
                         print('error in send notif to admin')
                         pass
 
-                # await asyncio.sleep(60*60*24)
+
 
             except Exception as e:
-                print('error in clean history')
-                print(e)
+
 
                 await self.send_to_admin('error in clean history' + '\n' + str(e))
-                # await asyncio.sleep(60*60*24)
+
 
 
 
@@ -1184,10 +1179,10 @@ class ChatGPTTelegramBot:
         application.add_handler(CommandHandler('cancel', self.cancel))
         application.add_handler(CommandHandler('role', self.role))
         application.add_handler(CommandHandler('send_to_all', self.send_to_all))
-        application.add_handler(CommandHandler('send_reminder', self.send_reminder))
+
         application.add_handler(CommandHandler('admin', self.admin))
         application.add_handler(CommandHandler('save', self.save))
-        application.add_handler(CommandHandler('send_notif', self.send_notif))
+
 
         application.add_handler(CommandHandler('temperature', self.temperature))
 
@@ -1225,27 +1220,31 @@ class ChatGPTTelegramBot:
 
     async def main(self):
 
-            tasks = [
-                asyncio.create_task(self.run_ptb()),
-                asyncio.create_task(self.run_other("send_notif"))
-            ]
+            # tasks = [
+            #     asyncio.create_task(self.run_ptb()),
+            #     asyncio.create_task(self.run_other("send_notif"))
+            # ]
 
             # linux
-            for sig in (signal.SIGINT, signal.SIGTERM):
-                loop = asyncio.get_event_loop()
-                loop.add_signal_handler(sig, lambda sig=sig: asyncio.create_task(self.shutdown(tasks)))
-            asyncio.get_event_loop() \
-                .add_signal_handler(signal.SIGTERM,
-                                    lambda: asyncio.create_task(self.shutdown(tasks)))
+            # for sig in (signal.SIGINT, signal.SIGTERM):
+            #     loop = asyncio.get_event_loop()
+            #     loop.add_signal_handler(sig, lambda sig=sig: asyncio.create_task(self.shutdown(tasks)))
+            # asyncio.get_event_loop() \
+            #     .add_signal_handler(signal.SIGTERM,
+            #                         lambda: asyncio.create_task(self.shutdown(tasks)))
+            #
+            # await asyncio.gather(*tasks)
 
-            await asyncio.gather(*tasks)
-
-        # windows
-        # try:
-        #     await asyncio.gather(*tasks)
-        # except KeyboardInterrupt:
-        #     logging.info("Received Ctrl+C, shutting down gracefully.")
-        #     await self.shutdown(tasks)
+            # windows
+            try:
+                tasks = [
+                    asyncio.create_task(self.run_ptb()),
+                    asyncio.create_task(self.run_other("send_notif"))
+                ]
+                await asyncio.gather(*tasks)
+            except KeyboardInterrupt:
+                logging.info("Received Ctrl+C, shutting down gracefully.")
+                await self.shutdown(tasks)
 
 
     async def shutdown(self,tasks):

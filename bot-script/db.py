@@ -178,7 +178,7 @@ class Database:
 
 
         users = list(User.objects.filter(status='inactive', reminder_date=date, blocked = False).values_list('user_id', flat=True))
-        print(users)
+
         # # set reminder_date for users
         User.objects.filter(status='inactive', reminder_date=date).update(reminder_date=date + timedelta(days=30))
         return users
