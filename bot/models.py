@@ -2,6 +2,7 @@ from django.db import models
 
 # Create your models here.
 from django.db import models
+from django.db.models.deletion import Collector
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -53,6 +54,7 @@ class User(models.Model):
             models.UniqueConstraint(fields=['user_id'], name='users_user_id_key'),
         ]
     objects = BotTGUserManager()
+
 
     def __str__(self):
         return str(self.user_id)
@@ -155,6 +157,7 @@ class Session(models.Model):
 
 
 
+
     messages = models.IntegerField(null=True, default=0)
     # контекст и вход отдельно?
 
@@ -169,5 +172,6 @@ class Session(models.Model):
 
     def __str__(self):
         return str(self.id)
+
 
 

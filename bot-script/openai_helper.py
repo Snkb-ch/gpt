@@ -164,7 +164,7 @@ class OpenAIHelper:
 
                     await self.db_analytics_for_sessions.add_session(chat_id, sub_type, date)
                 except Exception as e:
-                    print(traceback.format_exc())
+                    print(e)
                     pass
 
         response = await self.__common_get_chat_response(chat_id, query,model_config = model_config, stream=True)
@@ -184,12 +184,12 @@ class OpenAIHelper:
             tokens_in_answer = self.count_tokens([{"role": "assistant", "content": answer}], model_config['model'])
             sub_name = await self.db.get_sub_name_from_user(chat_id)
             try:
-                if sub_name == 'trial' or 'admin':
+                if sub_name == 'trial' or sub_name == 'admin':
                     await self.db_analytics_for_month.add_output_tokens(sub_type, tokens_in_answer)
                 else:
                     await self.db_analytics_for_sessions.update_session_output(chat_id, tokens_in_answer)
             except Exception as e:
-                print(traceback.format_exc())
+                print(e)
                 pass
             await self.db.update_used_tokens(chat_id, tokens_in_answer)
 
@@ -281,7 +281,7 @@ class OpenAIHelper:
 
             try:
                 sub_name = await self.db.get_sub_name_from_user(chat_id)
-                if sub_name == 'trial' or 'admin':
+                if sub_name == 'trial' or sub_name ==  'admin':
                     sub_id = await self.db.get_sub_type(chat_id)
                     await self.db_analytics_for_month.add_input_tokens(sub_id, input_tokens)
                 else:
