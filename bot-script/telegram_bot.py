@@ -1219,32 +1219,32 @@ class ChatGPTTelegramBot:
             # clean up here
 
     async def main(self):
+            #linux
+            tasks = [
+                asyncio.create_task(self.run_ptb()),
+                asyncio.create_task(self.run_other("send_notif"))
+            ]
 
-            # tasks = [
-            #     asyncio.create_task(self.run_ptb()),
-            #     asyncio.create_task(self.run_other("send_notif"))
-            # ]
 
-            # linux
-            # for sig in (signal.SIGINT, signal.SIGTERM):
-            #     loop = asyncio.get_event_loop()
-            #     loop.add_signal_handler(sig, lambda sig=sig: asyncio.create_task(self.shutdown(tasks)))
-            # asyncio.get_event_loop() \
-            #     .add_signal_handler(signal.SIGTERM,
-            #                         lambda: asyncio.create_task(self.shutdown(tasks)))
-            #
-            # await asyncio.gather(*tasks)
+            for sig in (signal.SIGINT, signal.SIGTERM):
+                loop = asyncio.get_event_loop()
+                loop.add_signal_handler(sig, lambda sig=sig: asyncio.create_task(self.shutdown(tasks)))
+            asyncio.get_event_loop() \
+                .add_signal_handler(signal.SIGTERM,
+                                    lambda: asyncio.create_task(self.shutdown(tasks)))
+
+            await asyncio.gather(*tasks)
 
             # windows
-            try:
-                tasks = [
-                    asyncio.create_task(self.run_ptb()),
-                    asyncio.create_task(self.run_other("send_notif"))
-                ]
-                await asyncio.gather(*tasks)
-            except KeyboardInterrupt:
-                logging.info("Received Ctrl+C, shutting down gracefully.")
-                await self.shutdown(tasks)
+            # try:
+            #     tasks = [
+            #         asyncio.create_task(self.run_ptb()),
+            #         asyncio.create_task(self.run_other("send_notif"))
+            #     ]
+            #     await asyncio.gather(*tasks)
+            # except KeyboardInterrupt:
+            #     logging.info("Received Ctrl+C, shutting down gracefully.")
+            #     await self.shutdown(tasks)
 
 
     async def shutdown(self,tasks):
