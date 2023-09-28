@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import asyncio
+import signal
 import asyncio
 import json
 import logging
@@ -10,6 +10,7 @@ import threading
 import time
 import traceback
 from datetime import datetime, timedelta
+from signal import SIGINT, SIGTERM, SIGABRT
 
 from openai_helper import default_max_tokens
 
@@ -68,7 +69,8 @@ import django
 
 django.setup()
 from bot.models import User, Subscriptions, Period, AnalyticsForMonth, AnalyticsPeriods,Session
-
+logging.basicConfig(level=logging.DEBUG)
+log = logging.getLogger("custom")
 
 class ChatGPTTelegramBot:
     """
@@ -81,7 +83,9 @@ class ChatGPTTelegramBot:
         :param config: A dictionary containing the bot configuration
         :param openai: OpenAIHelper object
         """
-
+        self.interrupt_flag = False
+        self.notif_run = False
+        self.tasks = []
         self.db = Database()
         self.db_analytics_for_month = DBanalytics_for_month()
         self.db_analytics_for_periods = DBanalytics_for_periods()
@@ -335,23 +339,55 @@ class ChatGPTTelegramBot:
                 print(traceback.format_exc())
                 await self.send_to_admin( 'error in send reminder' + '\n' + str(e))
 
-    async def send_notif(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        admin = await self.db.get_admin_users()
-        if not await self.db.is_admin(update.message.from_user.id):
+    async def send_notif(self):
+        print('notif')
+
+        if self.notif_run == True:
+            # stop asiocp loop
+            await asyncio.gather(*self.tasks, return_exceptions=True)
+
+            self.interrupt_flag = True
+
+            print("stop notif")
+            for task in self.tasks:
+
+                task.cancel()
+
+
+
+
+            self.notif_run = False
             return
-        time_flag = True
-        while True:
+        self.notif_run = True
 
-            while datetime.now().time() > datetime.strptime('6:00', '%H:%M').time() and time_flag:
-                # comment in prod
-                # time_flag = False
+        async def job():
+            await self.send_notifications()
 
-                await asyncio.sleep(60*15)
+        def run_job():
+            self.tasks.append(asyncio.create_task(job()))
+            print(self.tasks)
 
-            time_flag = False
 
+        schedule.every().day.at('15:19').do(run_job)
+
+        try:
+            while not self.interrupt_flag:
+                schedule.run_pending()
+                await asyncio.sleep(1)
+        except KeyboardInterrupt:
+            print("Ctrl+C pressed. Stopping the loop 1.")
+            for task in self.tasks:
+                task.cancel()
+
+    def interrupt(self):
+        self.interrupt_flag = True
+        for task in self.tasks:
+            task.cancel()
+        asyncio.gather(*self.tasks, return_exceptions=True)
+
+    async def send_notifications(self):
             try:
-
+                admin = await self.db.get_admin_users()
                 await self.db.set_inactive_auto()
 
                 # users = await self.db.get_users_for_reset_history()
@@ -394,12 +430,11 @@ class ChatGPTTelegramBot:
 
                     try:
 
-                        date = str(await self.db.get_end_time(update.message.from_user.id))[0:10]
+                        date = str(await self.db.get_end_time(user))[0:10]
                         date = date[8:10] + '.' + date[5:7] + '.' + date[0:4]
                         await self.bot.send_message(chat_id=user,
                                                     text='История чата автоматически сброшена. Токены обнулены, а ты можешь продолжить задавать вопросы GPT' + '\n' +
-                                                    'Ваша подписка : ' + await self.db.get_sub_name_from_user(
-                    update.message.from_user.id) + '\n' + 'Закончится: ' +
+                                                    'Ваша подписка : ' + await self.db.get_sub_name_from_user(user) + '\n' + 'Закончится: ' +
                      date)
                         count_send += 1
 
@@ -439,14 +474,14 @@ class ChatGPTTelegramBot:
                         print('error in send notif to admin')
                         pass
 
-                await asyncio.sleep(60*60*24)
+                # await asyncio.sleep(60*60*24)
 
             except Exception as e:
                 print('error in clean history')
                 print(e)
 
                 await self.send_to_admin('error in clean history' + '\n' + str(e))
-                await asyncio.sleep(60*60*24)
+                # await asyncio.sleep(60*60*24)
 
 
 
@@ -1141,7 +1176,7 @@ class ChatGPTTelegramBot:
         await application.bot.set_my_commands(self.group_commands, scope=BotCommandScopeAllGroupChats())
         await application.bot.set_my_commands(self.commands)
 
-    def run(self):
+    async def run_ptb(self):
 
         """
         Runs the bot indefinitely until the user presses Ctrl+C
@@ -1175,16 +1210,61 @@ class ChatGPTTelegramBot:
         application.add_handler(CommandHandler(
             'chat', self.prompt, filters=filters.ChatType.GROUP | filters.ChatType.SUPERGROUP)
         )
-        # application.add_handler(MessageHandler(
-        #     filters.AUDIO | filters.VOICE | filters.Document.AUDIO |
-        #     filters.VIDEO | filters.VIDEO_NOTE | filters.Document.VIDEO,
-        #     self.transcribe))
         application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), self.prompt))
-        # application.add_handler(InlineQueryHandler(self.inline_query, chat_types=[
-        #     constants.ChatType.GROUP, constants.ChatType.SUPERGROUP, constants.ChatType.PRIVATE
-        # ]))
-        # application.add_handler(CallbackQueryHandler(self.handle_callback_inline_query))
-
         application.add_error_handler(error_handler)
 
-        application.run_polling()
+        # application.run_polling()
+        await application.initialize()
+        await application.start()
+        await application.updater.start_polling()
+        try:
+            while application.running:
+                await asyncio.sleep(1)
+            log.info("App stopped running for some other reason, shutting down...")
+        except asyncio.CancelledError:
+            logging.info('Bot stopped')
+            await application.stop()
+        finally:
+            await application.stop()
+            await application.shutdown()
+
+    async def run_other(self, name):
+        try:
+            # do other async stuff, just sleeping here
+            # await self.send_notif()
+            await asyncio.sleep(10000)
+            log.info(f"Other {name} started")
+        except asyncio.CancelledError:
+            log.info(f"Other {name} got cancelled")
+            # clean up here
+
+    async def main(self):
+
+            tasks = [
+                asyncio.create_task(self.run_ptb()),
+                asyncio.create_task(self.run_other("send_notif"))
+            ]
+
+
+            # for sig in (signal.SIGINT, signal.SIGTERM):
+            #     loop = asyncio.get_event_loop()
+            #     loop.add_signal_handler(sig, lambda sig=sig: asyncio.create_task(self.shutdown(tasks)))
+            asyncio.get_event_loop() \
+                .add_signal_handler(signal.SIGTERM,
+                                    lambda: asyncio.create_task(self.shutdown(tasks)))
+
+            await asyncio.gather(*tasks)
+
+
+    async def shutdown(self,tasks):
+        log.warning("Received SIGTERM, cancelling tasks...")
+        for task in tasks:
+            task.cancel()
+
+    def run(self):
+        try:
+            asyncio.run(self.main())
+        except Exception as e:
+            log.info('Bot stopped')
+
+

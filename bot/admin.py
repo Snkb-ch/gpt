@@ -51,7 +51,7 @@ admin.site.register(Session, BotAdmin)
 admin.site.register(Subscriptions_statistics, BotAdmin)
 
 class CustomSearchFields(admin.SimpleListFilter):
-    title = 'Search Field'
+    title = 'Для Поиска по полям'
     parameter_name = 'search_field'
 
     def lookups(self, request, model_admin):
@@ -61,6 +61,7 @@ class CustomSearchFields(admin.SimpleListFilter):
             ('sub_type__sub_name', 'Subscription Type'),
             ('last_message', 'Last Message'),
             ('time_sub', 'Subscription Time'),
+
         )
 
     def queryset(self, request, queryset):
@@ -73,7 +74,7 @@ class CustomSearchFields(admin.SimpleListFilter):
 class UserAdmin(BotAdmin, admin.ModelAdmin):
     using = 'bottg'
     list_display = ('user_id', 'status', 'used_tokens', 'time_sub', 'end_time', 'sub_type', 'email', 'last_message', 'active_days', 'sold', 'admin', 'blocked')
-    list_filter = ('status', 'sub_type', 'blocked', 'time_sub', 'last_message', CustomSearchFields)
-    search_fields = ('user_id', 'email', 'sub_type__sub_name', 'last_message', 'time_sub')
+    list_filter = ('status', 'sub_type', 'blocked', CustomSearchFields)
+    search_fields = ('user_id', 'email', 'last_message', 'time_sub')
 
 admin.site.register(User, UserAdmin)
