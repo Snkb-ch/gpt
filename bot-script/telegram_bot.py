@@ -344,50 +344,31 @@ class ChatGPTTelegramBot:
 
 
     async def send_notif(self):
-        print('notif')
-
-        if self.notif_run == True:
-            # stop asiocp loop
-            await asyncio.gather(*self.tasks, return_exceptions=True)
-
-            self.interrupt_flag = True
-
-            print("stop notif")
-            for task in self.tasks:
-
-                task.cancel()
 
 
-
-
-            self.notif_run = False
-            return
-        self.notif_run = True
 
         async def job():
-            await self.send_to_admin('test')
+            await self.send_to_admin('start send notif test')
 
         def run_job():
-            self.tasks.append(asyncio.create_task(job()))
+            asyncio.create_task(job())
 
 
 
-        # schedule.every().day.at('15:19').do(run_job)
-        schedule.every(1).minutes.do(run_job)
+        schedule.every().day.at('16:21').do(run_job)
+
         try:
-            while not self.interrupt_flag:
+            while True:
                 schedule.run_pending()
                 await asyncio.sleep(1)
         except KeyboardInterrupt:
-            print("Ctrl+C pressed. Stopping the loop 1.")
-            for task in self.tasks:
-                task.cancel()
+            log.info('Exiting...')
 
-    def interrupt(self):
-        self.interrupt_flag = True
-        for task in self.tasks:
-            task.cancel()
-        asyncio.gather(*self.tasks, return_exceptions=True)
+    # def interrupt(self):
+    #     self.interrupt_flag = True
+    #     for task in self.tasks:
+    #         task.cancel()
+    #     asyncio.gather(*self.tasks, return_exceptions=True)
 
     async def send_notifications(self):
             try:
