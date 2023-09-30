@@ -170,6 +170,7 @@ class OpenAIHelper:
                     pass
 
         response, input_tokens = await self.__common_get_chat_response(chat_id, query,model_config = model_config, stream=True)
+
         if response != False:
 
             answer = ''
@@ -321,7 +322,7 @@ class OpenAIHelper:
             except Exception as e:
 
 
-                return False
+                return False, 0
 
 
         except openai.error.RateLimitError as e:
