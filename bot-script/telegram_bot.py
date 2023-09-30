@@ -749,12 +749,7 @@ class ChatGPTTelegramBot:
             sub_id = query.data
             await self.activate_sub(user_id, query.data)
 
-            try:
 
-                await self.db_analytics_for_day.add_sold(sub_id, await self.db.get_price(sub_id))
-
-            except:
-                pass
 
             # await self.db_analytics_for_month.add_income(sub_id, await self.db.get_price(sub_id))
             # await self.db_analytics_for_month.add_sold(sub_id)
