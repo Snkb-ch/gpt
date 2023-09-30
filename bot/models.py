@@ -126,8 +126,8 @@ class AnalyticsPeriods(models.Model):
 
 class Subscriptions_statistics(models.Model):
     id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    sub_type = models.ForeignKey(Subscriptions, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL,  null=True)
+    sub_type = models.ForeignKey(Subscriptions, on_delete=models.SET_NULL, null=True)
     start_date = models.DateField()
     end_date = models.DateField(null=True)
 
@@ -147,7 +147,7 @@ class Subscriptions_statistics(models.Model):
 class Session(models.Model):
     id = models.AutoField(primary_key=True)
     closed = models.BooleanField(default=False)
-    sub_stat = models.ForeignKey(Subscriptions_statistics, on_delete=models.CASCADE)
+    sub_stat = models.ForeignKey(Subscriptions_statistics, on_delete=models.SET_NULL ,  null=True)
     start_time = models.DateField()
     end_time = models.DateField(null=True)
     input_tokens = models.IntegerField(null=True, default=0)
@@ -173,5 +173,23 @@ class Session(models.Model):
     def __str__(self):
         return str(self.id)
 
+class AnalyticsForDay(models.Model):
+    id = models.AutoField(primary_key=True)
+    sub_type = models.ForeignKey(Subscriptions, on_delete=models.SET_NULL, null=True)
+    day = models.DateField()
+    active_users = models.IntegerField(default=0)
+    sold = models.IntegerField(default=0)
+    input_tokens = models.BigIntegerField(default=0)
+    output_tokens = models.BigIntegerField(default=0)
+    messages = models.IntegerField(default=0)
 
+    objects = BotTGUserManager()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['sub_type', 'day'], name='analytics_for_day_sub_type_day_key'),
+        ]
+
+    def __str__(self):
+        return str(self.sub_type)
 

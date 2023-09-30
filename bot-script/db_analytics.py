@@ -29,7 +29,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gpt.settings")
 # Импортируем и настраиваем Django настройки
 import django
 django.setup()
-from bot.models import User, Subscriptions, Period, AnalyticsForMonth, AnalyticsPeriods, Session, Subscriptions_statistics
+from bot.models import User, Subscriptions, Period, AnalyticsForMonth, AnalyticsPeriods, Session, Subscriptions_statistics, AnalyticsForDay
 
 
 class DBanalytics_for_month:
@@ -293,18 +293,53 @@ class DBanalytics_for_sessions:
         sub_active.save()
 
 
+class DBanalytics_for_day():
 
 
+        @sync_to_async
+        def add_sold(self, sub_id):
+
+            obj, created = AnalyticsForDay.objects.get_or_create(
+                sub_type=Subscriptions.objects.get(sub_id=sub_id),
+                day=datetime.now(),
+                defaults={'sold': 1}
+            )
+
+            if not created:
+                obj.sold = F('sold') + 1
+
+                obj.save()
+
+        @sync_to_async
+        def add(self, sub_id, input_tokens, output_tokens):
+            obj, created = AnalyticsForDay.objects.get_or_create(
+                sub_type=Subscriptions.objects.get(sub_id=sub_id),
+                day=datetime.now(),
+                defaults={'input_tokens': input_tokens,
+                          'output_tokens': output_tokens,
+                            'messages': 1,
+                          }
+            )
+
+            if not created:
+                obj.input_tokens = F('input_tokens') + input_tokens
+                obj.output_tokens = F('output_tokens') + output_tokens
+                obj.messages = F('messages') + 1
+
+                obj.save()
 
 
+        @sync_to_async
+        def add_active_user(self, sub_id):
+            obj, created = AnalyticsForDay.objects.get_or_create(
+                sub_type=Subscriptions.objects.get(sub_id=sub_id),
+                day=datetime.now(),
+                defaults={'active_users': 1}
+            )
 
-
-
-
-
-
-
-
+            if not created:
+                obj.active_users +=1
+                obj.save()
 
 
 

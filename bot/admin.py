@@ -54,6 +54,7 @@ admin.site.register(AnalyticsPeriods, BotAdmin)
 admin.site.register(Session, BotAdmin)
 
 admin.site.register(Subscriptions_statistics, BotAdmin)
+admin.site.register(AnalyticsForDay, BotAdmin)
 
 class CustomSearchFields(admin.SimpleListFilter):
     title = 'Для Поиска по полям'

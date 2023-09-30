@@ -39,7 +39,7 @@ from openai_helper import OpenAIHelper, localized_text
 
 from aiogram import Bot, Dispatcher, executor, types
 from db import Database
-from db_analytics import DBanalytics_for_month, DBanalytics_for_periods, DBanalytics_for_sessions
+from db_analytics import DBanalytics_for_month, DBanalytics_for_periods, DBanalytics_for_sessions, DBanalytics_for_day
 
 import os
 import sys
@@ -69,7 +69,7 @@ import django
 
 log = logging.getLogger("custom")
 django.setup()
-from bot.models import User, Subscriptions, Period, AnalyticsForMonth, AnalyticsPeriods,Session
+from bot.models import User, Subscriptions, Period, AnalyticsForMonth, AnalyticsPeriods,Session, AnalyticsForDay, Subscriptions_statistics
 
 
 class ChatGPTTelegramBot:
@@ -90,6 +90,7 @@ class ChatGPTTelegramBot:
         self.db_analytics_for_month = DBanalytics_for_month()
         self.db_analytics_for_periods = DBanalytics_for_periods()
         self.db_analytics_for_sessions = DBanalytics_for_sessions()
+        self.db_analytics_for_day = DBanalytics_for_day()
 
         self.config = config
         self.openai = openai
@@ -181,6 +182,13 @@ class ChatGPTTelegramBot:
         if not await self.db.user_exists(user_id):
             await self.db.add_user(user_id)
             await self.calc_end_time(user_id)
+            sub_id = await self.db.get_sub_type(user_id)
+            try:
+                await self.db_analytics_for_day.add_sold(sub_id)
+            except Exception as e:
+                print(e)
+                pass
+
 
             await update.message.reply_text(
                 message_thread_id=get_thread_id(update),
@@ -741,6 +749,13 @@ class ChatGPTTelegramBot:
             sub_id = query.data
             await self.activate_sub(user_id, query.data)
 
+            try:
+
+                await self.db_analytics_for_day.add_sold(sub_id, await self.db.get_price(sub_id))
+
+            except:
+                pass
+
             # await self.db_analytics_for_month.add_income(sub_id, await self.db.get_price(sub_id))
             # await self.db_analytics_for_month.add_sold(sub_id)
 
@@ -752,26 +767,23 @@ class ChatGPTTelegramBot:
         try:
             await self.db_analytics_for_sessions.close_session(user_id, datetime.now())
             await self.db_analytics_for_sessions.set_inactive(user_id, 'new_sub')
+            await self.db_analytics_for_day.add_sold(sub_id)
         except Exception as e:
             print(traceback.format_exc())
-            await self.send_to_admin( 'error in activate sub' + '\n' + str(e))
+            await self.send_to_admin( 'error in activate sub analytics' + '\n' + str(e))
 
             pass
         self.openai.reset_chat_history(chat_id=user_id)
 
-        # await self.db.set_sub_type(user_id, sub_id)
-        # await self.db.set_status(user_id, 'active')
-        # await self.db.set_time_sub(user_id, datetime.now().date())
-        # await self.calc_end_time(user_id)
-        # await self.db.set_used_tokens(user_id, 0)
+
         await self.db.update_user(user_id, sub_id)
         try:
             await self.db_analytics_for_sessions.new_sub_stats(user_id, sub_id)
         except Exception as e:
             print(traceback.format_exc())
-            await self.send_to_admin( 'error in activate sub' + '\n' + str(e))
+            await self.send_to_admin( 'error in activate sub analytics2' + '\n' + str(e))
             pass
-        # await self.db.add_sold(sub_id)
+
 
     async def is_in_time(self, update: Update, context: ContextTypes.DEFAULT_TYPE, user_id) -> bool:
         if await self.db.get_sub_type(user_id) == 2:
@@ -946,8 +958,13 @@ class ChatGPTTelegramBot:
                         self.prompts[chat_id] -= 1
                         return
 
-                if  last_message != date:
+                if  last_message != date or last_message is None:
                     await self.db.add_active_day(user_id)
+                    try:
+                        await self.db_analytics_for_day.add_active_user(sub_id=plan)
+                    except Exception as e:
+                        print(traceback.format_exc())
+                        pass
 
 
 
@@ -1224,27 +1241,25 @@ class ChatGPTTelegramBot:
                 asyncio.create_task(self.run_ptb()),
                 asyncio.create_task(self.run_other("send_notif"))
             ]
+            try:
 
+                for sig in (signal.SIGINT, signal.SIGTERM):
+                    loop = asyncio.get_event_loop()
+                    loop.add_signal_handler(sig, lambda sig=sig: asyncio.create_task(self.shutdown(tasks)))
+                asyncio.get_event_loop() \
+                    .add_signal_handler(signal.SIGTERM,
+                                        lambda: asyncio.create_task(self.shutdown(tasks)))
 
-            for sig in (signal.SIGINT, signal.SIGTERM):
-                loop = asyncio.get_event_loop()
-                loop.add_signal_handler(sig, lambda sig=sig: asyncio.create_task(self.shutdown(tasks)))
-            asyncio.get_event_loop() \
-                .add_signal_handler(signal.SIGTERM,
-                                    lambda: asyncio.create_task(self.shutdown(tasks)))
-
-            await asyncio.gather(*tasks)
-
+                await asyncio.gather(*tasks)
+            except:
+                print('windows')
             # windows
-            # try:
-            #     tasks = [
-            #         asyncio.create_task(self.run_ptb()),
-            #         asyncio.create_task(self.run_other("send_notif"))
-            #     ]
-            #     await asyncio.gather(*tasks)
-            # except KeyboardInterrupt:
-            #     logging.info("Received Ctrl+C, shutting down gracefully.")
-            #     await self.shutdown(tasks)
+                try:
+
+                    await asyncio.gather(*tasks)
+                except KeyboardInterrupt:
+                    logging.info("Received Ctrl+C, shutting down gracefully.")
+                    await self.shutdown(tasks)
 
 
     async def shutdown(self,tasks):

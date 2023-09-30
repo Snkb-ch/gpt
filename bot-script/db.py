@@ -28,7 +28,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gpt.settings")
 # Импортируем и настраиваем Django настройки
 import django
 django.setup()
-from bot.models import User, Subscriptions, Period, AnalyticsForMonth, AnalyticsPeriods
+from bot.models import User, Subscriptions, Period, AnalyticsForMonth, AnalyticsPeriods, Session, Subscriptions_statistics, AnalyticsForDay
 
 
 
@@ -40,7 +40,9 @@ class Database:
 
         #trial sub
         sub_id = Subscriptions.objects.get(sub_name='trial', for_sale=True).sub_id
+
         User.objects.create(user_id=user_id, sub_type=Subscriptions.objects.get(sub_id=sub_id))
+
 
     @sync_to_async
     def user_exists(self, user_id):
@@ -266,6 +268,7 @@ class Database:
         user.status = 'active'
         user.used_tokens = 0
         user.custom_temp = 1
+        user.last_message = None
         user.time_sub = datetime.now()
         user.end_time = datetime.now() + timedelta(days=Subscriptions.objects.get(sub_id=sub_id).duration)
         user.sold += 1

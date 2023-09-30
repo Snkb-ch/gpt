@@ -7,7 +7,8 @@ import traceback
 from datetime import datetime, timedelta
 from db import Database
 import django
-from db_analytics import DBanalytics_for_month, DBanalytics_for_periods, DBanalytics_for_sessions
+from db_analytics import DBanalytics_for_month, DBanalytics_for_periods, DBanalytics_for_sessions, DBanalytics_for_day
+
 # Получаем путь к текущему скрипту
 script_path = os.path.abspath(__file__)
 
@@ -25,7 +26,7 @@ sys.path.insert(0, project_root)
 # Установите переменную окружения DJANGO_SETTINGS_MODULE для указания файла настроек Django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gpt.settings")
 django.setup()
-from bot.models import User, Subscriptions, Period, AnalyticsForMonth, AnalyticsPeriods, Session, Subscriptions_statistics
+from bot.models import User, Subscriptions, Period, AnalyticsForMonth, AnalyticsPeriods, Session, Subscriptions_statistics, AnalyticsForDay
 
 
 import tiktoken
@@ -122,6 +123,7 @@ class OpenAIHelper:
         self.db_analytics_for_sessions = DBanalytics_for_sessions()
         self.db = Database()
         self.db_analytics_for_month = DBanalytics_for_month()
+        self.db_analytics_for_day = DBanalytics_for_day()
 
     def get_conversation_stats(self, chat_id: int, model: str) -> tuple[int, int]:
         """
@@ -167,7 +169,7 @@ class OpenAIHelper:
                     print(e)
                     pass
 
-        response = await self.__common_get_chat_response(chat_id, query,model_config = model_config, stream=True)
+        response, input_tokens = await self.__common_get_chat_response(chat_id, query,model_config = model_config, stream=True)
         if response != False:
 
             answer = ''
@@ -192,6 +194,13 @@ class OpenAIHelper:
                 print(e)
                 pass
             await self.db.update_used_tokens(chat_id, tokens_in_answer)
+            try:
+                sub_id = await self.db.get_sub_type(chat_id)
+
+                await self.db_analytics_for_day.add(sub_id, input_tokens, tokens_in_answer)
+            except Exception as e:
+                print(e)
+                pass
 
             self.__add_to_history(chat_id, role="assistant", content=answer)
             tokens_in_history= self.count_tokens(self.conversations[chat_id], model_config['model'])
@@ -305,7 +314,10 @@ class OpenAIHelper:
                     stream=stream
                 )
                 await self.db.update_used_tokens(chat_id, input_tokens)
-                return result
+
+
+
+                return result, input_tokens
             except Exception as e:
 
 
