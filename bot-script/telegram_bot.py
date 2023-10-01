@@ -648,7 +648,7 @@ class ChatGPTTelegramBot:
 
         sub_name = await self.db.get_sub_name_from_user(user_id)
         try:
-            if sub_name == 'trial' or sub_name =='admin':
+            if sub_name == 'trial' or sub_name =='ultimate admin':
                 pass
             else:
                 await self.db_analytics_for_sessions.role_edited(user_id)
@@ -670,7 +670,7 @@ class ChatGPTTelegramBot:
                 self.status[user_id] = 'prompt'
                 sub_name = await self.db.get_sub_name_from_user(user_id)
                 try:
-                    if sub_name == 'trial' or sub_name == 'admin':
+                    if sub_name == 'trial' or sub_name == 'ultimate admin':
                         pass
                     else:
 
@@ -804,7 +804,7 @@ class ChatGPTTelegramBot:
             sub_name = await self.db.get_sub_name_from_user(user_id)
 
             try:
-                if sub_name == 'trial' :
+                if sub_name == 'trial' or sub_name == 'ultimate admin':
                     pass
                 else:
                     await self.db_analytics_for_sessions.close_session(user_id, datetime.now())
@@ -1130,7 +1130,7 @@ class ChatGPTTelegramBot:
 
                                 try:
                                     sub_name = await self.db.get_sub_name_from_user(chat_id)
-                                    if sub_name == 'trial' or sub_name == 'admin':
+                                    if sub_name == 'trial' or sub_name == 'ultimate admin':
                                         pass
                                     else:
                                         await self.db_analytics_for_sessions.close_session(user_id, datetime.now())
