@@ -96,12 +96,12 @@ class AnalyticsForMonth(models.Model):
         return str(self.sub_type)
     # on create update previous month
 
-@receiver(post_save, sender=AnalyticsForMonth)
-def update_active_on_create(sender, instance, created, **kwargs):
-     if created and AnalyticsForMonth.objects.filter(sub_type=instance.sub_type).count() > 1:
-
-         previous_month = instance.begin_date[0:5] + str(int(instance.begin_date[5:7]) - 1) + instance.begin_date[7:]
-         AnalyticsForMonth.objects.filter(sub_type=instance.sub_type, begin_date=previous_month).update(active=User.objects.filter(sub_type=instance.sub_type, status = 'active').count())
+# @receiver(post_save, sender=AnalyticsForMonth)
+# def update_active_on_create(sender, instance, created, **kwargs):
+#      if created and AnalyticsForMonth.objects.filter(sub_type=instance.sub_type).count() > 1:
+#
+#          previous_month = instance.begin_date[0:5] + str(int(instance.begin_date[5:7]) - 1) + instance.begin_date[7:]
+#          AnalyticsForMonth.objects.filter(sub_type=instance.sub_type, begin_date=previous_month).update(active=User.objects.filter(sub_type=instance.sub_type, status = 'active').count())
 
 
 class AnalyticsPeriods(models.Model):
