@@ -370,6 +370,7 @@ class ChatGPTTelegramBot:
             await self.send_to_admin('start send reminders')
             await self.send_reminder()
 
+
         def run_job():
             asyncio.create_task(job())
 
@@ -933,6 +934,7 @@ class ChatGPTTelegramBot:
 
             elif self.status[user_id] == 'prompt':
 
+
                 plan = await self.db.get_sub_type(user_id)
                 plan_name = await self.db.get_sub_name_from_user(user_id)
                 model = await self.db.get_model(user_id)
@@ -942,6 +944,7 @@ class ChatGPTTelegramBot:
 
 
                 self.prompts[chat_id] = self.prompts.get(chat_id, 0) + 1
+                print(self.prompts[chat_id])
 
                 if self.prompts[chat_id] >1:
                     available_tokens = await self.db.get_max_tokens(user_id) - await self.db.get_used_tokens(user_id)
@@ -1013,6 +1016,8 @@ class ChatGPTTelegramBot:
 
                             used_tokens = await self.db.get_used_tokens(user_id)
                             max_tokens = await self.db.get_max_tokens(user_id)
+
+
 
 
                             stream_response = self.openai.get_chat_response_stream(chat_id=chat_id, query=prompt,
@@ -1155,8 +1160,9 @@ class ChatGPTTelegramBot:
 
                 except Exception as e:
                     # traceback
-                    await self.send_to_admin('error in prompt' + '\n' + str(e))
+                    await self.send_to_admin('error in prompt' + '\n' + str(e) + str(traceback.format_exc()))
                     print(traceback.format_exc())
+                    self.prompts[chat_id] = 0
 
                     logging.exception(e)
 
