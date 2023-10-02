@@ -240,7 +240,50 @@ class ChatGPTTelegramBot:
                 text='Вы не выбрали сообщение. Для выбора свайпните его влево. На ПК – 2 раза кликнуть по сообщению',
             )
 
+    async def delete(self, update:Update, context: ContextTypes.DEFAULT_TYPE):
+        if await self.is_active(update, context, update.message.from_user.id) == False:
+            await update.message.reply_text(
+                message_thread_id=get_thread_id(update),
+                text='Ваша подписка закончилась, купите подписку',
+            )
+            return
+        user_id = update.message.from_user.id
 
+        # pin last bot message
+        if update.message.reply_to_message:
+            # убрать 27 симовлов с конца
+            text_message = update.message.reply_to_message.text
+            print(text_message)
+             # list od dicts
+            deleted= False
+
+            if self.openai.conversations.get(user_id):
+                for item in self.openai.conversations[user_id]:
+                    print(item)
+
+                    if item['role'] == 'user' and item['content'] == text_message:
+                        self.openai.conversations[user_id].remove(item)
+                        deleted = True
+                        break
+                    elif item['role'] == 'assistant':
+
+                        short_text_message = text_message[0:len(text_message) - 28]
+                        print(short_text_message)
+                        if item['content'] in short_text_message:
+                            self.openai.conversations[user_id].remove(item)
+                            deleted = True
+                            break
+
+                await update.message.reply_to_message.reply_text('Сообщение удалено')
+
+            if deleted == False:
+                await update.message.reply_to_message.reply_text('Сообщение не найдено')
+
+        else:
+            await update.message.reply_text(
+                message_thread_id=get_thread_id(update),
+                text='Вы не выбрали сообщение. Для выбора свайпните его влево. На ПК – 2 раза кликнуть по сообщению',
+            )
 
 
 
@@ -744,12 +787,26 @@ class ChatGPTTelegramBot:
             (payment_details['confirmation'])['confirmation_url'])
 
         if await payment.check_payment(payment_details['id']):
-            await update.effective_message.reply_text("Платеж прошел")
+
 
             user_id = update.callback_query.from_user.id
             sub_id = query.data
-            await self.activate_sub(user_id, query.data)
-
+            try:
+                await self.activate_sub(user_id, query.data)
+            except Exception as e:
+                print(traceback.format_exc())
+                await self.send_to_admin( 'error in activate sub' + '\n' + str(e))
+                pass
+            try:
+                await self.send_to_admin('Платеж прошел' + '\n' + 'Пользователь: ' + str(user_id) + '\n' + 'Подписка: ' + sub_name + '\n' + 'Цена: ' + str(price) + '\n' + 'Email: ' + email)
+            except Exception as e:
+                print('error in send admin message' + '\n' + str(e))
+                pass
+            try:
+                await update.effective_message.reply_text("Платеж прошел")
+            except Exception as e:
+                print('error in send message' + '\n' + str(e))
+                pass
 
 
             # await self.db_analytics_for_month.add_income(sub_id, await self.db.get_price(sub_id))
@@ -1200,6 +1257,7 @@ class ChatGPTTelegramBot:
 
         application.add_handler(CommandHandler('admin', self.admin))
         application.add_handler(CommandHandler('save', self.save))
+        application.add_handler((CommandHandler('delete', self.delete)))
 
 
         application.add_handler(CommandHandler('temperature', self.temperature))
