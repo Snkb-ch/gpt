@@ -157,7 +157,7 @@ class Database:
     def get_all_users(self):
         # list of users_id
 
-        return list(User.objects.filter(blocked = False).values_list('user_id', flat=True))
+        return list(User.objects.values_list('user_id', flat=True))
 
     @sync_to_async
     def get_sub_ending_users(self):
