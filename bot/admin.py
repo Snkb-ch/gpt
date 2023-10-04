@@ -84,3 +84,5 @@ class UserAdmin(BotAdmin, admin.ModelAdmin):
     search_fields = ('user_id', 'email', 'last_message', 'time_sub')
 
 admin.site.register(User, UserAdmin)
+
+

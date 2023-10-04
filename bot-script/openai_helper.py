@@ -152,22 +152,8 @@ class OpenAIHelper:
 
         # analytics for sessions
 
-        if await self.db.get_sub_name_from_user(chat_id) == 'trial':
-            pass
 
 
-        else:
-            keys = len(self.conversations[chat_id])
-
-            if keys == 1 and self.conversations[chat_id][0]['content'] == self.config['assistant_prompt']:
-                date = datetime.now()
-                try:
-                    await self.db_analytics_for_sessions.close_session(chat_id, date)
-
-                    await self.db_analytics_for_sessions.add_session(chat_id, sub_type, date)
-                except Exception as e:
-                    print(e)
-                    pass
 
         response, input_tokens = await self.__common_get_chat_response(chat_id, query,model_config = model_config, stream=True)
 
@@ -186,19 +172,13 @@ class OpenAIHelper:
 
             tokens_in_answer = self.count_tokens([{"role": "assistant", "content": answer}], model_config['model'])
             sub_name = await self.db.get_sub_name_from_user(chat_id)
-            try:
-                if sub_name == 'trial' or sub_name == 'ultimate admin':
-                    await self.db_analytics_for_month.add_output_tokens(sub_type, tokens_in_answer)
-                else:
-                    await self.db_analytics_for_sessions.update_session_output(chat_id, tokens_in_answer)
-            except Exception as e:
-                print(e)
-                pass
+
             await self.db.update_used_tokens(chat_id, tokens_in_answer)
             try:
                 sub_id = await self.db.get_sub_type(chat_id)
 
                 await self.db_analytics_for_day.add(sub_id, input_tokens, tokens_in_answer)
+                await self.db_analytics_for_sessions.add_tokens(chat_id, input_tokens, tokens_in_answer)
             except Exception as e:
                 print(e)
                 pass
@@ -289,17 +269,8 @@ class OpenAIHelper:
             input_tokens = self.count_tokens(self.conversations[chat_id], model_config['model'])
 
 
-            try:
-                sub_name = await self.db.get_sub_name_from_user(chat_id)
-                if sub_name == 'trial' or sub_name ==  'ultimate admin':
-                    sub_id = await self.db.get_sub_type(chat_id)
-                    await self.db_analytics_for_month.add_input_tokens(sub_id, input_tokens)
-                else:
-                    await self.db_analytics_for_sessions.update_session_input(chat_id, input_tokens, input_tokens_before_sum)
-            except Exception as e:
-                print(traceback.format_exc())
 
-                pass
+
 
 
             try:

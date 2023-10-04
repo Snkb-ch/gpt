@@ -120,6 +120,18 @@ class ChatGPTTelegramBot:
         self.bot = Bot(token=self.config['token'])
         self.dispatcher = Dispatcher(bot=self.bot, loop=asyncio.get_event_loop())
 
+
+    async def send_info_message(self, users, text):
+        try:
+            for user in users:
+                await self.bot.send_message(
+                    chat_id=user.user_id,
+                    text=text,
+                )
+        except Exception as e:
+            print(e)
+            pass
+
     async def cancel(self, update: Update, _: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text(
             message_thread_id=get_thread_id(update),
@@ -185,6 +197,7 @@ class ChatGPTTelegramBot:
             sub_id = await self.db.get_sub_type(user_id)
             try:
                 await self.db_analytics_for_day.add_sold(sub_id)
+                await self.db_analytics_for_sessions.new_sub_stats(user_id, sub_id)
             except Exception as e:
                 print(e)
                 pass
@@ -437,10 +450,25 @@ class ChatGPTTelegramBot:
     async def send_notifications(self):
             try:
                 admin = await self.db.get_admin_users()
-                await self.db.set_inactive_auto()
+                users_for_inactive = await self.db.set_inactive_auto()
+                count_users_for_inactive = len(users_for_inactive)
+                count_error_users_for_inactive = 0
+                if count_users_for_inactive > 0:
+                    for user in users_for_inactive:
+                        try:
+                            await self.db_analytics_for_sessions.set_inactive(user, 'time')
+                            await self.bot.send_message(chat_id=user,
+                                                            text='Привет! Твоя подписка закончилась. Можешь продолжить общение с нейросетью, купив подписку')
+                        except Exception as e:
+                            if 'blocked' in str(e):
+                                await self.db.set_blocked_user(user)
+                                count_error_users_for_inactive += 1
+                                pass
+                            else:
+                                print(e)
+                                pass
 
-
-                users = await self.db.get_trial_ending_users()
+                users = await self.db.get_sub_ending_users()
                 k1 = str(len(users))
                 k1_errors = 0
                 k1_error_messages = []
@@ -457,7 +485,7 @@ class ChatGPTTelegramBot:
 
                             pass
 
-                users = await self.db.get_trial_users()
+                users = await self.db.get_active_trial_users()
 
                 k2 = str(len(users))
                 count_error = 0
@@ -493,16 +521,19 @@ class ChatGPTTelegramBot:
                 for admin_id in admin:
                     try:
                         await self.bot.send_message(chat_id=admin_id,
-                                                    text='Отправили уведомление о пробном периоде' + '\n' + 'Количество пользователей: ' + k1 + '\n'+
+                                                    text='Отправили уведомление о конце заканчивающейся' + '\n' + 'Количество пользователей: ' + k1 + '\n'+
                                                     'Количество пользователей с ошибкой: ' + str(k1_errors) + '\n' + 'Уникальные ошибки: ' + str(k1_error_messages))
                         await self.bot.send_message(chat_id=admin_id,
                                                     text='Отправили уведомление о сбросе истории чата' + '\n' + 'Количество пользователей подошло: ' + k2 + '\n'+
                                                     'Количество пользователей с ошибкой: ' + str(count_error) + '\n' + 'Уникальные ошибки: ' + str(unique_error_messages))
 
-
-
                         await self.bot.send_message(chat_id=admin_id,
-                                                    text='новых пользователей: ' + count_new_users + '\n' + 'продано подписок: ' + count_sold)
+                                                    text='уведомление о дактивации подписки' + '\n' + 'Количество пользователей подошло: ' + str(count_users_for_inactive) + '\n'+
+                                                    'Количество пользователей с ошибкой: ' + str(count_error_users_for_inactive))
+
+
+
+
                     except:
                         print('error in send notif to admin')
                         pass
@@ -520,10 +551,13 @@ class ChatGPTTelegramBot:
     async def admin(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         if not await  self.db.is_admin(update.message.from_user.id):
             return
-        await update.message.reply_text(
-            message_thread_id=get_thread_id(update),
-            text='Команды: /send_to_all  , /send_reminder, /send_notif',
-        )
+        users = await self.db.get_all_users()
+        for user in users:
+            if not await self.db_analytics_for_sessions.exists(user):
+                time_sub = await self.db.get_time_sub(user)
+                sub_type = await self.db.get_sub_type(user)
+                await self.db_analytics_for_sessions.new_sub_stats(user, sub_type, time_sub)
+
 
     async def buy(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
 
@@ -573,37 +607,38 @@ class ChatGPTTelegramBot:
         #
         #         ]
         #     ]
-        # )
-
+        # # )
+        # Цена: < s > < i > 50 < / i > < / s > 40
+        # руб / 30
+        # дней
         text = '''
 Описание подписок:
 
-<b>Скидка 20% до 3 октября</b>
 
 
 <b>GPT-3.5 Standart</b>
-Цена: <s><i>50</i></s> 40 руб / 30 дней
+Цена: 50 руб / 30 дней
 Модель: GPT-3.5
 40 000 токенов - около 20 стр. А4
 Настройка роли и креативности: ❌
 
 
 <b>GPT-3.5 PRO</b>
-Цена: <s><i>90</i></s> 72 руб / 30 дней
+Цена: 90 руб / 30 дней
 Модель: GPT-3.5
 200 000 токенов - около 100 стр. А4
 Настройка роли и креативности: ❌
 
 
 <b>GPT-4 Standart</b>
-Цена: <s><i>290</i></s> 232 руб / 30 дней
+Цена: 290 руб / 30 дней
 Модель: GPT-4
 40 000 токенов - около 20 стр. А4
 Настройка роли и креативности: ✅
 
 
 <b>GPT-4 PRO</b>
-Цена: <s><i>700</i></s> 560 руб / 30 дней
+Цена: 700 руб / 30 дней
 Модель: GPT-4
 100 000 токенов - около 50 стр. А4
 Настройка роли и креативности: ✅
@@ -691,7 +726,7 @@ class ChatGPTTelegramBot:
 
         sub_name = await self.db.get_sub_name_from_user(user_id)
         try:
-            if sub_name == 'trial' or sub_name =='ultimate admin':
+            if sub_name =='ultimate admin':
                 pass
             else:
                 await self.db_analytics_for_sessions.role_edited(user_id)
@@ -713,7 +748,7 @@ class ChatGPTTelegramBot:
                 self.status[user_id] = 'prompt'
                 sub_name = await self.db.get_sub_name_from_user(user_id)
                 try:
-                    if sub_name == 'trial' or sub_name == 'ultimate admin':
+                    if sub_name == 'ultimate admin':
                         pass
                     else:
 
@@ -785,8 +820,17 @@ class ChatGPTTelegramBot:
 
         await update.effective_message.reply_text(
             (payment_details['confirmation'])['confirmation_url'])
+        payment_success = False
 
-        if await payment.check_payment(payment_details['id']):
+        try:
+            payment_success = await payment.check_payment(payment_details['id'])
+        except Exception as e:
+            print(f' payment check error: {e}')
+            await self.send_to_admin( 'error in check payment' + '\n' + 'for user:' + str(user_id) + '\n' + str(e))
+
+
+
+        if payment_success:
 
 
             user_id = update.callback_query.from_user.id
@@ -818,9 +862,9 @@ class ChatGPTTelegramBot:
     async def activate_sub(self, user_id, sub_id):
 
         try:
-            await self.db_analytics_for_sessions.close_session(user_id, datetime.now())
+
             await self.db_analytics_for_sessions.set_inactive(user_id, 'new_sub')
-            await self.db_analytics_for_day.add_sold(sub_id)
+
         except Exception as e:
             print(traceback.format_exc())
             await self.send_to_admin( 'error in activate sub analytics' + '\n' + str(e))
@@ -832,6 +876,7 @@ class ChatGPTTelegramBot:
         await self.db.update_user(user_id, sub_id)
         try:
             await self.db_analytics_for_sessions.new_sub_stats(user_id, sub_id)
+            await self.db_analytics_for_day.add_sold(sub_id)
         except Exception as e:
             print(traceback.format_exc())
             await self.send_to_admin( 'error in activate sub analytics2' + '\n' + str(e))
@@ -861,10 +906,10 @@ class ChatGPTTelegramBot:
             sub_name = await self.db.get_sub_name_from_user(user_id)
 
             try:
-                if sub_name == 'trial' or sub_name == 'ultimate admin':
+                if sub_name == 'ultimate admin':
                     pass
                 else:
-                    await self.db_analytics_for_sessions.close_session(user_id, datetime.now())
+
                     await self.db_analytics_for_sessions.set_inactive(user_id, 'time')
 
             except Exception as e:
@@ -1013,10 +1058,14 @@ class ChatGPTTelegramBot:
                         self.prompts[chat_id] -= 1
                         return
 
-                if  last_message != date or last_message is None:
-                    await self.db.add_active_day(user_id)
+                if  last_message != date:
                     try:
-                        await self.db_analytics_for_day.add_active_user(sub_id=plan)
+                        if last_message is None:
+                            await self.db.add_active_day(user_id)
+                            await self.db_analytics_for_day.add_active_user(plan, True)
+                        else:
+                            await self.db.add_active_day(user_id)
+                            await self.db_analytics_for_day.add_active_user(plan, False)
                     except Exception as e:
                         print(traceback.format_exc())
                         pass
@@ -1187,10 +1236,10 @@ class ChatGPTTelegramBot:
 
                                 try:
                                     sub_name = await self.db.get_sub_name_from_user(chat_id)
-                                    if sub_name == 'trial' or sub_name == 'ultimate admin':
+                                    if sub_name == 'ultimate admin':
                                         pass
                                     else:
-                                        await self.db_analytics_for_sessions.close_session(user_id, datetime.now())
+
                                         await self.db_analytics_for_sessions.set_inactive(user_id, 'tokens')
 
                                 except Exception as e:

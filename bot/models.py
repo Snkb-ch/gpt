@@ -135,6 +135,9 @@ class Subscriptions_statistics(models.Model):
     expired_reason = models.CharField(max_length=50, null=True)
     role_edited = models.IntegerField(default=0)
     temp_edited = models.IntegerField(default=0)
+    input_tokens = models.IntegerField(null=True, default=0)
+    output_tokens = models.IntegerField(null=True, default=0)
+    messages = models.IntegerField(null=True, default=0)
     objects = BotTGUserManager()
 
     class Meta:
@@ -178,6 +181,7 @@ class AnalyticsForDay(models.Model):
     sub_type = models.ForeignKey(Subscriptions, on_delete=models.SET_NULL, null=True)
     day = models.DateField()
     active_users = models.IntegerField(default=0)
+    active_non_new_users = models.IntegerField(default=0)
     sold = models.IntegerField(default=0)
     input_tokens = models.BigIntegerField(default=0)
     output_tokens = models.BigIntegerField(default=0)

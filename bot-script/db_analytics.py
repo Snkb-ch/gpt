@@ -216,7 +216,11 @@ class DBanalytics_for_periods:
 class DBanalytics_for_sessions:
 
     @sync_to_async
-    def new_sub_stats(self, user_id, sub_type):
+    def exists(self, user_id):
+        return Subscriptions_statistics.objects.filter(user_id=user_id).exists()
+
+    @sync_to_async
+    def new_sub_stats(self, user_id, sub_type, start_time = datetime.now()):
         Subscriptions_statistics.objects.create(
             user_id = user_id,
             sub_type = Subscriptions.objects.get(sub_id=sub_type),
@@ -233,53 +237,6 @@ class DBanalytics_for_sessions:
             Subscriptions_statistics.objects.filter(user_id=user_id, active=True).update(active=False, end_date=datetime.now(),  expired_reason=expired_reason)
 
 
-
-
-    @sync_to_async
-    def add_session(self,user_id,  sub_type, start_time):
-
-        Session.objects.create(
-            sub_stat = Subscriptions_statistics.objects.get(user_id=user_id, active=True),
-
-            start_time = start_time)
-
-
-
-    @sync_to_async
-    def close_session(self, user_id, end_time):
-        if Subscriptions_statistics.objects.filter(user_id=user_id, active=True).exists():
-            sub_stat = Subscriptions_statistics.objects.get(user_id=user_id, active=True)
-            Session.objects.filter(sub_stat=sub_stat, closed=False).update(closed=True, end_time=end_time)
-
-
-
-
-
-    @sync_to_async
-    def update_session_input(self, chat_id, input_tokens, input_tokens_before_sum):
-        active_session = Session.objects.get(sub_stat=Subscriptions_statistics.objects.get(user_id=chat_id, active=True), closed=False)
-        active_session.input_tokens = F('input_tokens') + input_tokens
-        active_session.input_tokens_before_sum = F('input_tokens') + input_tokens_before_sum
-
-        active_session.messages = F('messages') + 1
-
-
-
-
-        active_session.save()
-
-
-
-
-
-    @sync_to_async
-    def update_session_output(self, chat_id, output_tokens):
-        active_session = Session.objects.get(sub_stat=Subscriptions_statistics.objects.get(user_id=chat_id, active=True), closed=False)
-        active_session.output_tokens = F('output_tokens') + output_tokens
-
-        active_session.save()
-
-
     @sync_to_async
     def role_edited(self, chat_id):
         sub_active = Subscriptions_statistics.objects.get(user_id=chat_id, active=True)
@@ -290,6 +247,15 @@ class DBanalytics_for_sessions:
     def temp_edited(self, chat_id):
         sub_active = Subscriptions_statistics.objects.get(user_id=chat_id, active=True)
         sub_active.temp_edited = F('temp_edited') + 1
+        sub_active.save()
+
+    @sync_to_async
+    def add_tokens(self, user_id, input_tokens, output_tokens):
+
+        sub_active=Subscriptions_statistics.objects.get(user_id=user_id, active=True)
+        sub_active.input_tokens += input_tokens
+        sub_active.output_tokens += output_tokens
+        sub_active.messages += 1
         sub_active.save()
 
 
@@ -330,16 +296,21 @@ class DBanalytics_for_day():
 
 
         @sync_to_async
-        def add_active_user(self, sub_id):
+        def add_active_user(self, sub_id, new_user = False):
             obj, created = AnalyticsForDay.objects.get_or_create(
                 sub_type=Subscriptions.objects.get(sub_id=sub_id),
                 day=datetime.now(),
-                defaults={'active_users': 1}
+                defaults={'active_users': 1 ,
+                'active_non_new_users': 0 if new_user else 1}
             )
 
             if not created:
                 obj.active_users +=1
+                if not new_user:
+                    obj.active_non_new_users +=1
+
                 obj.save()
+
 
 
 

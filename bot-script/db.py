@@ -160,19 +160,18 @@ class Database:
         return list(User.objects.filter(blocked = False).values_list('user_id', flat=True))
 
     @sync_to_async
-    def get_trial_ending_users(self):
+    def get_sub_ending_users(self):
         date = datetime.now()
-        sub_trial_id = Subscriptions.objects.filter(sub_name='trial').values_list('sub_id', flat=True)
 
-        list = []
-        for i in sub_trial_id:
 
-            users = User.objects.filter(sub_type=i, status='active', end_time=date + timedelta(days= 3), blocked = False).values_list('user_id', flat=True)
 
-            list.append(users)
+        users = User.objects.filter( status='active', end_time=date + timedelta(days= 3), blocked = False).values_list('user_id', flat=True)
 
-        list = [item for sublist in list for item in sublist]
-        return list
+
+
+
+
+        return list(users)
     @sync_to_async
     def get_all_inactive_users(self):
         date = datetime.now()
@@ -193,7 +192,12 @@ class Database:
     @sync_to_async
     def set_inactive_auto(self):
         date = datetime.now()
-        User.objects.filter(status='active', end_time__lt=date).update(status='inactive', reminder_date=date + timedelta(days=14), sub_type = Subscriptions.objects.get(sub_name='free'))
+        users = User.objects.filter(status='active', end_time__lt=date).values_list('user_id', flat=True)
+        user_list = list(users)
+        users.update(status='inactive', reminder_date=date + timedelta(days=14), sub_type = Subscriptions.objects.get(sub_name='free'))
+        return user_list
+
+
 
     @sync_to_async
     def is_admin(self, user_id):
@@ -230,7 +234,7 @@ class Database:
         return list(User.objects.filter(status='active', last_message__lt=date - timedelta(days=2)).values_list('user_id', flat=True))
 
     @sync_to_async
-    def get_trial_users(self):
+    def get_active_trial_users(self):
         date = datetime.now()
 
         sub_trial_id = Subscriptions.objects.filter(sub_name='trial').values_list('sub_id', flat=True)
@@ -243,6 +247,17 @@ class Database:
 
         return list
 
+    @sync_to_async
+    def get_trial_users(self):
+        date = datetime.now()
+
+        sub_trial_id = Subscriptions.objects.filter(sub_name='trial').values_list('sub_id', flat=True)
+        list = []
+        for i in sub_trial_id:
+            list.append(User.objects.filter(sub_type=i, status='active').values_list('user_id', flat=True))
+
+        list = [item for sublist in list for item in sublist]
+        return list
 
     @sync_to_async
     def get_model(self, user_id):
@@ -269,6 +284,7 @@ class Database:
         user.used_tokens = 0
         user.custom_temp = 1
         user.last_message = None
+        user.active_days = 0
         user.time_sub = datetime.now()
         user.end_time = datetime.now() + timedelta(days=Subscriptions.objects.get(sub_id=sub_id).duration)
         user.sold += 1
