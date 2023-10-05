@@ -86,6 +86,10 @@ class Database:
         user.save()
 
     @sync_to_async
+    def get_active_days(self, user_id):
+        return User.objects.get(user_id=user_id).active_days
+
+    @sync_to_async
     def update_used_tokens(self, user_id, tokens):
         user = User.objects.get(user_id=user_id)
         user.used_tokens += tokens
@@ -264,17 +268,7 @@ class Database:
         return Subscriptions.objects.get(sub_id=User.objects.get(user_id=user_id).sub_type.sub_id).model
 
 
-    @sync_to_async
-    def add_active_day(self, user_id):
-        user = User.objects.get(user_id=user_id)
-        user.active_days += 1
-        user.save()
 
-    @sync_to_async
-    def add_sold(self, user_id):
-        user = User.objects.get(user_id=user_id)
-        user.sold += 1
-        user.save()
 
     @sync_to_async
     def update_user(self, user_id, sub_id):
@@ -287,7 +281,7 @@ class Database:
         user.active_days = 0
         user.time_sub = datetime.now()
         user.end_time = datetime.now() + timedelta(days=Subscriptions.objects.get(sub_id=sub_id).duration)
-        user.sold += 1
+
         user.save()
 
     @sync_to_async

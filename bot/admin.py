@@ -79,7 +79,7 @@ class CustomSearchFields(admin.SimpleListFilter):
 
 class UserAdmin(BotAdmin, admin.ModelAdmin):
 
-    list_display = ('user_id', 'status', 'used_tokens', 'time_sub', 'end_time', 'sub_type', 'email', 'last_message', 'active_days', 'sold', 'admin', 'blocked')
+    list_display = ('user_id', 'status', 'used_tokens', 'time_sub', 'end_time', 'sub_type', 'email', 'last_message', 'active_days', 'admin', 'blocked')
     list_filter = ('status', 'sub_type', 'blocked', CustomSearchFields)
     search_fields = ('user_id', 'email', 'last_message', 'time_sub')
 

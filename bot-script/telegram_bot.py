@@ -197,6 +197,7 @@ class ChatGPTTelegramBot:
             sub_id = await self.db.get_sub_type(user_id)
             try:
                 await self.db_analytics_for_day.add_sold(sub_id)
+
                 await self.db_analytics_for_sessions.new_sub_stats(user_id, sub_id)
             except Exception as e:
                 print(e)
@@ -553,10 +554,11 @@ class ChatGPTTelegramBot:
             return
         users = await self.db.get_all_users()
         for user in users:
-            if not await self.db_analytics_for_sessions.exists(user):
-                time_sub = await self.db.get_time_sub(user)
-                sub_type = await self.db.get_sub_type(user)
-                await self.db_analytics_for_sessions.new_sub_stats(user, sub_type, time_sub)
+            try:
+                active_days = await self.db.get_active_days(user)
+                await self.db_analytics_for_sessions.add_tokens(user, 0, 0, active_days)
+            except:
+                pass
 
 
     async def buy(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -876,7 +878,8 @@ class ChatGPTTelegramBot:
         await self.db.update_user(user_id, sub_id)
         try:
             await self.db_analytics_for_sessions.new_sub_stats(user_id, sub_id)
-            await self.db_analytics_for_day.add_sold(sub_id)
+            price = await self.db.get_price(sub_id)
+            await self.db_analytics_for_day.add_sold(sub_id, price)
         except Exception as e:
             print(traceback.format_exc())
             await self.send_to_admin( 'error in activate sub analytics2' + '\n' + str(e))
@@ -1060,11 +1063,12 @@ class ChatGPTTelegramBot:
 
                 if  last_message != date:
                     try:
+                        await self.db_analytics_for_sessions.add_active_days(user_id)
                         if last_message is None:
-                            await self.db.add_active_day(user_id)
+
                             await self.db_analytics_for_day.add_active_user(plan, True)
                         else:
-                            await self.db.add_active_day(user_id)
+
                             await self.db_analytics_for_day.add_active_user(plan, False)
                     except Exception as e:
                         print(traceback.format_exc())

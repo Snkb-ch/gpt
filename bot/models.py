@@ -45,7 +45,7 @@ class User(models.Model):
     reminder_date = models.DateField(null=True, blank=True)
     last_message = models.DateField(null=True, blank=True)
     active_days = models.IntegerField(default=0, null=True)
-    sold = models.IntegerField(default=0, null=True)
+
     admin = models.BooleanField(default=False, null=True)
     blocked = models.BooleanField(default=False, null=True)
 
@@ -138,6 +138,7 @@ class Subscriptions_statistics(models.Model):
     input_tokens = models.IntegerField(null=True, default=0)
     output_tokens = models.IntegerField(null=True, default=0)
     messages = models.IntegerField(null=True, default=0)
+    active_days = models.IntegerField(null=True, default=0)
     objects = BotTGUserManager()
 
     class Meta:
@@ -183,9 +184,12 @@ class AnalyticsForDay(models.Model):
     active_users = models.IntegerField(default=0)
     active_non_new_users = models.IntegerField(default=0)
     sold = models.IntegerField(default=0)
+    income = models.FloatField(default=0)
+    costs = models.FloatField(default=0)
     input_tokens = models.BigIntegerField(default=0)
     output_tokens = models.BigIntegerField(default=0)
     messages = models.IntegerField(default=0)
+
 
     objects = BotTGUserManager()
 

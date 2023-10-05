@@ -50,15 +50,15 @@ GPT_ALL_MODELS = GPT_3_MODELS + GPT_3_16K_MODELS + GPT_4_MODELS + GPT_4_32K_MODE
 def get_price(sub_name):
     price = {}
     if sub_name in GPT_3_MODELS:
-        price['input']= 0.0015
-        price['output'] = 0.002
+        price['input']= 0.0000015
+        price['output'] = 0.000002
     elif sub_name in GPT_4_MODELS:
-        price['input']= 0.03
-        price['output'] = 0.06
+        price['input']= 0.00003
+        price['output'] = 0.00006
 
     elif sub_name in GPT_3_16K_MODELS:
-        price['input']= 0.003
-        price['output'] = 0.004
+        price['input']= 0.000003
+        price['output'] = 0.000004
 
     return price
 
@@ -176,8 +176,10 @@ class OpenAIHelper:
             await self.db.update_used_tokens(chat_id, tokens_in_answer)
             try:
                 sub_id = await self.db.get_sub_type(chat_id)
+                model = await self.db.get_model(chat_id)
+                price = get_price(model)
+                await self.db_analytics_for_day.add(sub_id, input_tokens, tokens_in_answer, price)
 
-                await self.db_analytics_for_day.add(sub_id, input_tokens, tokens_in_answer)
                 await self.db_analytics_for_sessions.add_tokens(chat_id, input_tokens, tokens_in_answer)
             except Exception as e:
                 print(e)

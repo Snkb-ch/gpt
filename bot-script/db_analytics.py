@@ -250,40 +250,55 @@ class DBanalytics_for_sessions:
         sub_active.save()
 
     @sync_to_async
-    def add_tokens(self, user_id, input_tokens, output_tokens):
+    def add_tokens(self, user_id, input_tokens, output_tokens, active = 0):
 
         sub_active=Subscriptions_statistics.objects.get(user_id=user_id, active=True)
         sub_active.input_tokens += input_tokens
         sub_active.output_tokens += output_tokens
+
+        sub_active.active_days += active
         sub_active.messages += 1
         sub_active.save()
+
+    @sync_to_async
+    def add_active_days(self, user_id):
+        sub_active = Subscriptions_statistics.objects.get(user_id=user_id, active=True)
+        sub_active.active_days = F('active_days') + 1
+        sub_active.save()
+
+
 
 
 class DBanalytics_for_day():
 
 
         @sync_to_async
-        def add_sold(self, sub_id):
+        def add_sold(self, sub_id, price = 0):
 
             obj, created = AnalyticsForDay.objects.get_or_create(
                 sub_type=Subscriptions.objects.get(sub_id=sub_id),
                 day=datetime.now(),
-                defaults={'sold': 1}
+                defaults={'sold': 1,
+                'income': price}
             )
 
             if not created:
                 obj.sold = F('sold') + 1
+                obj.income = F('income') + price
 
                 obj.save()
 
         @sync_to_async
-        def add(self, sub_id, input_tokens, output_tokens):
+        def add(self, sub_id, input_tokens, output_tokens, price):
+
+            cost = price['input'] * input_tokens + price['output'] * output_tokens
             obj, created = AnalyticsForDay.objects.get_or_create(
                 sub_type=Subscriptions.objects.get(sub_id=sub_id),
                 day=datetime.now(),
                 defaults={'input_tokens': input_tokens,
                           'output_tokens': output_tokens,
                             'messages': 1,
+                            'costs': cost
                           }
             )
 
@@ -291,6 +306,7 @@ class DBanalytics_for_day():
                 obj.input_tokens = F('input_tokens') + input_tokens
                 obj.output_tokens = F('output_tokens') + output_tokens
                 obj.messages = F('messages') + 1
+                obj.costs = F('costs') + cost
 
                 obj.save()
 
