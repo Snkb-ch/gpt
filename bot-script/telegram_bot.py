@@ -552,13 +552,7 @@ class ChatGPTTelegramBot:
     async def admin(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         if not await  self.db.is_admin(update.message.from_user.id):
             return
-        users = await self.db.get_all_users()
-        for user in users:
-            try:
-                active_days = await self.db.get_active_days(user)
-                await self.db_analytics_for_sessions.add_tokens(user, 0, 0, active_days)
-            except:
-                pass
+
 
 
     async def buy(self, update: Update, context: ContextTypes.DEFAULT_TYPE):

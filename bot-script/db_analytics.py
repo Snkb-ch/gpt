@@ -250,13 +250,13 @@ class DBanalytics_for_sessions:
         sub_active.save()
 
     @sync_to_async
-    def add_tokens(self, user_id, input_tokens, output_tokens, active = 0):
+    def add_tokens(self, user_id, input_tokens, output_tokens):
 
         sub_active=Subscriptions_statistics.objects.get(user_id=user_id, active=True)
         sub_active.input_tokens += input_tokens
         sub_active.output_tokens += output_tokens
 
-        sub_active.active_days += active
+
         sub_active.messages += 1
         sub_active.save()
 
