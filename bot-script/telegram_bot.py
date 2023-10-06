@@ -39,7 +39,7 @@ from openai_helper import OpenAIHelper, localized_text
 
 from aiogram import Bot, Dispatcher, executor, types
 from db import Database
-from db_analytics import DBanalytics_for_month, DBanalytics_for_periods, DBanalytics_for_sessions, DBanalytics_for_day
+from db_analytics import *
 
 import os
 import sys
@@ -69,7 +69,7 @@ import django
 
 log = logging.getLogger("custom")
 django.setup()
-from bot.models import User, Subscriptions, Period, AnalyticsForMonth, AnalyticsPeriods,Session, AnalyticsForDay, Subscriptions_statistics
+from bot.models import *
 
 
 class ChatGPTTelegramBot:
@@ -87,9 +87,8 @@ class ChatGPTTelegramBot:
         self.notif_run = False
         self.tasks = []
         self.db = Database()
-        self.db_analytics_for_month = DBanalytics_for_month()
-        self.db_analytics_for_periods = DBanalytics_for_periods()
-        self.db_analytics_for_sessions = DBanalytics_for_sessions()
+
+        self.db_analytics_for_sessions = DBanalytics_for_sub_stat()
         self.db_analytics_for_day = DBanalytics_for_day()
 
         self.config = config
@@ -552,6 +551,7 @@ class ChatGPTTelegramBot:
     async def admin(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         if not await  self.db.is_admin(update.message.from_user.id):
             return
+
 
 
 

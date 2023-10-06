@@ -60,68 +60,9 @@ class User(models.Model):
         return str(self.user_id)
 
 
-class Period(models.Model):
-    id_period = models.AutoField(primary_key=True)
-    begin = models.TimeField(null=True)
-    end = models.TimeField(null=True)
-    objects = BotTGUserManager()
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['id_period'], name='periods_pkey'),
-        ]
-        managed = 'bottg'
-
-    def __str__(self):
-        return str(self.id_period)
 
 
 
-class AnalyticsForMonth(models.Model):
-    id = models.AutoField(primary_key=True)
-    sub_type = models.ForeignKey(Subscriptions, on_delete=models.CASCADE)
-    begin_date = models.DateField()
-
-    input_tokens = models.BigIntegerField(default=0)
-    output_tokens = models.BigIntegerField(default=0)
-
-    objects = BotTGUserManager()
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['sub_type', 'begin_date'], name='analytics_for_month_sub_type_beginning_key'),
-        ]
-
-    def __str__(self):
-        return str(self.sub_type)
-    # on create update previous month
-
-# @receiver(post_save, sender=AnalyticsForMonth)
-# def update_active_on_create(sender, instance, created, **kwargs):
-#      if created and AnalyticsForMonth.objects.filter(sub_type=instance.sub_type).count() > 1:
-#
-#          previous_month = instance.begin_date[0:5] + str(int(instance.begin_date[5:7]) - 1) + instance.begin_date[7:]
-#          AnalyticsForMonth.objects.filter(sub_type=instance.sub_type, begin_date=previous_month).update(active=User.objects.filter(sub_type=instance.sub_type, status = 'active').count())
-
-
-class AnalyticsPeriods(models.Model):
-    id = models.AutoField(primary_key=True)
-    sub_type = models.ForeignKey(Subscriptions, on_delete=models.CASCADE)
-    month = models.DateField()
-    day = models.CharField(max_length=20)
-    period = models.IntegerField()
-    tokens = models.BigIntegerField()
-    users = models.IntegerField()
-
-    objects = BotTGUserManager()
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['sub_type', 'day', 'month', 'period'], name='analytics_periods_sub_type_day_month_period_key'),
-        ]
-
-    def __str__(self):
-        return str(self.sub_type)
 
 
 class Subscriptions_statistics(models.Model):
@@ -139,6 +80,7 @@ class Subscriptions_statistics(models.Model):
     output_tokens = models.IntegerField(null=True, default=0)
     messages = models.IntegerField(null=True, default=0)
     active_days = models.IntegerField(null=True, default=0)
+    income = models.FloatField(null=True, default=0)
     objects = BotTGUserManager()
 
     class Meta:
@@ -146,36 +88,25 @@ class Subscriptions_statistics(models.Model):
             models.UniqueConstraint(fields=['id'], name='subscriptions_statistics_pkey'),
         ]
 
-
-
-class Session(models.Model):
+class Statistics_by_day(models.Model):
     id = models.AutoField(primary_key=True)
-    closed = models.BooleanField(default=False)
     sub_stat = models.ForeignKey(Subscriptions_statistics, on_delete=models.SET_NULL ,  null=True)
-    start_time = models.DateField()
-    end_time = models.DateField(null=True)
+    day = models.DateField()
     input_tokens = models.IntegerField(null=True, default=0)
-    input_tokens_before_sum = models.IntegerField(null=True, default=0)
     output_tokens = models.IntegerField(null=True, default=0)
-
-
-
-
-
     messages = models.IntegerField(null=True, default=0)
-    # контекст и вход отдельно?
-
+    costs = models.FloatField(null=True, default=0)
 
 
     objects = BotTGUserManager()
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['id'], name='sessions_pkey'),
+            models.UniqueConstraint(fields=['id'], name='statistics_by_day_pkey'),
         ]
 
-    def __str__(self):
-        return str(self.id)
+
+
 
 class AnalyticsForDay(models.Model):
     id = models.AutoField(primary_key=True)

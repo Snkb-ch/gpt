@@ -7,7 +7,7 @@ import traceback
 from datetime import datetime, timedelta
 from db import Database
 import django
-from db_analytics import DBanalytics_for_month, DBanalytics_for_periods, DBanalytics_for_sessions, DBanalytics_for_day
+from db_analytics import *
 
 # Получаем путь к текущему скрипту
 script_path = os.path.abspath(__file__)
@@ -26,7 +26,7 @@ sys.path.insert(0, project_root)
 # Установите переменную окружения DJANGO_SETTINGS_MODULE для указания файла настроек Django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gpt.settings")
 django.setup()
-from bot.models import User, Subscriptions, Period, AnalyticsForMonth, AnalyticsPeriods, Session, Subscriptions_statistics, AnalyticsForDay
+from bot.models import *
 
 
 import tiktoken
@@ -120,9 +120,9 @@ class OpenAIHelper:
         self.config = config
         self.conversations: dict[int: list] = {}  # {chat_id: history}
         self.last_updated: dict[int: datetime] = {}  # {chat_id: last_update_timestamp}
-        self.db_analytics_for_sessions = DBanalytics_for_sessions()
+        self.db_analytics_for_sessions = DBanalytics_for_sub_stat()
         self.db = Database()
-        self.db_analytics_for_month = DBanalytics_for_month()
+        self.db_statistic_by_day = DBstatistics_by_day()
         self.db_analytics_for_day = DBanalytics_for_day()
 
     def get_conversation_stats(self, chat_id: int, model: str) -> tuple[int, int]:
@@ -181,6 +181,7 @@ class OpenAIHelper:
                 await self.db_analytics_for_day.add(sub_id, input_tokens, tokens_in_answer, price)
 
                 await self.db_analytics_for_sessions.add_tokens(chat_id, input_tokens, tokens_in_answer)
+                await self.db_statistic_by_day.add(chat_id, input_tokens, tokens_in_answer, price)
             except Exception as e:
                 print(e)
                 pass

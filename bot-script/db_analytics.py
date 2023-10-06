@@ -29,191 +29,14 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gpt.settings")
 # Импортируем и настраиваем Django настройки
 import django
 django.setup()
-from bot.models import User, Subscriptions, Period, AnalyticsForMonth, AnalyticsPeriods, Session, Subscriptions_statistics, AnalyticsForDay
-
-
-class DBanalytics_for_month:
-
-
-    def begin_date(self):
-        now = datetime.now()
-        return now.strftime("%Y-%m-01")
-
-
-
-    @sync_to_async
-    def add_input_tokens(self, sub_id, input_tokens):
-        obj, created =AnalyticsForMonth.objects.get_or_create(
-            sub_type=Subscriptions.objects.get(sub_id=sub_id),
-            begin_date=self.begin_date(),
-            defaults={'input_tokens': input_tokens}
-        )
-
-        if not created:
-            obj.input_tokens = F('input_tokens') + input_tokens
-            obj.save()
-
-    @sync_to_async
-    def get_input_tokens(self, sub_id):
-        return AnalyticsForMonth.objects.get(sub_type=sub_id, begin_date=self.begin_date()).input_tokens
-    @sync_to_async
-    def add_output_tokens(self, sub_id, output_tokens):
-        obj, created = AnalyticsForMonth.objects.get_or_create(
-            sub_type=Subscriptions.objects.get(sub_id=sub_id),
-            begin_date=self.begin_date(),
-            defaults={'output_tokens': output_tokens}
-        )
-
-        if not created:
-            obj.output_tokens = F('output_tokens') + output_tokens
-            obj.save()
-    @sync_to_async
-    def get_output_tokens(self, sub_id):
-        return AnalyticsForMonth.objects.get(sub_type=sub_id, begin_date=self.begin_date()).output_tokens
-
-
-    @sync_to_async
-    def add_expired_time(self, sub_id):
-        obj, created = AnalyticsForMonth.objects.get_or_create(
-            sub_type=Subscriptions.objects.get(sub_id=sub_id),
-            begin_date=self.begin_date(),
-            defaults={'expired_time': 1}
-        )
-
-        if not created:
-            obj.expired_time = F('expired_time') + 1
-            obj.save()
-    @sync_to_async
-    def get_expired_time(self, sub_id):
-        return AnalyticsForMonth.objects.get(sub_type=sub_id, begin_date=self.begin_date()).expired_time
-    @sync_to_async
-    def add_expired_tokens(self, sub_id):
-        obj, created = AnalyticsForMonth.objects.get_or_create(
-            sub_type=Subscriptions.objects.get(sub_id=sub_id),
-            begin_date=self.begin_date(),
-            defaults={'expired_tokens': 1}
-        )
-
-        if not created:
-            obj.expired_tokens = F('expired_tokens') + 1
-            obj.save()
-    @sync_to_async
-    def add_sold(self, sub_id):
-        AnalyticsForMonth.objects.update_or_create(
-            sub_type=Subscriptions.objects.get(sub_id=sub_id),
-            begin_date=self.begin_date(),
-            defaults={'sold': F('sold') + 1}
-        )
-
-    @sync_to_async
-    def get_sold(self, sub_id):
-        return AnalyticsForMonth.objects.get(sub_type=sub_id, begin_date=self.begin_date()).sold
-
-
-    @sync_to_async
-    def add_expired(self, sub_id):
-        obj, created = AnalyticsForMonth.objects.get_or_create(
-            sub_type=Subscriptions.objects.get(sub_id=sub_id),
-            begin_date=self.begin_date(),
-            defaults={'expired': 1}
-        )
-        if not created:
-            obj.expired = F('expired') + 1
-            obj.save()
-
-    @sync_to_async
-    def get_expired(self, sub_id):
-        return AnalyticsForMonth.objects.get(sub_type=sub_id, begin_date=self.begin_date()).expired
-    @sync_to_async
-    def add_income(self, sub_id, income):
-        obj, created = AnalyticsForMonth.objects.get_or_create(
-            sub_type=Subscriptions.objects.get(sub_id=sub_id),
-            begin_date=self.begin_date(),
-            defaults={'income': income}
-        )
-
-        if not created:
-            obj.income = F('income') + income
-            obj.save()
-
-
-    @sync_to_async
-    def get_income(self, sub_id):
-        return AnalyticsForMonth.objects.get(sub_type=Subscriptions.objects.get(sub_id=sub_id), begin_date=self.begin_date()).income
-    @sync_to_async
-    def add_temp_edited(self, sub_id):
-        obj, created = AnalyticsForMonth.objects.get_or_create(
-            sub_type=Subscriptions.objects.get(sub_id=sub_id),
-            begin_date=self.begin_date(),
-            defaults={'temp_edited': 1}
-        )
-        if not created:
-            obj.temp_edited = F('temp_edited') + 1
-            obj.save()
-
-    @sync_to_async
-    def get_temp_edited(self, sub_id):
-        return AnalyticsForMonth.objects.get(sub_type=sub_id, begin_date=self.begin_date()).temp_edited
-    @sync_to_async
-    def add_role_edited(self, sub_id):
-        obj, created = AnalyticsForMonth.objects.get_or_create(
-            sub_type=Subscriptions.objects.get(sub_id=sub_id),
-            begin_date=self.begin_date(),
-            defaults={'role_edited': 1}
-        )
-        if not created:
-            obj.role_edited = F('role_edited') + 1
-            obj.save()
-    @sync_to_async
-    def get_role_edited(self, sub_id):
-        return AnalyticsForMonth.objects.get(sub_type=sub_id, begin_date=self.begin_date()).role_edited
-
-class DBanalytics_for_periods:
-
-    def day(self):
-        date = datetime.now()
-        date_string = date.strftime("%Y-%m-%d")
-        date_obj = datetime.strptime(date_string, "%Y-%m-%d")
-
-        # Get the day type (e.g., Monday, Tuesday, etc.) using the strftime method
-        day_type = date_obj.strftime("%A")
-
-        return day_type
-
-    def date(self):
-        now = datetime.now().replace(day=1)
-        return now.strftime("%Y-%m-%d")
-
-
-    def get_period_id(self, time):
-         # Replace this with the desired time
-
-        return Period.objects.filter(begin__lt=time, end__gte=time).first().id_period
-
-
-    @sync_to_async
-    def add(self, sub_type, tokens):
-        print(self.date())
-        print(self.day())
-        print(self.get_period_id(datetime.now().time()))
+from bot.models import User, Subscriptions,  Subscriptions_statistics, AnalyticsForDay, Statistics_by_day
 
 
 
 
-        obj, created = AnalyticsPeriods.objects.get_or_create(
-            sub_type=Subscriptions.objects.get(sub_id=sub_type),
-            month=self.date(),
-            day=self.day(),
-            period=self.get_period_id(datetime.now().time()),
-            defaults={'tokens': tokens, 'users': 1}
-        )
 
-        if not created:
-            obj.tokens = F('tokens') + tokens
-            obj.users = F('users') + 1
-            obj.save()
 
-class DBanalytics_for_sessions:
+class DBanalytics_for_sub_stat():
 
     @sync_to_async
     def exists(self, user_id):
@@ -272,6 +95,8 @@ class DBanalytics_for_sessions:
 class DBanalytics_for_day():
 
 
+
+
         @sync_to_async
         def add_sold(self, sub_id, price = 0):
 
@@ -328,5 +153,27 @@ class DBanalytics_for_day():
                 obj.save()
 
 
+class DBstatistics_by_day():
 
 
+    @sync_to_async
+    def add(self, user_id, input_tokens, output_tokens, price):
+        day = datetime.now().date()
+        cost = price['input'] * input_tokens + price['output'] * output_tokens
+        obj, created = Statistics_by_day.objects.get_or_create(
+            sub_stat=Subscriptions_statistics.objects.get(user_id=user_id, active=True),
+            day=day,
+            defaults={'input_tokens': input_tokens,
+                      'output_tokens': output_tokens,
+                      'messages': 1,
+                      'costs': cost
+                      }
+        )
+
+        if not created:
+            obj.input_tokens += input_tokens
+            obj.output_tokens += output_tokens
+            obj.messages += 1
+            obj.costs += cost
+
+            obj.save()

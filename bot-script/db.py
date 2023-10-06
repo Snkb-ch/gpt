@@ -28,8 +28,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gpt.settings")
 # Импортируем и настраиваем Django настройки
 import django
 django.setup()
-from bot.models import User, Subscriptions, Period, AnalyticsForMonth, AnalyticsPeriods, Session, Subscriptions_statistics, AnalyticsForDay
-
+from bot.models import User, Subscriptions,  Subscriptions_statistics, AnalyticsForDay, Statistics_by_day
 
 
 
