@@ -99,7 +99,7 @@ class ChatGPTTelegramBot:
         bot_language = self.config['bot_language']
         self.commands = [
             BotCommand(command='help', description='Помощь/описание'),
-            BotCommand(command='reset', description='Сбросить историю чата'),
+            BotCommand(command='reset', description='Сбросить историю'),
             BotCommand(command='buy', description='Купить подписку'),
             BotCommand(command='stats', description='Моя Статистика'),
             BotCommand(command='resend', description='Переслать последний запрос'),
