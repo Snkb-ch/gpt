@@ -227,6 +227,12 @@ class ChatGPTTelegramBot:
 
                 arg = arg.split('_')
                 print(arg)
+                # если в списке нет 5 элементов, запонить его None
+                if len(arg) < 5:
+                    for i in range(5 - len(arg)):
+                        arg.append('')
+
+
                 await self.db.set_utm(user_id, arg[0], arg[1], arg[2], arg[3], arg[4])
             except Exception as e:
                 print(e)

@@ -339,7 +339,7 @@ class Database:
 
 
     @sync_to_async
-    def set_utm(self, user_id, utm_source, utm_campaign, phrase_id, device_type, ad_id):
+    def set_utm(self, user_id, utm_source, utm_campaign = None, phrase_id= None, device_type= None, ad_id= None):
 
         user = User.objects.get(user_id=user_id)
         user.utm_source = utm_source if utm_source and utm_source!= 'None' else None
