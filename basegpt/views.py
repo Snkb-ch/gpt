@@ -9,10 +9,11 @@ from django.contrib.auth.decorators import login_required
 
 from django.conf import settings
 from openai_async import openai_async
-
+from urllib.parse import quote, urlencode
 from .prompts import *
 
 from django.contrib import messages
+import urllib
 
 import openai
 from django.contrib.auth.views import LoginView
@@ -99,8 +100,69 @@ def refund(order):
     # return JsonResponse({'type': 'error', 'error': 'error payment canceled'})
 
 
+
+
+
 def home(request):
-    return render(request, 'basegpt/homev4.html')
+    utm_source = request.GET.get('utm_source')
+
+    utm_campaign = request.GET.get('utm_campaign')
+    phrase_id = request.GET.get('phrase_id')
+
+    device_type = request.GET.get('device_type')
+
+
+    ad_id = request.GET.get('ad_id')
+
+    value = request.GET.get('type')
+
+    if not value:
+        if utm_campaign == '97804992':
+            value = 'work'
+        elif utm_campaign == '96794788':
+            value = 'study'
+        elif utm_campaign == '98292438':
+            value = 'home'
+        else:
+            value = 'work'
+
+    context = {
+        'utm_source': utm_source,
+
+        'utm_campaign': utm_campaign,
+        'phrase_id': phrase_id,
+
+        'device_type': device_type,
+
+
+        'ad_id': ad_id,
+        'type': value,
+
+    }
+    print(context['type'])
+
+    # values of contex < 64
+    print(context.values().__len__() )
+    if context.values().__len__() > 58:
+        context = {
+            'utm_source': utm_source,
+
+            'utm_campaign': utm_campaign,
+            'phrase_id': None,
+
+            'device_type': None,
+
+
+            'ad_id': None,
+        }
+
+
+
+
+    print(context)
+
+
+    return render(request, 'basegpt/homev5.html', context)
 
 def unique(request):
     return render(request, 'basegpt/home.html')

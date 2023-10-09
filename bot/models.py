@@ -23,6 +23,8 @@ class Subscriptions(models.Model):
     duration = models.IntegerField(null=True)
     temp = models.FloatField(null=True, default=1)
     for_sale = models.BooleanField(default=False)
+    multimodel = models.BooleanField(default=False)
+    multi_k = models.IntegerField(null=True)
     objects = BotTGUserManager()
     class Meta:
         constraints = [
@@ -44,10 +46,22 @@ class User(models.Model):
     # date to remind user about expiring subscription
     reminder_date = models.DateField(null=True, blank=True)
     last_message = models.DateField(null=True, blank=True)
-    active_days = models.IntegerField(default=0, null=True)
 
+    model = models.CharField(max_length=50, default='gpt-4', null=True)
     admin = models.BooleanField(default=False, null=True)
     blocked = models.BooleanField(default=False, null=True)
+
+    utm_source = models.CharField(max_length=50, null=True, blank=True)
+    utm_campaign = models.IntegerField(null=True, blank=True)
+
+    phrase_id = models.IntegerField(null=True, blank=True)
+    # utm_content
+
+    device_type = models.CharField(max_length=50, null=True, blank=True)
+
+
+    ad_id = models.IntegerField(null=True, blank=True)
+
 
     class Meta:
         constraints = [
@@ -58,8 +72,6 @@ class User(models.Model):
 
     def __str__(self):
         return str(self.user_id)
-
-
 
 
 
@@ -98,6 +110,7 @@ class Statistics_by_day(models.Model):
     costs = models.FloatField(null=True, default=0)
 
 
+
     objects = BotTGUserManager()
 
     class Meta:
@@ -131,4 +144,5 @@ class AnalyticsForDay(models.Model):
 
     def __str__(self):
         return str(self.sub_type)
+
 

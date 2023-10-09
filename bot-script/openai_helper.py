@@ -172,11 +172,15 @@ class OpenAIHelper:
 
             tokens_in_answer = self.count_tokens([{"role": "assistant", "content": answer}], model_config['model'])
             sub_name = await self.db.get_sub_name_from_user(chat_id)
+            if model_config['multimodel_3'] == True:
+                await self.db.update_used_tokens(chat_id, int(tokens_in_answer/model_config['multi_k']))
+            else:
+                await self.db.update_used_tokens(chat_id, tokens_in_answer)
 
-            await self.db.update_used_tokens(chat_id, tokens_in_answer)
+
             try:
                 sub_id = await self.db.get_sub_type(chat_id)
-                model = await self.db.get_model(chat_id)
+                model = model_config['model']
                 price = get_price(model)
                 await self.db_analytics_for_day.add(sub_id, input_tokens, tokens_in_answer, price)
 
@@ -193,6 +197,8 @@ class OpenAIHelper:
 
             if self.config['show_usage']:
 
+                if model_config['multimodel_3'] == True:
+                    tokens_in_history = int(tokens_in_history/model_config['multi_k'])
 
                 answer += f"\n\n---\nИстория диалога: {tokens_in_history} ток."
 
@@ -230,7 +236,7 @@ class OpenAIHelper:
             self.__add_to_history(chat_id, role="user", content=query)
 
 
-            input_tokens_before_sum = self.count_tokens(self.conversations[chat_id], model_config['model'])
+
 
 
             # Summarize the chat history if it's too long to avoid excessive token usage
@@ -261,13 +267,20 @@ class OpenAIHelper:
                 pass
 
 
+            if model_config['multimodel_3'] == True:
 
-            available_tokens = await self.db.get_max_tokens(chat_id) - await self.db.get_used_tokens(chat_id)
+                available_tokens = await self.db.get_max_tokens(chat_id)*model_config['multi_k'] - await self.db.get_used_tokens(chat_id)*model_config['multi_k']
+
+            else:
+                available_tokens = await self.db.get_max_tokens(chat_id) - await self.db.get_used_tokens(chat_id)
             if available_tokens < default_max_tokens(model=model_config['model']) and available_tokens > 10:
                 max_tokens = available_tokens
 
             else:
                 max_tokens = default_max_tokens(model=model_config['model'])
+
+
+
 
             input_tokens = self.count_tokens(self.conversations[chat_id], model_config['model'])
 
@@ -283,12 +296,15 @@ class OpenAIHelper:
                     messages=self.conversations[chat_id],
                     temperature=model_config['custom_temp'],
                     n=self.config['n_choices'],
-                    max_tokens=max_tokens,
+                    max_tokens=int(max_tokens),
                     presence_penalty=self.config['presence_penalty'],
                     frequency_penalty=self.config['frequency_penalty'],
                     stream=stream
                 )
-                await self.db.update_used_tokens(chat_id, input_tokens)
+                if model_config['multimodel_3'] == True:
+                    await self.db.update_used_tokens(chat_id, int(input_tokens/model_config['multi_k']))
+                else:
+                    await self.db.update_used_tokens(chat_id, input_tokens)
 
 
 

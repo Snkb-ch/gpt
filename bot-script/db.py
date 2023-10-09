@@ -42,6 +42,19 @@ class Database:
 
         User.objects.create(user_id=user_id, sub_type=Subscriptions.objects.get(sub_id=sub_id))
 
+    @sync_to_async
+    def get_user_model(self, user_id):
+        return User.objects.get(user_id=user_id).model
+    @sync_to_async
+    def set_user_model(self, user_id, model):
+        User.objects.filter(user_id=user_id).update(model=model)
+    @sync_to_async
+    def get_sub_multimodel(self, sub_id):
+        return Subscriptions.objects.get(sub_id=sub_id).multimodel
+
+    @sync_to_async
+    def get_sub_multi_k(self, sub_id):
+        return Subscriptions.objects.get(sub_id=sub_id).multi_k
 
     @sync_to_async
     def user_exists(self, user_id):
@@ -123,9 +136,18 @@ class Database:
         return data_dict
     @sync_to_async
     def get_model_config(self, user_id):
-        model = Subscriptions.objects.get(sub_id=User.objects.get(user_id=user_id).sub_type.sub_id).model
+        multimodel_3 = False
+        multimodel = Subscriptions.objects.get(sub_id=User.objects.get(user_id=user_id).sub_type.sub_id).multimodel
+        multi_k = Subscriptions.objects.get(sub_id=User.objects.get(user_id=user_id).sub_type.sub_id).multi_k
+        if multimodel:
+            model = User.objects.get(user_id=user_id).model
+            if model == 'gpt-3.5-turbo':
+                multimodel_3 = True
+
+        else:
+            model = Subscriptions.objects.get(sub_id=User.objects.get(user_id=user_id).sub_type.sub_id).model
         custom_temp = User.objects.get(user_id=user_id).custom_temp
-        data_dict = {'model': model, 'custom_temp': custom_temp}
+        data_dict = {'model': model, 'custom_temp': custom_temp, 'multimodel_3': multimodel_3, 'multi_k': multi_k}
         return data_dict
     @sync_to_async
     def get_price(self, sub_id):
@@ -277,7 +299,7 @@ class Database:
         user.used_tokens = 0
         user.custom_temp = 1
         user.last_message = None
-        user.active_days = 0
+
         user.time_sub = datetime.now()
         user.end_time = datetime.now() + timedelta(days=Subscriptions.objects.get(sub_id=sub_id).duration)
 
@@ -315,3 +337,18 @@ class Database:
         User.objects.filter(user_id=user_id).update(blocked=False)
 
 
+
+    @sync_to_async
+    def set_utm(self, user_id, utm_source, utm_campaign, phrase_id, device_type, region_id, ad_id):
+
+        user = User.objects.get(user_id=user_id)
+        user.utm_source = utm_source if utm_source and utm_source!= 'None' else None
+        user.utm_campaign = utm_campaign if utm_campaign and utm_campaign!= 'None' else None
+
+        user.phrase_id = phrase_id if phrase_id and phrase_id!= 'None' else None
+
+        user.device_type = device_type if device_type and device_type!= 'None' else None
+
+        user.region_id = region_id if region_id and region_id != 'None' else None
+        user.ad_id = ad_id if ad_id and ad_id != 'None' else None
+        user.save()

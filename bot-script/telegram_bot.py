@@ -104,6 +104,9 @@ class ChatGPTTelegramBot:
             BotCommand(command='stats', description='Моя Статистика'),
             BotCommand(command='resend', description='Переслать последний запрос'),
             BotCommand(command='save', description='Закрепить выбранное сообщение'),
+            BotCommand(command='delete', description='Удалить из контекста выбранное сообщение'),
+            BotCommand(command='model', description='Изменить модель'),
+
 
         ]
         self.commands.append(BotCommand(command='role', description='Изменить роль  PRO'))
@@ -162,6 +165,10 @@ class ChatGPTTelegramBot:
 
 Не ругайтесь на нас. Это придумали не мы. Убрать это нельзя. Мы же хотим предупредить вас об этом. Поэтому чистите историю чаще /reset :)
 
+<b>Команда model</b>
+
+В подписках с GPT-4 включена и GPT-3.5. С помощью команды /model можно переключаться между моделями. Но расход токенов при «тройке» уменьшается в 20 раз. Получается, что 40 000 токенов «четвёрки» фактически 800 000 в GPT-3.5
+
 <b>Команда role</b>
 
 После ввода команды /role вы пишете условия, которые нейросеть должна соблюдать. Например, если нужны краткие ответы без пояснений, можно попросить нейросеть отвечать только "да" или "нет".
@@ -180,15 +187,27 @@ class ChatGPTTelegramBot:
 
 Закрепить можно любые сообщения: свои и GPT. Количество не ограничено.
 
+<b>Команда delete</b>
+
+Эта команда удаляет выбранное сообщение из истории. Delete нужен для того, чтобы тонко настраивать контекст чата. Допустим, нейросеть ответила не так, как вы хотели. И чтобы GPT не использовал плохой ответ, как источник информации для следующих ответов – просто удалите его:
+
+- Свайпните влево сообщение, которое хотите закрепить. На ПК два ЛКМ по нему
+- Введите команду /delete и отправьте
+- Готово, сообщение удалено из контекста
+
 Подробнее на сайте: brainstormai.ru
 ''',
 
         )
 
-    async def start(self, update: Update, _: ContextTypes.DEFAULT_TYPE) -> None:
+    async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
         user_id = update.message.from_user.id
         self.status[user_id] = 'prompt'
+
+
+
+
 
         if not await self.db.user_exists(user_id):
             await self.db.add_user(user_id)
@@ -202,6 +221,15 @@ class ChatGPTTelegramBot:
                 print(e)
                 pass
 
+            try:
+                arg = update.message.text[7:]
+
+                arg = arg.split('_')
+                print(arg)
+                await self.db.set_utm(user_id, arg[0], arg[1], arg[2], arg[3], arg[4])
+            except Exception as e:
+                print(e)
+                pass
 
             await update.message.reply_text(
                 message_thread_id=get_thread_id(update),
@@ -309,6 +337,8 @@ class ChatGPTTelegramBot:
             )
             return
 
+
+
         remain_tokens = await self.db.get_max_tokens(update.message.from_user.id) - await  self.db.get_used_tokens(
             update.message.from_user.id)
 
@@ -316,11 +346,12 @@ class ChatGPTTelegramBot:
         date = date[8:10] + '.' + date[5:7] + '.' + date[0:4]
 
         await update.message.reply_text(
-            text='Осталось: ' + str(
-                remain_tokens) + ' токенов' + '\n' + 'Подписка: ' + await self.db.get_sub_name_from_user(
-                update.message.from_user.id) + '\n' + 'Закончится: ' +
-                 date
-        )
+                text='Осталось: ' + str(
+                    remain_tokens) + ' токенов' + '\n' + 'Подписка: ' + await self.db.get_sub_name_from_user(
+                    update.message.from_user.id) + '\n' + 'Закончится: ' +
+                     date
+            )
+
 
     async def resend(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """
@@ -360,7 +391,35 @@ class ChatGPTTelegramBot:
             text='История чата сброшена',
         )
 
+    async def model(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        user_id = update.message.from_user.id
+        if await self.is_active(update, context, update.message.from_user.id) == False:
+            await update.message.reply_text(
+                message_thread_id=get_thread_id(update),
+                text='Ваша подписка закончилась, купите подписку',
+            )
+            return
+        sub_id = await self.db.get_sub_type(update.message.from_user.id)
+        if await self.db.get_sub_multimodel(sub_id):
 
+            current_model = await self.db.get_user_model(update.message.from_user.id)
+            if current_model == 'gpt-3.5-turbo':
+                await self.db.set_user_model(user_id, 'gpt-4')
+                await update.message.reply_text(
+                    message_thread_id=get_thread_id(update),
+                    text='Модель изменена на GPT-4',
+                )
+            elif current_model == 'gpt-4':
+                await self.db.set_user_model(user_id, 'gpt-3.5-turbo')
+                await update.message.reply_text(
+                    message_thread_id=get_thread_id(update),
+                    text='Модель изменена на GPT-3.5',
+                )
+        else:
+            await update.message.reply_text(
+                message_thread_id=get_thread_id(update),
+                text='Ваша подписка не позволяет менять модель',
+            )
 
     async def send_to_admin(self, text):
         try:
@@ -626,18 +685,23 @@ class ChatGPTTelegramBot:
 Настройка роли и креативности: ❌
 
 
-<b>GPT-4 Standart</b>
+<b>Multi GPT-4 Standart</b>
 Цена: 290 руб / 30 дней
-Модель: GPT-4
-40 000 токенов - около 20 стр. А4
+Модели: GPT-4, GPT-3.5
+Доступно 40 000 токенов в GPT-4
+Расход токенов при «тройке» уменьшается в 20 раз
+Так вместо 20 стр. в «четверке», через GPT-3.5 получится 400 стр.
 Настройка роли и креативности: ✅
 
 
-<b>GPT-4 PRO</b>
+<b>Multi GPT-4 PRO</b>
 Цена: 700 руб / 30 дней
-Модель: GPT-4
-100 000 токенов - около 50 стр. А4
+Модели: GPT-4, GPT-3.5
+Доступно 100 000 токенов в GPT-4
+Расход токенов при «тройке» уменьшается в 20 раз
+Так вместо 50 стр. в «четверке», через GPT-3.5 получится 1000 стр.
 Настройка роли и креативности: ✅
+
 
 <b>Важно🔻</b>
 Один токен не равен одному символу. Точного отношения токена к символу нет.
@@ -939,10 +1003,17 @@ class ChatGPTTelegramBot:
             return True
 
     async def is_input_in_tokens(self, update: Update, context: ContextTypes.DEFAULT_TYPE, user_id,
-                                 tokens_input) -> bool:
+                                 tokens_input, model_config ={'multimodel_3' : False}) -> bool:
+
+        multimodel_3 = model_config['multimodel_3']
+        multi_k = model_config['multi_k']
+
         if await self.db.get_sub_type(user_id) == 2:
             return True
-        elif   await self.db.get_max_tokens(user_id) - (await self.db.get_used_tokens(user_id) + tokens_input) <= 10:
+        elif multimodel_3 and await self.db.get_max_tokens(user_id)*multi_k - (await self.db.get_used_tokens(user_id)*multi_k + tokens_input) <= 10:
+
+                return False
+        elif not multimodel_3 and  await self.db.get_max_tokens(user_id) - (await self.db.get_used_tokens(user_id) + tokens_input) <= 10:
 
             return False
         else:
@@ -1081,11 +1152,14 @@ class ChatGPTTelegramBot:
 
 
                 self.last_message[chat_id] = prompt
+
+
+
                 model_config = await self.db.get_model_config(update.effective_chat.id)
                 tokens_in_message = self.openai.count_tokens(([{"role": "user", "content": prompt}]), model_config['model'])
                 tokens_input = tokens_in_message + self.openai.get_conversation_stats(chat_id=chat_id, model=model_config['model'])[1]
 
-                while not await  self.is_input_in_tokens(update, context, user_id, tokens_input):
+                while not await self.is_input_in_tokens(update, context, user_id, tokens_input, model_config):
                     try:
                         if self.openai.remove_messages(chat_id):
                             tokens_input = tokens_in_message + self.openai.get_conversation_stats(chat_id=chat_id, model=model_config['model'])[1]
@@ -1116,10 +1190,8 @@ class ChatGPTTelegramBot:
                                 action=constants.ChatAction.TYPING,
                                 message_thread_id=get_thread_id(update)
                             )
-                            model_config = await  self.db.get_model_config(update.effective_chat.id)
 
-                            used_tokens = await self.db.get_used_tokens(user_id)
-                            max_tokens = await self.db.get_max_tokens(user_id)
+
 
 
 
@@ -1211,6 +1283,9 @@ class ChatGPTTelegramBot:
                         # await self.db_analytics_for_month.add_total_tokens(plan, total_tokens)
                         # await self.db_analytics_for_month.add_output_tokens(plan, total_tokens - input_tokens)
                         # await self.db_analytics_for_periods.add(plan, total_tokens)
+
+
+
 
 
                         if await self.is_in_tokens(update, context, user_id) == False:
@@ -1305,6 +1380,7 @@ class ChatGPTTelegramBot:
         application.add_handler(CommandHandler('admin', self.admin))
         application.add_handler(CommandHandler('save', self.save))
         application.add_handler((CommandHandler('delete', self.delete)))
+        application.add_handler(CommandHandler('model', self.model))
 
 
         application.add_handler(CommandHandler('temperature', self.temperature))

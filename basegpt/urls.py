@@ -9,6 +9,7 @@ urlpatterns = [
     path('notifications', views.notifications.as_view(), name='notifications'),
     path('history', views.history, name='history'),
 
+
     path('get_objects', views.get_objects, name='get_objects'),
 
 
