@@ -111,6 +111,7 @@ class ChatGPTTelegramBot:
         ]
         self.commands.append(BotCommand(command='role', description='Изменить роль  PRO'))
         self.commands.append(BotCommand(command='temperature', description='Изменить креативность  PRO'))
+
         self.group_commands = [BotCommand(
             command='chat', description=localized_text('chat_description', bot_language)
         )] + self.commands
@@ -702,6 +703,7 @@ class ChatGPTTelegramBot:
 Так вместо 50 стр. в «четверке», через GPT-3.5 получится 1000 стр.
 Настройка роли и креативности: ✅
 
+Менять модель командой /model
 
 <b>Важно🔻</b>
 Один токен не равен одному символу. Точного отношения токена к символу нет.
