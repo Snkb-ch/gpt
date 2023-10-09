@@ -937,7 +937,9 @@ class ChatGPTTelegramBot:
 
         await self.db.update_user(user_id, sub_id)
         try:
-            await self.db_analytics_for_sessions.new_sub_stats(user_id, sub_id)
+
+            income = await self.db.get_price(sub_id)
+            await self.db_analytics_for_sessions.new_sub_stats(user_id, sub_id, income)
             price = await self.db.get_price(sub_id)
             await self.db_analytics_for_day.add_sold(sub_id, price)
         except Exception as e:
