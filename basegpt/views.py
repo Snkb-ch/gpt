@@ -104,26 +104,34 @@ def refund(order):
 
 
 def home(request):
-    utm_source = request.GET.get('utm_source')
+    # utm_source = request.GET.get('utm_source')
+    #
+    # utm_campaign = request.GET.get('utm_campaign')
+    # phrase_id = request.GET.get('phrase_id')
+    #
+    # device_type = request.GET.get('device_type')
 
-    utm_campaign = request.GET.get('utm_campaign')
-    phrase_id = request.GET.get('phrase_id')
+    #
+    # ad_id = request.GET.get('ad_id')
 
-    device_type = request.GET.get('device_type')
+    if request.session.get('utm_source') == None:
+        request.session['utm_source'] = request.GET.get('utm_source')
+        request.session['utm_campaign'] = request.GET.get('utm_campaign')
+        request.session['phrase_id'] = request.GET.get('phrase_id')
+        request.session['device_type'] = request.GET.get('device_type')
+        request.session['ad_id'] = request.GET.get('ad_id')
 
 
-    ad_id = request.GET.get('ad_id')
+    utm_source = request.session.get('utm_source')
+    utm_campaign = request.session.get('utm_campaign')
+    phrase_id = request.session.get('phrase_id')
+    device_type = request.session.get('device_type')
+    ad_id = request.session.get('ad_id')
+
 
     value = request.GET.get('type')
 
     if not value:
-        if utm_campaign == '97804992':
-            value = 'work'
-        elif utm_campaign == '96794788':
-            value = 'study'
-        elif utm_campaign == '98292438':
-            value = 'home'
-        else:
             value = 'work'
 
     context = {
