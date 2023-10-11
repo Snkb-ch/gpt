@@ -190,7 +190,7 @@ class Database:
 
 
 
-        users = User.objects.filter( status='active', end_time=date + timedelta(days= 3), blocked = False).values_list('user_id', flat=True)
+        users = User.objects.filter( status='active', end_time=date + timedelta(days= 2), blocked = False).values_list('user_id', flat=True)
 
 
 
