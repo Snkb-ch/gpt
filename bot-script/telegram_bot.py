@@ -910,11 +910,18 @@ class ChatGPTTelegramBot:
                 await self.send_to_admin( 'error in activate sub' + '\n' + str(e))
                 pass
             try:
+
                 await self.send_to_admin('Платеж прошел' + '\n' + 'Пользователь: ' + str(user_id) + '\n' + 'Подписка: ' + sub_name + '\n' + 'Цена: ' + str(price) + '\n' + 'Email: ' + email)
             except Exception as e:
                 print('error in send admin message' + '\n' + str(e))
                 pass
             try:
+                if await self.db.get_sub_multimodel(sub_id):
+                    await self.db.set_user_model(user_id, 'gpt-3.5-turbo')
+                    await update.effective_message.reply_text(
+                        message_thread_id=get_thread_id(update),
+                        text='Сейчас вы используете модель GPT-3.5, расход токенов уменьшен в 20 раз, для смены модели на GPT-4 введите /model',
+                    )
                 await update.effective_message.reply_text("Платеж прошел")
             except Exception as e:
                 print('error in send message' + '\n' + str(e))
@@ -932,6 +939,8 @@ class ChatGPTTelegramBot:
         try:
 
             await self.db_analytics_for_sessions.set_inactive(user_id, 'new_sub')
+
+
 
         except Exception as e:
             print(traceback.format_exc())
