@@ -543,7 +543,7 @@ class ChatGPTTelegramBot:
 
                         try:
                             await self.bot.send_message(chat_id=user,
-                                                        text='Привет, твой пробный период скоро закончится. Можешь продолжить общение с нейросетью, купив подписку')
+                                                        text='Привет, напоминаем, что твоя подписка скоро закончится.')
                         except Exception as e:
                             await self.db.set_blocked_user(user)
                             k1_errors += 1
