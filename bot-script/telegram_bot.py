@@ -543,7 +543,7 @@ class ChatGPTTelegramBot:
 
                         try:
                             await self.bot.send_message(chat_id=user,
-                                                        text='Привет, напоминаем, что твоя подписка закончится через 2 дня.')
+                                                        text='Привет, напоминаем, что сегодня последний день действия подписки.')
                         except Exception as e:
                             await self.db.set_blocked_user(user)
                             k1_errors += 1
@@ -964,9 +964,10 @@ class ChatGPTTelegramBot:
 
 
     async def is_in_time(self, update: Update, context: ContextTypes.DEFAULT_TYPE, user_id) -> bool:
+
         if await self.db.get_sub_type(user_id) == 2:
             return True
-        elif await self.db.get_end_time(user_id) < datetime.now().date():
+        elif await self.db.get_end_time(user_id) <= datetime.now().date():
             return False
         else:
             return True

@@ -217,7 +217,7 @@ class Database:
     @sync_to_async
     def set_inactive_auto(self):
         date = datetime.now()
-        users = User.objects.filter(status='active', end_time__lt=date).values_list('user_id', flat=True)
+        users = User.objects.filter(status='active', end_time=date).values_list('user_id', flat=True)
         user_list = list(users)
         users.update(status='inactive', reminder_date=date + timedelta(days=14), sub_type = Subscriptions.objects.get(sub_name='free'))
         return user_list
