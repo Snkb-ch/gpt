@@ -194,7 +194,9 @@ def split_text_on_parts(text, max_length):
 
 def red1_for_unique_text(text):
     parts =  split_text_on_parts(text, 1500)
+
     for i in range(len(parts)):
+        print(parts[i])
 
 
         openai.api_key = settings.OPENAI_API_KEY
@@ -210,10 +212,11 @@ def red1_for_unique_text(text):
                 {"role": "user",
                  "content": parts[i]},
             ],
-            temperature=0.7,
+            temperature=1,
             max_tokens=2048,
         )
         parts[i] = ans.choices[0]['message']['content']
+        print(ans)
 
     response_text = ''.join(parts)
 
@@ -238,7 +241,7 @@ def red2_for_unique_text(text):
                 {"role": "user",
                  "content": parts[i]},
             ],
-            temperature=0.7,
+            temperature=1,
             max_tokens=2048,
         )
         parts[i] = ans.choices[0]['message']['content']
@@ -266,7 +269,7 @@ def red3_for_unique_text(text):
                 {"role": "user",
                  "content": parts[i]},
             ],
-            temperature=0.7,
+            temperature=1,
             max_tokens=2048,
         )
         parts[i] = ans.choices[0]['message']['content']
@@ -569,10 +572,10 @@ def get_order(button_value, request):
 
 def success_result(request):
     if request.method == 'POST':
-        print(request)
-        print(request.POST)
+
+
         button_value = request.POST.get('order')
-        print(button_value)
+
 
 
 
@@ -659,16 +662,15 @@ def delete_old_objects(model, limit, user):
 
 
 def moderation(text):
-    openai.api_key = settings.OPENAI_API_KEY
+    # openai.api_key = settings.OPENAI_API_KEY
+    #
+    # moderation =  openai.Moderation.create(
+    #     input=text,
+    # )
+    # output = moderation["results"][0]["flagged"]
 
-    moderation =  openai.Moderation.create(
-        input=text,
-    )
-    output = moderation["results"][0]["flagged"]
 
-
-    return output
-
+    return False
 def generate_idea(text, id):
     openai.api_key = settings.OPENAI_API_KEY
     try:
@@ -836,7 +838,7 @@ def get_price_text(text, code, request, type):
     if type == 'red1':
 
         price = 0
-        print(price)
+        price = int(len(text) * 0.0025 * (100 - discount) / 100)
     elif type == 'red2':
         price = int(len(text) * 0.005 * (100 - discount) / 100)
     elif type == 'red3':
@@ -972,21 +974,22 @@ def uniquefile(request):
     
                 type = request.POST.get('options')
 
-                if type == 'red1':
-                    price  =0
-                    order = Order.objects.create(user=request.user, price=price, rawfile=obj, type='unique_file',
-                                         type2=type, complete = True)
+                if type == 'free':
+                    # price  =0
+                    # order = Order.objects.create(user=request.user, price=price, rawfile=obj, type='unique_file',
+                    #                      type2=type, complete = True)
+                    #
+                    #
+                    #
+                    #
+                    #
+                    #
+                    # UniqueText.objects.get_or_create(user=order.user, rawfile=order.rawfile, order=order,
+                    #                                      type=order.type2)
+                    # delete_old_objects(UniqueText, 10, order.user)
+                    # return redirect('success')
 
-
-
-
-
-
-                    UniqueText.objects.get_or_create(user=order.user, rawfile=order.rawfile, order=order,
-                                                         type=order.type2)
-                    delete_old_objects(UniqueText, 10, order.user)
-                    return redirect('success')
-
+                   pass
 
                 else:
 

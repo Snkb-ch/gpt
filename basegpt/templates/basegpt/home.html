@@ -1,77 +1,193 @@
+
 {% extends "main.html" %}
 {% load static %}
 {% block title %}Главная{% endblock %}
 {% block extra_css %}
-  <link href="{% static 'css/homev2.css' %}" rel="stylesheet" />
-    <link href="{% static 'css/home.css' %}" rel="stylesheet" />
+<link href="{% static 'css/home.css' %}" rel="stylesheet" xmlns="http://www.w3.org/1999/html"/>
+
+
+  <link href='https://fonts.googleapis.com/css?family=Raleway:200,400,800' rel='stylesheet' type='text/css'><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+<link rel='stylesheet' href='https://www.marcoguglie.it/Codepen/AnimatedHeaderBg/demo-1/css/demo.css'>
+
+    <link href="{% static 'css/style.css' %}" rel="stylesheet" />
 {% endblock %}
 {% block content %}
-<div>
-  <link href="./homev3.css" rel="stylesheet" />
-  <div class="homev3-container">
-    <div class="homev3-container01">
-      <div class="homev3-container02">
-        <div class="homev3-container03">
-          <div class="homev3-container04">
-            <h1 class="homev3-text">Забудь о плагиате вместе с GPT-4</h1>
-          </div>
-          <div class="homev3-container05">
-            <span class="homev3-text01">
-              Поможем повысить оригинальность любого текста с помощью
-              искусственного интеллекта
-            </span>
-          </div>
-          <div class="homev3-container06">
-            <a href="{% url 'uniquefile' %}" class="btn-pay "
-              >Начать</a>
-          </div>
+
+
+
+
+
+<body>
+
+<div id="large-header" class="large-header" style="background-image: url({% static 'images/Fonun.jpg' %});
+">
+  <canvas id="demo-canvas"></canvas>
+  <div>
+
+
+          <div class="main-title ">
+                  <div class="homev4-container02">
+        <div class="homev4-container03">
+          <h1 class="homev4-text">Рерайт текста нейросетью</h1>
         </div>
-        <div id="radius" class="homev3-container07"></div>
-        <div class="homev3-container08">
-          <img
-            src="{% static 'images/image.png' %}"
-            alt="image"
-            class="homev3-image"
-          />
+        <div class="homev4-container04">
+          <span class="homev4-text01">увеличим оригинальность
+с помощью ChatGPT
+</span>
+
         </div>
+
+        <div class="homev4-container05">
+          <a href="{% url 'uniquefile' %}"  class="button-tg"><span class="button-tg-text">Попробовать</span></a>
+        </div>
+
       </div>
-      <div class="homev3-container09">
-        <div class="homev3-container10">
-          <div class="homev3-container11">
-            <h1 class="homev3-text02">Как это работает</h1>
-          </div>
-          <div class="homev3-container12">
-            <span class="homev3-text03">
-              Используй нейросеть и экономь свое время
-            </span>
-          </div>
-          <div class="homev3-container13">
-            <span class="homev3-text04">
-              <span>
-                Мы не используем скрытые пробелы, абзацы, символы, английские буквы и другие технические хитрости. Текст преобразует искусственный интеллект GPT-4. Он переформулирует текст с помощью синонимов, при этом сохраняет цитаты, фамилии, названия произведений, даты и числа.
-              </span>
-              <br />
-              <br />
-              <br />
-              <span>
-                Пока что не существует систем, которые точно определят был ли текст создан искусственным интеллектом. Антиплагиат, особенно бесплатный, также не способен это распознать. Единственное, что антиплагиат может обнаружить – это перефразирование. Избежать этого можно с помощью разных режимов на сайте.
-              </span>
-            </span>
-          </div>
-          <img
-            alt="image"
-            src="{% static 'images/Shest.png' %}"
-            class="homev3-image1"
-          />
-          <div class="homev3-container14">
-            <a href="{% url 'uniquefile' %}" class="btn-pay "
-              >Попробовать</a>
-          </div>
-        </div>
+
       </div>
+
+
+
     </div>
-  </div>
 </div>
+
+
+  <script src='https://www.marcoguglie.it/Codepen/AnimatedHeaderBg/demo-1/js/EasePack.min.js'></script>
+<script src='https://www.marcoguglie.it/Codepen/AnimatedHeaderBg/demo-1/js/rAF.js'></script>
+<script src='https://www.marcoguglie.it/Codepen/AnimatedHeaderBg/demo-1/js/TweenLite.min.js'></script>
+<script src = "{% static 'js/homev4.js' %}"></script>
+
+<div>
+  <script
+    type="text/javascript"
+    src="https://unpkg.com/dangerous-html/dist/default/lib.umd.js"
+  ></script>
+
+
+  <div class="homev4-container">
+    <div class="homev4-container01">
+
+      <div class="homev4-container06" >
+        <div class="homev4-container07">
+          <div class="homev4-container08">
+            <h1 class="homev4-text02">Четыре преимущества</h1>
+          </div>
+          <div class="homev4-container09">
+            <div class="homev4-container10">
+              <div class="homev4-container-diff">
+                  <div class = "promo-text promo1">
+                <h1 class="h-dif promo1-h">всё честно</h1>
+                  <span >Мы не используем скрытые пробелы, абзацы, символы, английские буквы и другие технические хитрости</span>
+
+
+                  </div>
+                </div>
+
+            </div>
+            <div class="homev4-container11">
+
+             <div class="homev4-container-diff">
+                  <div  class = "promo-text promo2">                <h1 class="h-dif promo2-h">не вручную</h1>
+                                    <span>Текст преобразует ChatGPT. Он переформулирует текст за вас. И сделает это в разы быстрее
+</span>
+                  </div>
+                </div>
+
+            </div>
+          </div>
+
+
+
+
+            <div class="homev4-container09 homev4-container092">
+            <div class="homev4-container10">
+
+              <div class="homev4-container-diff">
+                  <div class = "promo-text promo3">  <h1 class="h-dif promo3-h">антиплагиат бессилен
+</h1>
+                   <span>Не существует систем, которые точно определят, был ли текст создан искусственным интеллектом
+</span>
+
+
+                  </div>
+                </div>
+
+            </div>
+            <div class="homev4-container11">
+
+             <div class="homev4-container-diff">
+     <div  class = "promo-text promo4">
+<h1 class="h-dif">
+тонкая настройка
+</h1>
+
+                                      <span>На сайте есть три режима для точной настройки оригинальности</span>
+                  </div>
+                </div>
+
+            </div>
+          </div>
+<!--          <div class="homev4-container12">-->
+<!--            <h1 class="homev4-text07">Четыре подписки для учебы</h1>-->
+
+<!--          </div>-->
+
+
+
+
+        </div>
+      </div>
+
+
+
+
+
+
+
+
+
+            <div class="homev4-container33-price">
+        <h1 class="homev4-text20">
+
+            <span class="homev4-text21">Попробуй и убедись</span>
+          <br class="homev4-text22" />
+
+        </h1>
+
+
+            </div>
+
+
+
+
+
+
+        <div class="homev4-container32">
+<!--               <a href="https://t.me/snktestbot?start={{utm_source}}_{{utm_medium}}_{{utm_campaign}}_{{campaign_type}}_{{device_type}}_{{source}}_{{utm_term}}"  -->
+            <a href="{% url  'uniquefile' %}"  class="button-tg"><span class="button-tg-text">Начать</span></a>
+          </div>
+      <div class="homev4-container33">
+          <img class="bottom-img" src = "{% static 'images/Fonun2.jpg' %}">
+
+
+
+
+
+
+      </div>
+
+
+
+
+
+
+</div>
+</div>
+</div>
+
+
+</body>
+
+
 
 
 

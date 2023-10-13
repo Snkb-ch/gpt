@@ -73,7 +73,7 @@ margin-top: -350px;
   padding-right: 13px;
   padding-bottom: var(--dl-space-space-halfunit);
   justify-content: flex-end;
-  background-color: rgb(172, 39, 191);
+  background-color: #1D2A49;
 
   z-index: 100;
 
@@ -347,7 +347,13 @@ margin-top: -350px;
   object-fit: cover;
   border-radius: var(--dl-radius-radius-radius8);
 }
-@media(max-width: 1200px) {
+@media(max-width: 1500px) {
+.component-image1{
+display:none;
+}
+}
+@media(max-width: 1250px) {
+
   .component-text {
     padding-left: 1px;
     padding-right: 1px;
@@ -365,7 +371,7 @@ margin-top: -350px;
     padding-right: 1px;
   }
 }
-@media(max-width: 767px) {
+@media(max-width: 1100px) {
   .component-header {
     padding-left: var(--dl-space-space-twounits);
     padding-right: var(--dl-space-space-twounits);

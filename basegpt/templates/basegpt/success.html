@@ -50,13 +50,24 @@
  </div>
   <div class="succes-container">
     <div class="succes-container01">
+      {% if not objects and not exam_objects %}
+          <div class="succes-containernothing"><h1 class="nothing-h">Здесь пока ничего нет</h1><img
+                    alt="image"
+                    src="{% static 'images/nothing.jpg' %}"
+                    class="nothing-image"
+                  />
+          </div>
+
+          {% else %}
       <div class="succes-container02">
         <div class="succes-container03">
           <div class="succes-container04">
             <div class="succes-container05">
-              <h1 class="succes-text">Купленные заказы</h1>
+              <h1 class="succes-text">Работы в ожидании</h1>
             </div>
           </div>
+
+
           {% for object in objects %}
 
           <div class="succes-container06">
@@ -72,6 +83,8 @@
             <div class="succes-container08">
               <a href = "{{object.rawfile.url}}" style="text-decoration: underline;" download="">{{object.rawfile.name|cut:'rawfiles/'}}</a>
             </div>
+
+
             {% endif %}
             <div class="succes-container09">
 
@@ -105,10 +118,16 @@
 
 
         </div>
-        <div class="succes-container11">
-          <pre><div class="succes-container12" id="response-div" style="display: none;"></div></pre>
+        <div class="succes-container11"><img
+                    alt="image"
+                    src="{% static 'images/nothing2.jpg' %}"
+                    class="nothing-image2"
+                  />
+          <pre><div class="succes-container12" id="response-div" style="display: flex;"></div></pre>
+
         </div>
       </div>
+           {% endif %}
     </div>
   </div>
 </div>
