@@ -844,6 +844,8 @@ def get_price_text(text, code, request, type):
     elif type == 'red3':
         price = int(len(text) * 0.0075 * (100 - discount) / 100)
 
+    if price < 1:
+        price = 1
 
     return price
 

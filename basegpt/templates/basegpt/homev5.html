@@ -3,7 +3,8 @@
 {% load static %}
 {% block title %}Главная{% endblock %}
 {% block extra_css %}
-<link href="{% static 'css/homev5.css' %}" rel="stylesheet" xmlns="http://www.w3.org/1999/html"/>
+<link href="{% static 'css/homev5.css' %}" rel="stylesheet" xmlns="http://www.w3.org/1999/html"
+      xmlns="http://www.w3.org/1999/html"/>
 
 
   <link href='https://fonts.googleapis.com/css?family=Raleway:200,400,800' rel='stylesheet' type='text/css'><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
@@ -48,6 +49,8 @@
     </div>
 </div>
 
+<!-- Add this to include Hammer.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
 
   <script src='https://www.marcoguglie.it/Codepen/AnimatedHeaderBg/demo-1/js/EasePack.min.js'></script>
 <script src='https://www.marcoguglie.it/Codepen/AnimatedHeaderBg/demo-1/js/rAF.js'></script>
@@ -156,39 +159,21 @@ style='fill:#000000;'>
 
       </div>
 
-         {% if type == 'work' %}
+
       <div class="homev4-container34">
 
-       <a href="{% url 'home' %}?type=work" class="homev4-container36 type-active">для работы</a>
-        <a href="{% url 'home' %}?type=study" class="homev4-container36">для учебы</a>
-           <a href="{% url 'home' %}?type=home" class="homev4-container36">для начала</a>
+       <button class="homev4-container36 type-active" data-type="work"  onclick="showBlock('work')">для работы</button>
+        <button  class="homev4-container36" data-type="study"  onclick="showBlock('study')">для учебы</button>
+           <button class="homev4-container36" data-type="home"  onclick="showBlock('home')">для начала</button>
 
-
-      </div>
-
-         {% elif type == 'study' %}
-                <div class="homev4-container34">
-
-       <a href="{% url 'home' %}?type=work" class="homev4-container36">для работы</a>
-        <a href="{% url 'home' %}?type=study" class="homev4-container36 type-active">для учебы</a>
-           <a href="{% url 'home' %}?type=home" class="homev4-container36">для начала</a>
 
 
       </div>
-        {% elif type == 'home' %}
-                <div class="homev4-container34">
 
-       <a href="{% url 'home' %}?type=work" class="homev4-container36">для работы</a>
-        <a href="{% url 'home' %}?type=study" class="homev4-container36">для учебы</a>
-           <a href="{% url 'home' %}?type=home" class="homev4-container36 type-active">для начала</a>
-
-
-      </div>
-         {% endif %}
         <div>
 
-        {% if type == 'work' %}
-        <div class="homev4-container-tasks">
+
+        <div class="homev4-container-tasks" id="workBlockwide">
        <div class="homev4-container-task task1">
            <span class="task-hed"> Создавай контент</span>
            <br>
@@ -206,8 +191,8 @@ style='fill:#000000;'>
         </div>
       </div>
 
-        {% elif type == 'study' %}
-        <div class="homev4-container-tasks">
+
+        <div class="homev4-container-tasks"  id="studyBlockwide"  style="display: none;">
        <div class="homev4-container-task task1">
            <span class="task-hed"> Узнавай новое </span>
            <br>
@@ -224,8 +209,8 @@ style='fill:#000000;'>
           <span>Все знания у тебя в кармане. Не трать время на рутину. Больше не нужно часами искать источники</span>
         </div>
       </div>
-        {% elif type == 'home' %}
-        <div class="homev4-container-tasks">
+
+        <div class="homev4-container-tasks" id="homeBlockwide"  style="display: none;">
        <div class="homev4-container-task task1">
            <span class="task-hed">Узнавай новое</span>
            <br>
@@ -245,13 +230,13 @@ style='fill:#000000;'>
 
 
 
-        {% endif %}
             <div class="container">
     <input type="radio" name="slider" id="item-1" checked>
     <input type="radio" name="slider" id="item-2">
     <input type="radio" name="slider" id="item-3">
-  {% if type == 'work' %}
-  <div class="cards">
+
+  <div class="cards" id="workBlock">
+
     <label class="card" for="item-1" id="song-1">
 
       <div class="homev4-container-task task1">
@@ -282,8 +267,9 @@ style='fill:#000000;'>
 
 
   </div>
-  {% elif type == 'study' %}
-<div class="cards">
+
+  <div class="cards" id="studyBlock"  style="display: none;">
+
     <label class="card" for="item-1" id="song-1">
 
         <div class="homev4-container-task task1">
@@ -314,8 +300,9 @@ style='fill:#000000;'>
 
 
   </div>
-{% elif type == 'home' %}
-<div class="cards">
+
+  <div class="cards" id="homeBlock"  style="display: none;">
+
     <label class="card" for="item-1" id="song-1">
 
       <div class="homev4-container-task task1">
@@ -346,7 +333,7 @@ style='fill:#000000;'>
 
 
   </div>
-{% endif %}
+
 
 
 
@@ -354,10 +341,7 @@ style='fill:#000000;'>
 
         </div>
 
-        <script>$('input').on('change', function() {
-  $('body').toggleClass('blue');
-});
-</script>
+
 
 
             <div class="homev4-container33-price">
@@ -391,7 +375,9 @@ style='fill:#000000;'>
 </div>
           <div class="homev4-container13">
             <div class="homev4-container14">
-              <div class="homev4-container15 tariff">
+                <div class="sub-unit"><span class = "light-text" id = "homelight" style="display: none;">Рекомендуем</span>
+              <div class="homev4-container15 tariff homelight">
+
                 <div class="homev4-container16">
                   <h3 class="homev4-text08">GPT-3.5 Standart</h3>
                   <div class="homev4-container17">
@@ -426,7 +412,9 @@ description
                   </div>
                 </div>
               </div>
-              <div class="homev4-container19 tariff">
+                    </div>
+                <div class="sub-unit"><span class = "light-text" id = "studylight" style="display: none;">Рекомендуем</span>
+              <div class="homev4-container19 tariff studylight">
                 <div class="homev4-container20">
                   <h3 class="homev4-text11">GPT-3.5 PRO</h3>
                   <div class="homev4-container21">
@@ -463,9 +451,11 @@ description
                   </div>
                 </div>
               </div>
+                </div>
             </div>
             <div class="homev4-container23 ">
-              <div class="homev4-container24 tariff">
+                <div class="sub-unit"><span class = "light-text" id = "worklight">Рекомендуем</span>
+              <div class="homev4-container24 tariff worklight light">
                 <div class="homev4-container25">
                   <h3 class="homev4-text14">Multi GPT-4 Standart</h3>
                   <div class="homev4-container26">
@@ -505,6 +495,8 @@ style='fill:#000000;'>
                   </div>
                 </div>
               </div>
+                </div>
+                <div class="sub-unit">
               <div class="homev4-container28 tariff">
                 <div class="homev4-container29">
                   <h3 class="homev4-text17">Multi GPT-4 PRO</h3>
@@ -550,6 +542,8 @@ style='fill:#000000;'>
                   </div>
                 </div>
               </div>
+                </div>
+
             </div>
           </div></div>
             <div class = "multi-model"><span>В мультимодельных подписках GPT - 3.5 расходует в 20 раз меньше токенов</span></div>
@@ -574,7 +568,8 @@ style='fill:#000000;'>
         <div class="faq-content">
             <!-- faq -->
             <div class="faq-box-container">
-                {% if type == 'home' %}
+
+                 <div class="faq-block" id="homefaq"  style="display: none;" >
                 <div class="faq-box">
                     <div class="faq-box-question ">
                             <h4>Что такое нейросеть?</h4>
@@ -660,7 +655,9 @@ style='fill:#000000;'>
                         <p>Дело в том, что токены тратятся не только на ответ, но и на вопрос. Получается, что мы делим токены на 50%, предполагая, что половина уйдет на вопрос. А другая половина на ответ. Поэтому получите вы не 200 страниц, а 100.</p>
                     </div>
                 </div>
-                {% elif type == 'work' %}
+                 </div>
+
+                 <div class="faq-block" id="workfaq">
                 <div class="faq-box">
                     <div class="faq-box-question ">
                             <h4>Какая модель лучше?</h4>
@@ -768,7 +765,9 @@ style='fill:#000000;'>
                         <p>Команда /temperature нужна, чтобы регулировать креативность от 0 до 1.25. Чем меньше значение, тем чаще GPT повторяется, но уменьшается шанс ошибки.  Чем выше, тем креативнее и безумнее становится нейросеть. Начальное, самое стабильное значение 1.</p>
                     </div>
                 </div>
-                {% elif type == 'study' %}
+                 </div>
+
+                <div class="faq-block" id="studyfaq"  style="display: none;">
                 <div class="faq-box">
                     <div class="faq-box-question ">
                             <h4>Какая модель лучше?</h4>
@@ -888,8 +887,8 @@ style='fill:#000000;'>
 </p>
                     </div>
                 </div>
+</div>
 
-                {% endif %}
             </div>
 
         </div>
@@ -921,49 +920,6 @@ for (i = 0; i < faq.length; i++) {
         </div>
       </div>
 
-<!--      <div class="homev4-container-reviews">-->
-<!--        <div class="homev4-container-hed-reviews">-->
-<!--                <h1 class="homev4-text20">-->
-<!--                  <span class="homev4-text-reviews">Отзывы</span>-->
-<!--                  <br class="homev4-text22" />-->
-<!--                </h1>-->
-
-<!--              </div>-->
-<!--             <div class="homev4-container-reviews-row">-->
-<!--       <div class="homev4-container-review">-->
-<!--           <span> Создавай контент</span>-->
-<!--           <br>-->
-<!--          <span>Создавая статьи, сценарии, тексты вместе с ИИ</span>-->
-<!--        </div><div class="homev4-container-review">-->
-<!--           <span> Создавай контент</span>-->
-<!--           <br>-->
-<!--          <span>Создавая статьи, сценарии, тексты вместе с ИИ</span>-->
-<!--        </div><div class="homev4-container-review">-->
-<!--           <span> Создавай контент</span>-->
-<!--           <br>-->
-<!--          <span>Создавая статьи, сценарии, тексты вместе с ИИ</span>-->
-<!--        </div>-->
-
-<!--      </div>-->
-<!--          <div class="homev4-container-reviews-row">-->
-<!--       <div class="homev4-container-review">-->
-<!--           <span> Создавай контент</span>-->
-<!--           <br>-->
-<!--          <span>Создавая статьи, сценарии, тексты вместе с ИИ</span>-->
-<!--        </div><div class="homev4-container-review">-->
-<!--           <span> Создавай контент</span>-->
-<!--           <br>-->
-<!--          <span>Создавая статьи, сценарии, тексты вместе с ИИ</span>-->
-<!--        </div><div class="homev4-container-review">-->
-<!--           <span> Создавай контент</span>-->
-<!--           <br>-->
-<!--          <span>Создавая статьи, сценарии, тексты вместе с ИИ</span>-->
-<!--        </div>-->
-
-<!--      </div>-->
-
-
-<!--      </div>-->
 
 
 

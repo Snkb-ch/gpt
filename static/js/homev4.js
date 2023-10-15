@@ -187,3 +187,74 @@
     }
 
 })();
+
+
+
+function showBlock(type) {
+        // Hide all blocks
+         var buttons = document.querySelectorAll('.homev4-container36');
+    buttons.forEach(function(button) {
+      button.classList.remove('type-active');
+    });
+    $('.light').removeClass('light');
+
+    // Add 'type-active' class to the clicked button
+    var clickedButton = document.querySelector('[data-type="' + type + '"]');
+    clickedButton.classList.add('type-active');
+        var faqblocks =  document.getElementsByClassName('faq-block');
+        var lightblocks =  document.getElementsByClassName('light-text');
+        if (window.innerWidth < 800) {
+
+        var blocks = document.getElementsByClassName('cards');
+        }
+        else{
+        var blocks = document.getElementsByClassName('homev4-container-tasks');
+        }
+        for (var i = 0; i < blocks.length; i++) {
+            blocks[i].style.display = 'none';
+        }
+        for (var i = 0; i < faqblocks.length; i++) {
+            faqblocks[i].style.display = 'none';
+        }
+        for (var i = 0; i < lightblocks.length; i++) {
+            lightblocks[i].style.display = 'none';
+        }
+         if (window.innerWidth < 800) {
+
+        // Show the selected block
+        document.getElementById(type + 'Block').style.display = 'flex';
+        }
+        else{
+        document.getElementById(type + 'Blockwide').style.display = 'flex';
+        }
+        document.getElementById(type + 'faq').style.display = 'block';
+        document.getElementById(type + 'light').style.display = 'block';
+        $('.' + type + 'light').addClass('light');
+
+    }
+
+  $(document).ready(function () {
+    // Initialize Hammer.js on the container element
+    var container = document.querySelector('.container');
+    var hammer = new Hammer(container);
+
+    // Handle both click and swipe events
+    $('input').on('change', function () {
+      $('body').toggleClass('blue');
+    });
+
+    // Listen for swipe events
+    hammer.on('swipeleft swiperight', function (e) {
+      var currentIndex = $('input[name="slider"]:checked').index('input[name="slider"]');
+      var totalItems = $('input[name="slider"]').length;
+
+      if (e.type === 'swiperight') {
+        currentIndex = (currentIndex - 1 + totalItems) % totalItems;
+      } else if (e.type === 'swipeleft') {
+        currentIndex = (currentIndex + 1) % totalItems;
+      }
+
+      // Trigger change event on the corresponding radio button
+      $('input[name="slider"]').eq(currentIndex).prop('checked', true).change();
+    });
+  });
