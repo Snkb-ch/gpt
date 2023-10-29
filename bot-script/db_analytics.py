@@ -29,7 +29,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gpt.settings")
 # Импортируем и настраиваем Django настройки
 import django
 django.setup()
-from bot.models import User, Subscriptions,  Subscriptions_statistics, AnalyticsForDay, Statistics_by_day
+from bot.models import User, Subscriptions,  Subscriptions_statistics, Statistics_by_day, AdminStats
 
 
 
@@ -73,85 +73,14 @@ class DBanalytics_for_sub_stat():
         sub_active.temp_edited = F('temp_edited') + 1
         sub_active.save()
 
-    @sync_to_async
-    def add_tokens(self, user_id, input_tokens, output_tokens):
-
-        sub_active=Subscriptions_statistics.objects.get(user_id=user_id, active=True)
-        sub_active.input_tokens += input_tokens
-        sub_active.output_tokens += output_tokens
-
-
-        sub_active.messages += 1
-        sub_active.save()
-
-    @sync_to_async
-    def add_active_days(self, user_id):
-        sub_active = Subscriptions_statistics.objects.get(user_id=user_id, active=True)
-        sub_active.active_days = F('active_days') + 1
-        sub_active.save()
 
 
 
 
-class DBanalytics_for_day():
 
 
 
 
-        @sync_to_async
-        def add_sold(self, sub_id, price = 0):
-
-            obj, created = AnalyticsForDay.objects.get_or_create(
-                sub_type=Subscriptions.objects.get(sub_id=sub_id),
-                day=datetime.now(),
-                defaults={'sold': 1,
-                'income': price}
-            )
-
-            if not created:
-                obj.sold = F('sold') + 1
-                obj.income = F('income') + price
-
-                obj.save()
-
-        @sync_to_async
-        def add(self, sub_id, input_tokens, output_tokens, price):
-
-            cost = price['input'] * input_tokens + price['output'] * output_tokens
-            obj, created = AnalyticsForDay.objects.get_or_create(
-                sub_type=Subscriptions.objects.get(sub_id=sub_id),
-                day=datetime.now(),
-                defaults={'input_tokens': input_tokens,
-                          'output_tokens': output_tokens,
-                            'messages': 1,
-                            'costs': cost
-                          }
-            )
-
-            if not created:
-                obj.input_tokens = F('input_tokens') + input_tokens
-                obj.output_tokens = F('output_tokens') + output_tokens
-                obj.messages = F('messages') + 1
-                obj.costs = F('costs') + cost
-
-                obj.save()
-
-
-        @sync_to_async
-        def add_active_user(self, sub_id, new_user = False):
-            obj, created = AnalyticsForDay.objects.get_or_create(
-                sub_type=Subscriptions.objects.get(sub_id=sub_id),
-                day=datetime.now(),
-                defaults={'active_users': 1 ,
-                'active_non_new_users': 0 if new_user else 1}
-            )
-
-            if not created:
-                obj.active_users +=1
-                if not new_user:
-                    obj.active_non_new_users +=1
-
-                obj.save()
 
 
 class DBstatistics_by_day():
@@ -178,3 +107,29 @@ class DBstatistics_by_day():
             obj.costs += cost
 
             obj.save()
+
+class DBAdminStats():
+
+        @sync_to_async
+        def add(self, user_id, input_tokens, output_tokens, price, type = 'personal'):
+            date = datetime.now().date().replace(day=1)
+
+            cost = price['input'] * input_tokens + price['output'] * output_tokens
+            obj, created = AdminStats.objects.get_or_create(
+                user_id=user_id,
+                month=date,
+                defaults={
+                        'work_cost': cost if type == 'work' else 0,
+                        'personal_cost': cost if type == 'personal' else 0,
+
+                        }
+            )
+
+            if not created:
+                if type == 'work':
+                    obj.work_cost += cost
+                else:
+                    obj.personal_cost += cost
+
+                obj.save()
+

@@ -88,10 +88,9 @@ class Subscriptions_statistics(models.Model):
     expired_reason = models.CharField(max_length=50, null=True)
     role_edited = models.IntegerField(default=0)
     temp_edited = models.IntegerField(default=0)
-    input_tokens = models.IntegerField(null=True, default=0)
-    output_tokens = models.IntegerField(null=True, default=0)
-    messages = models.IntegerField(null=True, default=0)
-    active_days = models.IntegerField(null=True, default=0)
+
+
+
     income = models.FloatField(null=True, default=0)
     objects = BotTGUserManager()
 
@@ -121,28 +120,13 @@ class Statistics_by_day(models.Model):
 
 
 
-class AnalyticsForDay(models.Model):
+
+
+class AdminStats(models.Model):
     id = models.AutoField(primary_key=True)
-    sub_type = models.ForeignKey(Subscriptions, on_delete=models.SET_NULL, null=True)
-    day = models.DateField()
-    active_users = models.IntegerField(default=0)
-    active_non_new_users = models.IntegerField(default=0)
-    sold = models.IntegerField(default=0)
-    income = models.FloatField(default=0)
-    costs = models.FloatField(default=0)
-    input_tokens = models.BigIntegerField(default=0)
-    output_tokens = models.BigIntegerField(default=0)
-    messages = models.IntegerField(default=0)
-
-
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    month = models.DateField()
+    work_cost = models.FloatField(default=0)
+    personal_cost = models.FloatField(default=0)
+    type_now = models.CharField(max_length=50, null=True)
     objects = BotTGUserManager()
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['sub_type', 'day'], name='analytics_for_day_sub_type_day_key'),
-        ]
-
-    def __str__(self):
-        return str(self.sub_type)
-
-

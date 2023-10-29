@@ -89,7 +89,7 @@ class ChatGPTTelegramBot:
         self.db = Database()
 
         self.db_analytics_for_sessions = DBanalytics_for_sub_stat()
-        self.db_analytics_for_day = DBanalytics_for_day()
+
 
         self.config = config
         self.openai = openai
@@ -215,7 +215,7 @@ class ChatGPTTelegramBot:
             await self.calc_end_time(user_id)
             sub_id = await self.db.get_sub_type(user_id)
             try:
-                await self.db_analytics_for_day.add_sold(sub_id)
+
 
                 await self.db_analytics_for_sessions.new_sub_stats(user_id, sub_id)
             except Exception as e:
@@ -617,6 +617,18 @@ class ChatGPTTelegramBot:
     async def admin(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         if not await  self.db.is_admin(update.message.from_user.id):
             return
+        if self.openai.type_admin == 'personal':
+            self.openai.type_admin = 'work'
+            await update.message.reply_text(
+                message_thread_id=get_thread_id(update),
+                text='Режим админа изменен на рабочий',
+            )
+        else:
+            self.openai.type_admin = 'personal'
+            await update.message.reply_text(
+                message_thread_id=get_thread_id(update),
+                text='Режим админа изменен на личный',
+            )
 
 
 
@@ -956,7 +968,7 @@ class ChatGPTTelegramBot:
             income = await self.db.get_price(sub_id)
             await self.db_analytics_for_sessions.new_sub_stats(user_id, sub_id, income)
             price = await self.db.get_price(sub_id)
-            await self.db_analytics_for_day.add_sold(sub_id, price)
+
         except Exception as e:
             print(traceback.format_exc())
             await self.send_to_admin( 'error in activate sub analytics2' + '\n' + str(e))
@@ -1146,18 +1158,7 @@ class ChatGPTTelegramBot:
                         self.prompts[chat_id] -= 1
                         return
 
-                if  last_message != date:
-                    try:
-                        await self.db_analytics_for_sessions.add_active_days(user_id)
-                        if last_message is None:
 
-                            await self.db_analytics_for_day.add_active_user(plan, True)
-                        else:
-
-                            await self.db_analytics_for_day.add_active_user(plan, False)
-                    except Exception as e:
-                        print(traceback.format_exc())
-                        pass
 
 
 
@@ -1401,6 +1402,7 @@ class ChatGPTTelegramBot:
         application.add_handler(CommandHandler('save', self.save))
         application.add_handler((CommandHandler('delete', self.delete)))
         application.add_handler(CommandHandler('model', self.model))
+
 
 
         application.add_handler(CommandHandler('temperature', self.temperature))

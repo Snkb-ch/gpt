@@ -264,6 +264,8 @@ margin-bottom:20px;
 }
 
 
+
+
 .icon {
   width: 24px;
   height: 24px;
@@ -285,6 +287,18 @@ margin-bottom:20px;
 height:24px;
 display:flex;
 margin-bottom: 20px;
+  align-items: center;
+
+}.item_or{
+height:24px;
+display:flex;
+margin-bottom: 20px;
+  align-items: center;
+  justify-content: center;
+
+}
+.line{
+
 
 
 }
@@ -294,11 +308,7 @@ margin-bottom: 20px;
   align-items: center;
 
 }
-.item {
-  height: 24px;
-  display: flex;
-  align-items: center;
-}
+
 
 .list_text {
 

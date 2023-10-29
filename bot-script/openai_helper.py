@@ -123,7 +123,9 @@ class OpenAIHelper:
         self.db_analytics_for_sessions = DBanalytics_for_sub_stat()
         self.db = Database()
         self.db_statistic_by_day = DBstatistics_by_day()
-        self.db_analytics_for_day = DBanalytics_for_day()
+
+        self.db_admin_stats = DBAdminStats()
+        self.type_admin = 'personal'
 
     def get_conversation_stats(self, chat_id: int, model: str) -> tuple[int, int]:
         """
@@ -178,16 +180,21 @@ class OpenAIHelper:
                 await self.db.update_used_tokens(chat_id, tokens_in_answer)
 
 
-            try:
-                sub_id = await self.db.get_sub_type(chat_id)
-                model = model_config['model']
-                price = get_price(model)
-                await self.db_analytics_for_day.add(sub_id, input_tokens, tokens_in_answer, price)
 
-                await self.db_analytics_for_sessions.add_tokens(chat_id, input_tokens, tokens_in_answer)
-                await self.db_statistic_by_day.add(chat_id, input_tokens, tokens_in_answer, price)
+            sub_id = await self.db.get_sub_type(chat_id)
+            sub_name = await self.db.get_sub_name_from_user(chat_id)
+            model = model_config['model']
+            price = get_price(model)
+            try:
+                if sub_name == 'ultimate admin':
+                    await self.db_admin_stats.add(chat_id, input_tokens, tokens_in_answer, price, self.type_admin)
+                else:
+
+
+
+                    await self.db_statistic_by_day.add(chat_id, input_tokens, tokens_in_answer, price)
             except Exception as e:
-                print(e)
+                print(traceback.format_exc())
                 pass
 
             self.__add_to_history(chat_id, role="assistant", content=answer)
