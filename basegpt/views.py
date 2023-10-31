@@ -101,7 +101,8 @@ def refund(order):
 
 
 
-
+def cloud(request):
+    return render(request, 'basegpt/cloud.html')
 
 def home(request):
     # utm_source = request.GET.get('utm_source')
