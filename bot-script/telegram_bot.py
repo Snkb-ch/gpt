@@ -1158,8 +1158,7 @@ class ChatGPTTelegramBot:
                         self.prompts[chat_id] -= 1
                         return
 
-
-
+                if last_message != date:
 
 
 
