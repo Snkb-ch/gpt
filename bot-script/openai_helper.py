@@ -455,7 +455,7 @@ class OpenAIHelper:
 
                         num_tokens += len(encoding.encode(value))
                     elif type(value) == list:
-                        print(value[0]['text'])
+
                         num_tokens = num_tokens + len(encoding.encode(value[0]['text'])) + 1500
 
                 except Exception as e:
