@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import base64
 import signal
 import asyncio
 import json
 import logging
 import os
 import re
+import io
 import threading
 import time
 import traceback
@@ -195,6 +197,10 @@ class ChatGPTTelegramBot:
 - Свайпните влево сообщение, которое хотите закрепить. На ПК два ЛКМ по нему
 - Введите команду /delete и отправьте
 - Готово, сообщение удалено из контекста
+
+<b>Анализ фото</b>
+
+Доступен только тем, у кого есть подписка с GPT-4. Просто прикрепляете фото в чат, задаёте вопрос и всё. Готово. Но помните, что одна фотография весит 1500 токенов
 
 Подробнее на сайте: brainstormai.ru
 ''',
@@ -410,14 +416,14 @@ class ChatGPTTelegramBot:
         if await self.db.get_sub_multimodel(sub_id):
 
             current_model = await self.db.get_user_model(update.message.from_user.id)
-            if current_model == 'gpt-3.5-turbo':
-                await self.db.set_user_model(user_id, 'gpt-4')
+            if current_model == 'gpt-3.5-turbo-1106' or current_model == 'gpt-3.5-turbo':
+                await self.db.set_user_model(user_id, 'gpt-4-vision-preview')
                 await update.message.reply_text(
                     message_thread_id=get_thread_id(update),
                     text='Модель изменена на GPT-4',
                 )
-            elif current_model == 'gpt-4':
-                await self.db.set_user_model(user_id, 'gpt-3.5-turbo')
+            elif current_model == 'gpt-4-vision-preview' or current_model == 'gpt-4':
+                await self.db.set_user_model(user_id, 'gpt-3.5-turbo-1106')
                 await update.message.reply_text(
                     message_thread_id=get_thread_id(update),
                     text='Модель изменена на GPT-3.5',
@@ -705,28 +711,33 @@ class ChatGPTTelegramBot:
 
 
 <b>Multi GPT-4 Standart</b>
-Цена: 290 руб / 30 дней
+Цена: 260 руб / 30 дней
 Модели: GPT-4, GPT-3.5
-Доступно 40 000 токенов в GPT-4
-Расход токенов при «тройке» уменьшается в 20 раз
-Так вместо 20 стр. в «четверке», через GPT-3.5 получится 400 стр.
+Доступно 80 000 токенов в GPT-4
+Расход токенов при «тройке» уменьшается в 10 раз
+Так вместо 40 стр. в «четверке», через GPT-3.5 получится 400 стр.
 Настройка роли и креативности: ✅
+Анализ фото: ✅
+
 
 
 <b>Multi GPT-4 PRO</b>
-Цена: 700 руб / 30 дней
+Цена: 650 руб / 30 дней
 Модели: GPT-4, GPT-3.5
-Доступно 100 000 токенов в GPT-4
-Расход токенов при «тройке» уменьшается в 20 раз
-Так вместо 50 стр. в «четверке», через GPT-3.5 получится 1000 стр.
+Доступно 200 000 токенов в GPT-4
+Расход токенов при «тройке» уменьшается в 10 раз
+Так вместо 100 стр. в «четверке», через GPT-3.5 получится 1000 стр.
 Настройка роли и креативности: ✅
+Анализ фото: ✅
 
 Менять модель командой /model
+
 
 <b>Важно🔻</b>
 Один токен не равен одному символу. Точного отношения токена к символу нет.
 Приблизительно 1000 токенов – 300 слов или 2300 символов с пробелами.
 Проще говоря 1 тыс. равна 1.5 стр. А4.
+1 фото для анализа весит 1500 токенов
 
 Подробнее на сайте: brainstormai.ru
 
@@ -929,7 +940,7 @@ class ChatGPTTelegramBot:
                 pass
             try:
                 if await self.db.get_sub_multimodel(sub_id):
-                    await self.db.set_user_model(user_id, 'gpt-3.5-turbo')
+                    await self.db.set_user_model(user_id, 'gpt-3.5-turbo-1106')
                     await update.effective_message.reply_text(
                         message_thread_id=get_thread_id(update),
                         text='Сейчас вы используете модель GPT-3.5, расход токенов уменьшен в 20 раз, для смены модели на GPT-4 введите /model',
@@ -1073,13 +1084,63 @@ class ChatGPTTelegramBot:
 
         chat_id = update.effective_chat.id
         user_id = update.message.from_user.id
+        model_config = await self.db.get_model_config(user_id)
+        photo_list = []
 
+        # get photos from message and send to ai
+        if update.message.photo:
+            try:
+                await self.db_analytics_for_sessions.photo_send(user_id)
+            except:
+                pass
 
-        prompt = message_text(update.message)
+            if model_config['model'] == 'gpt-3.5-turbo-1106' or model_config['model'] == 'gpt-3.5-turbo':
+                await update.message.reply_text(
+                    message_thread_id=get_thread_id(update),
+                    text='Модель GPT-3.5 не поддерживает распознавание фото. Чтобы сменить модель, введите команду /model',
+                )
+                self.prompts[chat_id] -= 1
+                return
+
+            file = update.message.photo[-1].file_id  # get the file_id of the largest size photo
+            obj = await context.bot.get_file(file)
+            out = io.BytesIO()
+            await obj.download_to_memory(out=out)
+            out.seek(0)  # reset file pointer to the beginning
+            base64_image = base64.b64encode(out.read()).decode('utf-8')
+
+            # Add the base64 image to the list
+            photo_list.append(base64_image)
+
+        # Create a list to store the prompts
+        prompt = []
+
+        # Check if there are any photos in the list
+        if photo_list:
+            # Add a text prompt
+            if update.message.caption:
+                text = update.message.caption
+            else:
+                text = 'что на фото?'
+            prompt.append({
+                "type": "text",
+                "text": text
+            })
+
+            # Add image prompts for each photo in the list
+            for base64_image in photo_list:
+                prompt.append({
+                    "type": "image_url",
+                    "image_url": f"data:image/jpeg;base64,{base64_image}"
+
+                })
+
+        else:
+            prompt = update.message.text
         if user_id not in self.status:
             self.status[user_id] = 'prompt'
 
-        if update.message.text:
+        if update.message:
             if self.status[user_id] == 'set_email':
                 if self.is_email(update.message.text) == False:
                     await update.message.reply_text(
@@ -1204,6 +1265,19 @@ class ChatGPTTelegramBot:
                     input_tokens = 0
 
                     if self.config['stream']:
+
+
+
+                        # get photo from message and send to ai
+                        # get photo from message and send to ai
+
+                        text = update.message.text
+
+                        base64_image = None
+                        # get photo from message and send to ai
+
+
+
                         async def _reply():
                             nonlocal total_tokens
                             await update.effective_message.reply_chat_action(
@@ -1216,8 +1290,10 @@ class ChatGPTTelegramBot:
 
 
 
+
+
                             stream_response = self.openai.get_chat_response_stream(chat_id=chat_id, query=prompt,
-                                                                                   model_config=model_config, sub_type = plan)
+                                                                                       model_config=model_config, sub_type = plan)
 
                             i = 0
                             prev = ''
@@ -1410,7 +1486,7 @@ class ChatGPTTelegramBot:
         application.add_handler(CommandHandler(
             'chat', self.prompt, filters=filters.ChatType.GROUP | filters.ChatType.SUPERGROUP)
         )
-        application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), self.prompt))
+        application.add_handler(MessageHandler( (~filters.COMMAND), self.prompt))
         application.add_error_handler(error_handler)
 
         # application.run_polling()

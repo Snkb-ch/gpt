@@ -73,6 +73,12 @@ class DBanalytics_for_sub_stat():
         sub_active.temp_edited = F('temp_edited') + 1
         sub_active.save()
 
+    @sync_to_async
+    def photo_send(self, chat_id):
+        sub_active = Subscriptions_statistics.objects.get(user_id=chat_id, active=True)
+        sub_active.photo_send = F('photo_send') + 1
+        sub_active.save()
+
 
 
 

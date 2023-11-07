@@ -41,24 +41,22 @@ from calendar import monthrange
 from tenacity import retry, stop_after_attempt, wait_fixed, retry_if_exception_type
 
 # Models can be found here: https://platform.openai.com/docs/models/overview
-GPT_3_MODELS = ("gpt-3.5-turbo", "gpt-3.5-turbo-0301", "gpt-3.5-turbo-0613")
-GPT_3_16K_MODELS = ("gpt-3.5-turbo-16k", "gpt-3.5-turbo-16k-0613")
-GPT_4_MODELS = ("gpt-4", "gpt-4-0314", "gpt-4-0613")
+GPT_3_MODELS = ('gpt-3.5-turbo-1106', "gpt-3.5-turbo", "gpt-3.5-turbo-0613","gpt-3.5-turbo-1106")
+GPT_3_16K_MODELS = ("gpt-3.5-turbo-16k", "gpt-3.5-turbo-16k-0613" )
+GPT_4_MODELS = ("gpt-4", "gpt-4-0314", "gpt-4-0613", "gpt-4-1106-preview", "gpt-4-vision-preview")
 GPT_4_32K_MODELS = ("gpt-4-32k", "gpt-4-32k-0314", "gpt-4-32k-0613")
 GPT_ALL_MODELS = GPT_3_MODELS + GPT_3_16K_MODELS + GPT_4_MODELS + GPT_4_32K_MODELS
 
 def get_price(sub_name):
     price = {}
     if sub_name in GPT_3_MODELS:
-        price['input']= 0.0000015
+        price['input']= 0.000001
         price['output'] = 0.000002
     elif sub_name in GPT_4_MODELS:
-        price['input']= 0.00003
-        price['output'] = 0.00006
+        price['input']= 0.00001
+        price['output'] = 0.00003
 
-    elif sub_name in GPT_3_16K_MODELS:
-        price['input']= 0.000003
-        price['output'] = 0.000004
+
 
     return price
 
@@ -142,7 +140,7 @@ class OpenAIHelper:
 
 
 
-    async def get_chat_response_stream(self, chat_id: int, query: str, model_config: dict, sub_type: int):
+    async def get_chat_response_stream(self, chat_id: int, query, model_config: dict, sub_type: int):
 
 
         """
@@ -197,7 +195,7 @@ class OpenAIHelper:
                 print(traceback.format_exc())
                 pass
 
-            self.__add_to_history(chat_id, role="assistant", content=answer)
+            self.add_to_history(chat_id, role="assistant", content=answer)
             tokens_in_history= self.count_tokens(self.conversations[chat_id], model_config['model'])
 
             tokens_used = tokens_in_history
@@ -220,7 +218,7 @@ class OpenAIHelper:
         wait=wait_fixed(20),
         stop=stop_after_attempt(3)
     )
-    async def __common_get_chat_response(self, chat_id: int, query: str,model_config:dict, stream=False):
+    async def __common_get_chat_response(self, chat_id: int, query,model_config:dict, stream=False):
         """
         Request a response from the GPT model.
         :param chat_id: The chat ID
@@ -240,7 +238,8 @@ class OpenAIHelper:
             # self.last_updated[chat_id] = datetime.now()
 
 
-            self.__add_to_history(chat_id, role="user", content=query)
+            self.add_to_history(chat_id, role="user", content=query)
+
 
 
 
@@ -297,7 +296,7 @@ class OpenAIHelper:
 
 
             try:
-
+                print(model_config['model'])
                 result =await openai.ChatCompletion.acreate(
                     model=model_config['model'],
                     messages=self.conversations[chat_id],
@@ -308,6 +307,7 @@ class OpenAIHelper:
                     frequency_penalty=self.config['frequency_penalty'],
                     stream=stream
                 )
+
                 if model_config['multimodel_3'] == True:
                     await self.db.update_used_tokens(chat_id, int(input_tokens/model_config['multi_k']))
                 else:
@@ -317,6 +317,7 @@ class OpenAIHelper:
 
                 return result, input_tokens
             except Exception as e:
+
 
 
                 return False, 0
@@ -330,8 +331,8 @@ class OpenAIHelper:
             raise Exception(f"⚠️ _{localized_text('openai_invalid', bot_language)}._ ⚠️\n{str(e)}") from e
 
         except Exception as e:
-            print(e)
-            raise Exception(f"⚠️ _{localized_text('error', bot_language)}._ ⚠️\n{str(e)}") from e
+            print(traceback.format_exc())
+            raise Exception
 
 
     async def transcribe(self, filename):
@@ -376,7 +377,7 @@ class OpenAIHelper:
         max_age_minutes = self.config['max_conversation_age_minutes']
         return last_updated < now - timedelta(minutes=max_age_minutes)
 
-    def __add_to_history(self, chat_id, role, content):
+    def add_to_history(self, chat_id, role, content):
         """
         Adds a message to the conversation history.
         :param chat_id: The chat ID
@@ -407,13 +408,13 @@ class OpenAIHelper:
         return response.choices[0]['message']['content']
 
     def __max_model_tokens(self, model):
-        base = 4096
+        base = 16000
         if model in GPT_3_MODELS:
             return base
         if model in GPT_3_16K_MODELS:
             return base * 4
         if model in GPT_4_MODELS:
-            return base * 2
+            return 128000
         if model in GPT_4_32K_MODELS:
             return base * 8
         raise NotImplementedError(
@@ -430,8 +431,11 @@ class OpenAIHelper:
         """
 
         try:
+
             encoding = tiktoken.encoding_for_model(model)
-        except KeyError:
+
+        except KeyError as e:
+
             encoding = tiktoken.get_encoding("gpt-3.5-turbo")
 
         if model in GPT_3_MODELS + GPT_3_16K_MODELS:
@@ -446,7 +450,17 @@ class OpenAIHelper:
         for message in messages:
             num_tokens += tokens_per_message
             for key, value in message.items():
-                num_tokens += len(encoding.encode(value))
+                try:
+                    if type(value) == str:
+
+                        num_tokens += len(encoding.encode(value))
+                    elif type(value) == list:
+                        print(value[0]['text'])
+                        num_tokens = num_tokens + len(encoding.encode(value[0]['text'])) + 1500
+
+                except Exception as e:
+
+                    print(e)
                 if key == "name":
                     num_tokens += tokens_per_name
         num_tokens += 3  # every reply is primed with <|start|>assistant<|message|>

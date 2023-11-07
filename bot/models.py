@@ -47,7 +47,7 @@ class User(models.Model):
     reminder_date = models.DateField(null=True, blank=True)
     last_message = models.DateField(null=True, blank=True)
 
-    model = models.CharField(max_length=50, default='gpt-4', null=True)
+    model = models.CharField(max_length=50, default='gpt-3.5-turbo-1106', null=True)
     admin = models.BooleanField(default=False, null=True)
     blocked = models.BooleanField(default=False, null=True)
 
@@ -88,6 +88,7 @@ class Subscriptions_statistics(models.Model):
     expired_reason = models.CharField(max_length=50, null=True)
     role_edited = models.IntegerField(default=0)
     temp_edited = models.IntegerField(default=0)
+    photo_send = models.IntegerField(default=0)
 
 
 

@@ -141,8 +141,11 @@ class Database:
         multi_k = Subscriptions.objects.get(sub_id=User.objects.get(user_id=user_id).sub_type.sub_id).multi_k
         if multimodel:
             model = User.objects.get(user_id=user_id).model
-            if model == 'gpt-3.5-turbo':
+            if model == 'gpt-3.5-turbo-1106' or model == 'gpt-3.5-turbo':
                 multimodel_3 = True
+                model = 'gpt-3.5-turbo-1106'
+            elif model == 'gpt-4':
+                model = 'gpt-4-vision-preview'
 
         else:
             model = Subscriptions.objects.get(sub_id=User.objects.get(user_id=user_id).sub_type.sub_id).model
