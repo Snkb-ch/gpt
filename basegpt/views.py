@@ -118,14 +118,14 @@ def home(request):
     if request.session.get('utm_source') == None:
         request.session['utm_source'] = request.GET.get('utm_source')
         request.session['utm_campaign'] = request.GET.get('utm_campaign')
-        request.session['phrase_id'] = request.GET.get('phrase_id')
+        request.session['gbid'] = request.GET.get('gbid')
         request.session['device_type'] = request.GET.get('device_type')
         request.session['ad_id'] = request.GET.get('ad_id')
 
 
     utm_source = request.session.get('utm_source')
     utm_campaign = request.session.get('utm_campaign')
-    phrase_id = request.session.get('phrase_id')
+    gbid = request.session.get('gbid')
     device_type = request.session.get('device_type')
     ad_id = request.session.get('ad_id')
 
@@ -139,7 +139,7 @@ def home(request):
         'utm_source': utm_source,
 
         'utm_campaign': utm_campaign,
-        'phrase_id': phrase_id,
+        'gbid': gbid,
 
         'device_type': device_type,
 
@@ -157,7 +157,7 @@ def home(request):
             'utm_source': utm_source,
 
             'utm_campaign': utm_campaign,
-            'phrase_id': None,
+            'gbid': None,
 
             'device_type': None,
 
