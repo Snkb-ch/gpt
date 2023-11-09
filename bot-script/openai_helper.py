@@ -138,7 +138,22 @@ class OpenAIHelper:
 
 
 
+    async def generate_image(self, chat_id, prompt):
 
+        response =await openai.Image.acreate(
+
+                model="dall-e-3",
+                prompt=prompt,
+                size="1024x1024",
+                quality="standard",
+                n=1,
+            )
+
+
+
+        image_url = response.data[0].url
+
+        return image_url
 
     async def get_chat_response_stream(self, chat_id: int, query, model_config: dict, sub_type: int):
 

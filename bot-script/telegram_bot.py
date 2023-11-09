@@ -339,6 +339,27 @@ class ChatGPTTelegramBot:
                 text='Вы не выбрали сообщение. Для выбора свайпните его влево. На ПК – 2 раза кликнуть по сообщению',
             )
 
+    async def image(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        if await self.is_active(update, context, update.message.from_user.id) == False:
+            await update.message.reply_text(
+                message_thread_id=get_thread_id(update),
+                text='Ваша подписка закончилась, купите подписку',
+            )
+            return
+        # admin
+        if not await self.db.is_admin(update.message.from_user.id):
+            return
+
+        user_id = update.message.from_user.id
+
+        await update.message.reply_text(
+            message_thread_id=get_thread_id(update),
+            text='Введите запрос',
+        )
+
+        self.status[user_id] = 'image'
+
+
 
 
     async def stats(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -1157,6 +1178,18 @@ class ChatGPTTelegramBot:
 
                 await self.buy(update, context)
                 return
+            elif self.status[user_id] == 'image':
+
+                self.status[user_id] = 'prompt'
+
+                prompt = update.message.text
+                url = await self.openai.generate_image(user_id, prompt)
+                await update.message.reply_photo(
+                    photo=url,
+                    message_thread_id=get_thread_id(update),
+                )
+                return
+
             elif self.status[user_id] == 'admin_message':
 
                 self.status[user_id] = 'prompt'
@@ -1477,6 +1510,7 @@ class ChatGPTTelegramBot:
         application.add_handler(CommandHandler('save', self.save))
         application.add_handler((CommandHandler('delete', self.delete)))
         application.add_handler(CommandHandler('model', self.model))
+        application.add_handler(CommandHandler('image', self.image))
 
 
 
