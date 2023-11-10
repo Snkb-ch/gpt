@@ -91,6 +91,8 @@ class ChatGPTTelegramBot:
         self.db = Database()
 
         self.db_analytics_for_sessions = DBanalytics_for_sub_stat()
+        self.db_statistic_by_day = DBstatistics_by_day()
+        self.db_admin_stats = DBAdminStats()
 
 
         self.config = config
@@ -108,6 +110,9 @@ class ChatGPTTelegramBot:
             BotCommand(command='save', description='Закрепить выбранное сообщение'),
             BotCommand(command='delete', description='Удалить из контекста выбранное сообщение'),
             BotCommand(command='model', description='Изменить модель'),
+            BotCommand(command='imagine', description='Сгенерировать изображение'),
+            BotCommand(command='quality', description='Изменить качество изображения'),
+
 
 
         ]
@@ -121,6 +126,7 @@ class ChatGPTTelegramBot:
         self.budget_limit_message = localized_text('budget_limit', bot_language)
         self.usage = {}
         self.last_message = {}
+        self.quality_list = {}
         self.inline_queries_cache = {}
         self.bot = Bot(token=self.config['token'])
         self.dispatcher = Dispatcher(bot=self.bot, loop=asyncio.get_event_loop())
@@ -201,6 +207,10 @@ class ChatGPTTelegramBot:
 <b>Анализ фото</b>
 
 Доступен только тем, у кого есть подписка с GPT-4. Просто прикрепляете фото в чат, задаёте вопрос и всё. Готово. Но помните, что одна фотография весит 1500 токенов
+
+<b>Команды /imagine и /quality</b>
+
+Нейросеть, которая генерирует фото - это DALL-E 3. Её создатели компания OpenAI,  это они разработали ChatGPT.  В её картинках меньше артефактов, больше деталей, но с её помощью пока нельзя обрабатывать фото. Чтобы сгенерировать изображение введите команду /imagine. После отдельным сообщением введите запрос, что именно вы хотите получить на фото. Команда /quality - это выбор качества между Standard и HD.
 
 Подробнее на сайте: brainstormai.ru
 ''',
@@ -338,20 +348,91 @@ class ChatGPTTelegramBot:
                 message_thread_id=get_thread_id(update),
                 text='Вы не выбрали сообщение. Для выбора свайпните его влево. На ПК – 2 раза кликнуть по сообщению',
             )
+    def get_quality(self, user_id):
+        if self.quality_list.get(user_id) == None:
+            return {'quality': "standard", 'size': "1024x1024", 'flag' : True, 'tokens': 2000, 'price': 0.040}
+        if self.quality_list.get(user_id,'st-1') == 'st-1':
+            return {'quality': "standard", 'size': "1024x1024", 'tokens': 2000, 'price': 0.040}
+        elif self.quality_list.get(user_id,'st-1') == 'st-2':
+            return {'quality': "standard", 'size': "1024x1792", 'tokens': 1000, 'price': 0.080}
+        elif self.quality_list.get(user_id,'st-1') == 'st-3':
+            return {'quality': "standard", 'size': "1792x1024", 'tokens': 1000, 'price': 0.080}
+        elif self.quality_list.get(user_id,'st-1') == 'hd-1':
+            return {'quality': "hd", 'size': "1024x1024", 'tokens': 4000, 'price': 0.080}
+        elif self.quality_list.get(user_id,'st-1') == 'hd-2':
+            return {'quality': "hd", 'size': "1024x1792", 'tokens': 1500, 'price': 0.120}
+        elif self.quality_list.get(user_id,'st-1') == 'hd-3':
+            return {'quality': "hd", 'size': "1792x1024", 'tokens': 1500, 'price': 0.120}
 
-    async def image(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+
+    async def quality(self, update:Update, context: ContextTypes.DEFAULT_TYPE):
         if await self.is_active(update, context, update.message.from_user.id) == False:
             await update.message.reply_text(
                 message_thread_id=get_thread_id(update),
                 text='Ваша подписка закончилась, купите подписку',
             )
             return
-        # admin
-        if not await self.db.is_admin(update.message.from_user.id):
+
+        await update.message.reply_text(
+            message_thread_id=get_thread_id(update),
+            text='Выберите качество',
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton('Standard 1024x1024 - 2000 токенов', callback_data='st-1')],
+                # [InlineKeyboardButton('Standard 1024x1792 - 1000 токенов', callback_data='st-2')],
+                # [InlineKeyboardButton('Standard 1792x1024 - 1000 токенов', callback_data='st-3')],
+                [InlineKeyboardButton('HD 1024x1024 - 4000 токенов', callback_data='hd-1')],
+                # [InlineKeyboardButton('HD 1024x1792 - 1000 токенов', callback_data='hd-2')],
+                # [InlineKeyboardButton('HD 1792x1024 - 1000 токенов', callback_data='hd-3')],
+            ])
+        )
+
+    async def imagine(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        if await self.is_active(update, context, update.message.from_user.id) == False:
+            await update.message.reply_text(
+                message_thread_id=get_thread_id(update),
+                text='Ваша подписка закончилась, купите подписку',
+            )
             return
 
-        user_id = update.message.from_user.id
+        sub_id = await self.db.get_sub_type(update.message.from_user.id)
+        if await self.db.get_gen_im(sub_id) == False:
+            await update.message.reply_text(
+                message_thread_id=get_thread_id(update),
+                text='Ваша подписка не позволяет генерировать изображения',
+            )
+            return
 
+
+        user_id = update.message.from_user.id
+        chat_id = user_id
+        self.prompts[chat_id] = self.prompts.get(chat_id, 0) + 1
+        print(self.prompts[chat_id])
+
+
+
+
+        res = self.get_quality(user_id)
+        flag = res['flag'] if 'flag' in res else False
+        quality = res['quality'] if 'quality' in res else 'standard'
+        size = res['size'] if 'size' in res else '1024x1024'
+        tokens = res['tokens'] if 'tokens' in res else 1000
+        price = res['price'] if 'price' in res else 0.040
+
+
+
+
+        if not await self.is_input_in_tokens(update, context, update.message.from_user.id, tokens):
+            await update.message.reply_text(
+                message_thread_id=get_thread_id(update),
+                text='У вас недостаточно токенов, выберите другое качество или купите подписку',
+            )
+            return
+        if flag:
+            await update.message.reply_text(
+                message_thread_id=get_thread_id(update),
+                text='На данный момент у вас установлено качество ' + quality + ' и размер ' + size + '. Чтобы изменить качество и размер, введите /quality',
+            )
         await update.message.reply_text(
             message_thread_id=get_thread_id(update),
             text='Введите запрос',
@@ -739,6 +820,7 @@ class ChatGPTTelegramBot:
 Так вместо 40 стр. в «четверке», через GPT-3.5 получится 400 стр.
 Настройка роли и креативности: ✅
 Анализ фото: ✅
+Генерация до 40 изображений: ✅
 
 
 
@@ -750,6 +832,7 @@ class ChatGPTTelegramBot:
 Так вместо 100 стр. в «четверке», через GPT-3.5 получится 1000 стр.
 Настройка роли и креативности: ✅
 Анализ фото: ✅
+Генерация до 100 изображений: ✅
 
 Менять модель командой /model
 
@@ -759,6 +842,7 @@ class ChatGPTTelegramBot:
 Приблизительно 1000 токенов – 300 слов или 2300 символов с пробелами.
 Проще говоря 1 тыс. равна 1.5 стр. А4.
 1 фото для анализа весит 1500 токенов
+Генерация одного изображения с стоит от 2000 токенов
 
 Подробнее на сайте: brainstormai.ru
 
@@ -881,7 +965,52 @@ class ChatGPTTelegramBot:
 
     async def button(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_id = update.callback_query.from_user.id
-        if await self.db.get_email(update.callback_query.from_user.id) == None:
+        if not await self.is_active(update, context, update.callback_query.from_user.id):
+            await self.send_end_of_subscription_message(update, context)
+            return
+        if update.callback_query.data == 'st-1':
+            self.quality_list[user_id] = 'st-1'
+            await update.effective_message.reply_text(
+                message_thread_id=get_thread_id(update),
+                text='Качество изменено. Чтобы сгенерировать фото, введите  /imagine',
+            )
+            return
+        elif update.callback_query.data == 'st-2':
+            self.quality_list[user_id] = 'st-2'
+            await update.effective_message.reply_text(
+                message_thread_id=get_thread_id(update),
+                text='Качество изменено. Чтобы сгенерировать фото, введите  /imagine',
+            )
+            return
+        elif update.callback_query.data == 'st-3':
+            self.quality_list[user_id] = 'st-3'
+            await update.effective_message.reply_text(
+                message_thread_id=get_thread_id(update),
+                text='Качество изменено. Чтобы сгенерировать фото, введите  /imagine',
+            )
+            return
+        elif update.callback_query.data == 'hd-1':
+            self.quality_list[user_id] = 'hd-1'
+            await update.effective_message.reply_text(
+                message_thread_id=get_thread_id(update),
+                text='Качество изменено. Чтобы сгенерировать фото, введите  /imagine',
+            )
+            return
+        elif update.callback_query.data == 'hd-2':
+            self.quality_list[user_id] = 'hd-2'
+            await update.effective_message.reply_text(
+                message_thread_id=get_thread_id(update),
+                text='Качество изменено. Чтобы сгенерировать фото, введите  /imagine',
+            )
+            return
+        elif update.callback_query.data == 'hd-3':
+            self.quality_list[user_id] = 'hd-3'
+            await update.effective_message.reply_text(
+                message_thread_id=get_thread_id(update),
+                text='Качество изменено. Чтобы сгенерировать фото, введите  /imagine',
+            )
+            return
+        elif await self.db.get_email(update.callback_query.from_user.id) == None:
             await update.effective_message.reply_text(
                 message_thread_id=get_thread_id(update),
                 parse_mode = 'HTML',
@@ -1067,8 +1196,10 @@ class ChatGPTTelegramBot:
             return True
 
     async def is_input_in_tokens(self, update: Update, context: ContextTypes.DEFAULT_TYPE, user_id,
-                                 tokens_input, model_config ={'multimodel_3' : False}) -> bool:
+                                 tokens_input, model_config=None) -> bool:
 
+        if model_config is None:
+            model_config = {'multimodel_3': False, 'multi_k': 1}
         multimodel_3 = model_config['multimodel_3']
         multi_k = model_config['multi_k']
 
@@ -1087,6 +1218,45 @@ class ChatGPTTelegramBot:
         current_date = datetime.now().date()
         end_date = current_date + timedelta(days=await self.db.get_duration_sub(user_id))
         await self.db.set_end_time(user_id, end_date)
+
+    async def inactivate(self, user_id, update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+
+            plan = await self.db.get_sub_name_from_user(user_id)
+            if plan == 'trial':
+                await update.effective_message.reply_text(
+                    message_thread_id=get_thread_id(update),
+                    text='Ваш лимит токенов на сегодня закончился, купите подписку или подождите до завтра',
+                )
+
+            else:
+                await update.effective_message.reply_text(
+                    message_thread_id=get_thread_id(update),
+                    text='Ваш лимит токенов закончился, купите подписку',
+                )
+
+                await self.db.set_inactive(user_id)
+                self.openai.reset_chat_history(chat_id=user_id)
+
+                try:
+                    sub_name = await self.db.get_sub_name_from_user(user_id)
+                    if sub_name == 'ultimate admin':
+                        pass
+                    else:
+
+                        await self.db_analytics_for_sessions.set_inactive(user_id, 'tokens')
+
+                except Exception as e:
+                    print(traceback.format_exc())
+                    await self.send_to_admin('error in is active' + '\n' + str(e))
+                    pass
+
+                # await  self.db_analytics_for_month.add_expired(plan)
+                # await self.db_analytics_for_month.add_expired_tokens(plan)
+
+                await self.buy(update, context)
+
+
 
     async def prompt(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """
@@ -1183,12 +1353,67 @@ class ChatGPTTelegramBot:
                 self.status[user_id] = 'prompt'
 
                 prompt = update.message.text
-                url = await self.openai.generate_image(user_id, prompt)
-                await update.message.reply_photo(
-                    photo=url,
-                    message_thread_id=get_thread_id(update),
-                )
-                return
+                res = self.get_quality(user_id)
+                quality = res['quality']
+                size = res['size']
+                price = res['price']
+                tokens = res['tokens']
+
+                url = await self.openai.generate_image( quality, size, prompt)
+                if url == False:
+                    await update.message.reply_text(
+                        message_thread_id=get_thread_id(update),
+                        text='Произошла ошибка, попробуйте еще раз',
+                    )
+                    return
+                else:
+
+                    try:
+                        await update.message.reply_photo(
+                        photo=url,
+                        message_thread_id=get_thread_id(update),
+                        )
+
+                        await self.db.update_used_tokens(user_id, tokens)
+                    except Exception as e:
+                        if 'Failed to get http url content' in e:
+                            print(str(url))
+
+                            await update.message.reply_text(
+                                text=str(url),
+                            )
+                        elif 'safety system' in e:
+                            await update.message.reply_text(
+                                message_thread_id=get_thread_id(update),
+                                text='Ваш запрос не прошел модерацию',
+                            )
+
+                        else:
+                            await update.message.reply_text(
+                                message_thread_id=get_thread_id(update),
+                                text='Произошла ошибка, попробуйте еще раз',
+                            )
+                        return
+
+
+
+
+                    try:
+
+                        sub_name = await self.db.get_sub_name_from_user(user_id)
+                        cost={ 'output' : price,'input' : price}
+                        if sub_name == 'ultimate admin':
+                            await self.db_admin_stats.add(user_id,1/2,1/2, cost)
+                            print('admin')
+                        else:
+                            print('not admin')
+                            await self.db_analytics_for_sessions.image_generated(user_id)
+                            await self.db_statistic_by_day.add(user_id, 1/2, 1/2, cost)
+                    except Exception as e:
+                        print('error in analytics image' + '\n' + str(e))
+                        pass
+
+                    return
 
             elif self.status[user_id] == 'admin_message':
 
@@ -1419,40 +1644,8 @@ class ChatGPTTelegramBot:
 
                         if await self.is_in_tokens(update, context, user_id) == False:
 
-                            plan = await self.db.get_sub_name_from_user(user_id)
-                            if plan == 'trial':
-                                await update.effective_message.reply_text(
-                                    message_thread_id=get_thread_id(update),
-                                    text='Ваш лимит токенов на сегодня закончился, купите подписку или подождите до завтра',
-                                )
+                            await self.inactivate(user_id, update, context)
 
-                            else:
-                                await update.effective_message.reply_text(
-                                    message_thread_id=get_thread_id(update),
-                                    text='Ваш лимит токенов закончился, купите подписку',
-                                )
-
-                                await self.db.set_inactive(user_id)
-                                self.openai.reset_chat_history(chat_id=user_id)
-
-
-                                try:
-                                    sub_name = await self.db.get_sub_name_from_user(chat_id)
-                                    if sub_name == 'ultimate admin':
-                                        pass
-                                    else:
-
-                                        await self.db_analytics_for_sessions.set_inactive(user_id, 'tokens')
-
-                                except Exception as e:
-                                    print(traceback.format_exc())
-                                    await self.send_to_admin( 'error in is active' + '\n' + str(e))
-                                    pass
-
-                                # await  self.db_analytics_for_month.add_expired(plan)
-                                # await self.db_analytics_for_month.add_expired_tokens(plan)
-
-                                await self.buy(update, context)
 
 
 
@@ -1510,7 +1703,8 @@ class ChatGPTTelegramBot:
         application.add_handler(CommandHandler('save', self.save))
         application.add_handler((CommandHandler('delete', self.delete)))
         application.add_handler(CommandHandler('model', self.model))
-        application.add_handler(CommandHandler('image', self.image))
+        application.add_handler(CommandHandler('imagine', self.imagine))
+        application.add_handler(CommandHandler('quality', self.quality))
 
 
 

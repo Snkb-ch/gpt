@@ -25,6 +25,7 @@ class Subscriptions(models.Model):
     for_sale = models.BooleanField(default=False)
     multimodel = models.BooleanField(default=False)
     multi_k = models.IntegerField(null=True)
+    gen_im =  models.BooleanField(default=False)
     objects = BotTGUserManager()
     class Meta:
         constraints = [
@@ -89,6 +90,7 @@ class Subscriptions_statistics(models.Model):
     role_edited = models.IntegerField(default=0)
     temp_edited = models.IntegerField(default=0)
     photo_send = models.IntegerField(default=0)
+    image_generated = models.IntegerField(default=0)
 
 
 

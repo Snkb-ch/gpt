@@ -78,6 +78,11 @@ class DBanalytics_for_sub_stat():
         sub_active = Subscriptions_statistics.objects.get(user_id=chat_id, active=True)
         sub_active.photo_send = F('photo_send') + 1
         sub_active.save()
+    @sync_to_async
+    def image_generated(self, chat_id):
+        sub_active = Subscriptions_statistics.objects.get(user_id=chat_id, active=True)
+        sub_active.image_generated = F('image_generated') + 1
+        sub_active.save()
 
 
 
@@ -93,7 +98,7 @@ class DBstatistics_by_day():
 
 
     @sync_to_async
-    def add(self, user_id, input_tokens, output_tokens, price):
+    def add(self, user_id, input_tokens, output_tokens , price):
         day = datetime.now().date()
         cost = price['input'] * input_tokens + price['output'] * output_tokens
         obj, created = Statistics_by_day.objects.get_or_create(
@@ -119,6 +124,7 @@ class DBAdminStats():
         @sync_to_async
         def add(self, user_id, input_tokens, output_tokens, price, type = 'personal'):
             date = datetime.now().date().replace(day=1)
+
 
             cost = price['input'] * input_tokens + price['output'] * output_tokens
             obj, created = AdminStats.objects.get_or_create(

@@ -90,6 +90,9 @@ class Database:
     @sync_to_async
     def get_used_tokens(self, user_id):
         return User.objects.get(user_id=user_id).used_tokens
+    @sync_to_async
+    def get_gen_im(self, sub_type):
+        return Subscriptions.objects.get(sub_id=sub_type).gen_im
 
     @sync_to_async
     def set_used_tokens(self, user_id, tokens):

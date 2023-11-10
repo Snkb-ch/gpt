@@ -138,20 +138,26 @@ class OpenAIHelper:
 
 
 
-    async def generate_image(self, chat_id, prompt):
+    async def generate_image(self, quality, size,  prompt):
+        try:
+            response =await openai.Image.acreate(
 
-        response =await openai.Image.acreate(
-
-                model="dall-e-3",
-                prompt=prompt,
-                size="1024x1024",
-                quality="standard",
-                n=1,
-            )
+                    model="dall-e-3",
+                    prompt=prompt,
+                    size=size,
+                    quality=quality,
+                    n=1,
+                )
 
 
 
-        image_url = response.data[0].url
+
+
+            image_url = response.data[0].url
+        except Exception as e:
+            print(traceback.format_exc())
+            image_url = False
+
 
         return image_url
 
