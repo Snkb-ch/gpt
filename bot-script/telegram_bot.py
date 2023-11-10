@@ -405,9 +405,6 @@ class ChatGPTTelegramBot:
 
 
         user_id = update.message.from_user.id
-        chat_id = user_id
-        self.prompts[chat_id] = self.prompts.get(chat_id, 0) + 1
-        print(self.prompts[chat_id])
 
 
 
