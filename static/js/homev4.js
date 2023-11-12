@@ -263,7 +263,7 @@ function showBlock(type) {
 
 ym(94971306, 'getClientID', function(clientID) {
 
-  var link = $('.button-tg').attr('href'); // Получаем текущий href
+  var link = $('#button-tg').attr('href'); // Получаем текущий href
   link += '_'+clientID; // Добавляем clientID к href
-  $('.button-tg').attr('href', link); // Обновляем href
+  $('#button-tg').attr('href', link); // Обновляем href
 });
