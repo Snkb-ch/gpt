@@ -143,6 +143,68 @@ class ChatGPTTelegramBot:
             print(e)
             pass
 
+    async def test2(self, update: Update, _: ContextTypes.DEFAULT_TYPE):
+        import requests
+        import json
+
+        url = " https://api-metrika.yandex.net/cdp/api/v1/counter/94971306/data/contacts?merge_mode=APPEND"
+
+        headers = {
+            'Authorization': 'OAuth y0_AgAAAAAQJblaAArN0QAAAADxxu9tx4umNnbDQfmSGrbQXCSjNAVwRzI',
+            "Content-Type": "application/json",
+        }
+
+        date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        data = {
+    "contacts":
+    [
+        {
+            "uniq_id" : "1",
+
+            "create_date_time" : date,
+
+            "client_ids": ["1699791622237661922"],
+
+
+        }
+    ]
+}
+
+        response = requests.post(url, headers=headers, data=json.dumps(data))
+
+        print(response.json())
+    async def test(self, update: Update, _: ContextTypes.DEFAULT_TYPE):
+        import requests
+        import json
+
+        url = "https://api-metrika.yandex.net/cdp/api/v1/counter/94971306/data/orders?merge_mode=APPEND"
+
+        headers = {
+            'Authorization': 'OAuth y0_AgAAAAAQJblaAArN0QAAAADxxu9tx4umNnbDQfmSGrbQXCSjNAVwRzI',
+            'Content-Type': 'application/json',
+        }
+        date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print(date)
+        data = {
+            "orders": [
+        {
+            "id" : "1",
+            "client_uniq_id" : "1699791622237661922",
+            "client_type" : "CONTACT",
+            "create_date_time": date,
+            "revenue" : 10,
+            "order_status" : "1",
+            "cost" : 2,
+
+        }
+    ]
+        }
+
+        response = requests.post(url, headers=headers, data=json.dumps(data))
+
+        print(response.status_code)
+        print(response.json())
+
     async def cancel(self, update: Update, _: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text(
             message_thread_id=get_thread_id(update),
@@ -251,7 +313,7 @@ class ChatGPTTelegramBot:
 
                 await self.db.set_utm(user_id, arg[0], arg[1], arg[2], arg[3], arg[4], arg[5])
             except Exception as e:
-                print(e)
+                print(traceback.format_exc())
                 pass
 
             await update.message.reply_text(
@@ -1701,6 +1763,9 @@ class ChatGPTTelegramBot:
         application.add_handler(CommandHandler('model', self.model))
         application.add_handler(CommandHandler('imagine', self.imagine))
         application.add_handler(CommandHandler('quality', self.quality))
+        application.add_handler(CommandHandler('test', self.test))
+        application.add_handler(CommandHandler('test2', self.test2))
+
 
 
 
