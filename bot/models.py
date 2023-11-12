@@ -62,7 +62,7 @@ class User(models.Model):
 
 
     ad_id = models.BigIntegerField(null=True, blank=True)
-    client_id = models.BigIntegerField(null=True, blank=True)
+    client_id_metrika = models.BigIntegerField(null=True, blank=True)
 
 
     class Meta:

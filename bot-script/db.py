@@ -345,7 +345,7 @@ class Database:
 
 
     @sync_to_async
-    def set_utm(self, user_id, utm_source, utm_campaign = None, group_id= None, device_type= None, ad_id= None, client_id= None):
+    def set_utm(self, user_id, utm_source, utm_campaign = None, group_id= None, device_type= None, ad_id= None, client_id_metrika= None):
 
         user = User.objects.get(user_id=user_id)
         user.utm_source = utm_source if utm_source and utm_source!= 'None' else None
@@ -357,5 +357,5 @@ class Database:
 
 
         user.ad_id = ad_id if ad_id and ad_id != 'None' else None
-        user.client_id = client_id if client_id and client_id != 'None' else None
+        user.client_id_metrika = client_id_metrika if client_id_metrika and client_id_metrika != 'None' else None
         user.save()
