@@ -42,6 +42,26 @@ font-weight: 700;
 color:white;
 
 box-shadow: 0px 0px 10px 0px #54acec;
+}.button-tg-2{
+
+font-size: 19px;
+
+background: #54aaeb;
+border-radius: 32px;
+
+color: white;
+padding: 10px 20px;
+justify-content: space-between;
+display: flex;
+gap: 15px;
+font-weight: 700;
+
+}
+
+.button-tg-2:hover{
+color:white;
+
+box-shadow: 0px 0px 10px 0px #54acec;
 }
 .homev4-container01 {
   width: 100%;
@@ -1242,6 +1262,13 @@ font-size: 16px;
 
 }
 .button-tg{
+
+font-size:16px;
+padding: 6px 14 px;
+color:white;
+
+
+}.button-tg-2{
 
 font-size:16px;
 padding: 6px 14 px;
