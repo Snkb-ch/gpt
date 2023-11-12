@@ -157,7 +157,7 @@ class ChatGPTTelegramBot:
         import pytz
 
         # Создаем объект datetime
-        dt = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        dt = datetime.now() - timedelta(seconds=60)
 
 
         data = {
