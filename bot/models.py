@@ -26,6 +26,7 @@ class Subscriptions(models.Model):
     multimodel = models.BooleanField(default=False)
     multi_k = models.IntegerField(null=True)
     gen_im =  models.BooleanField(default=False)
+    cost= models.FloatField(null=True, default=0)
     objects = BotTGUserManager()
     class Meta:
         constraints = [
@@ -92,7 +93,7 @@ class Subscriptions_statistics(models.Model):
     temp_edited = models.IntegerField(default=0)
     photo_send = models.IntegerField(default=0)
     image_generated = models.IntegerField(default=0)
-
+    order_id_payment = models.CharField(max_length=100, null=True)
 
 
     income = models.FloatField(null=True, default=0)

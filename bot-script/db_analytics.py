@@ -43,13 +43,20 @@ class DBanalytics_for_sub_stat():
         return Subscriptions_statistics.objects.filter(user_id=user_id).exists()
 
     @sync_to_async
-    def new_sub_stats(self, user_id, sub_type, income = 0):
+    def new_sub_stats(self, user_id, sub_type, order_id_payment = None, income = 0):
         Subscriptions_statistics.objects.create(
             user_id = user_id,
             sub_type = Subscriptions.objects.get(sub_id=sub_type),
             start_date = datetime.now(),
+            order_id_payment = order_id_payment,
             income = income
         )
+
+    @sync_to_async
+    def get_sub_stats_id(self, user_id):
+
+        return Subscriptions_statistics.objects.get(user_id=user_id, active=True).id
+
 
 
     @sync_to_async

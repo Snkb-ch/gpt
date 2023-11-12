@@ -83,6 +83,14 @@ class Database:
     @sync_to_async
     def get_sub_name(self, sub_id):
         return Subscriptions.objects.get(sub_id=sub_id).sub_name
+    @sync_to_async
+    def get_sub_info(self, sub_id):
+        #return dict
+        values = Subscriptions.objects.filter(sub_id=sub_id).values('sub_name', 'price', 'cost').first()
+
+        return values
+
+
 
     @sync_to_async
     def get_max_tokens(self, user_id):

@@ -143,7 +143,7 @@ class ChatGPTTelegramBot:
             print(e)
             pass
 
-    async def test2(self, update: Update, _: ContextTypes.DEFAULT_TYPE):
+    async def add_client(self, update: Update, _: ContextTypes.DEFAULT_TYPE, user_id, client_id):
         import requests
         import json
 
@@ -154,16 +154,21 @@ class ChatGPTTelegramBot:
             "Content-Type": "application/json",
         }
 
-        date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        import pytz
+
+        # Создаем объект datetime
+        dt = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+
         data = {
     "contacts":
     [
         {
-            "uniq_id" : "1",
+            "uniq_id" : str(user_id),
 
-            "create_date_time" : date,
+            "create_date_time" : dt,
 
-            "client_ids": ["1699791622237661922"],
+            "client_ids": [str(client_id), ],
 
 
         }
@@ -173,7 +178,12 @@ class ChatGPTTelegramBot:
         response = requests.post(url, headers=headers, data=json.dumps(data))
 
         print(response.json())
-    async def test(self, update: Update, _: ContextTypes.DEFAULT_TYPE):
+
+
+
+
+
+    async def add_order(self, user_id, revenue, cost, order_id, product):
         import requests
         import json
 
@@ -183,26 +193,58 @@ class ChatGPTTelegramBot:
             'Authorization': 'OAuth y0_AgAAAAAQJblaAArN0QAAAADxxu9tx4umNnbDQfmSGrbQXCSjNAVwRzI',
             'Content-Type': 'application/json',
         }
-        date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        # minus 60 sec
+        date = datetime.now() - timedelta(seconds=60)
+        date = date.strftime("%Y-%m-%d %H:%M:%S")
         print(date)
         data = {
             "orders": [
         {
-            "id" : "1",
-            "client_uniq_id" : "1699791622237661922",
+            "id" : str(order_id),
+            "client_uniq_id" : str(user_id),
             "client_type" : "CONTACT",
             "create_date_time": date,
-            "revenue" : 10,
-            "order_status" : "1",
-            "cost" : 2,
+            "revenue" : 600,
+            "order_status" : "paid",
+            "cost" : cost,
 
         }
-    ]
+        ]
         }
 
         response = requests.post(url, headers=headers, data=json.dumps(data))
 
         print(response.status_code)
+        print(response.json())
+    async def orders(self, update: Update, _: ContextTypes.DEFAULT_TYPE):
+        import requests
+        import json
+
+
+
+        headers = {
+            'Authorization': 'OAuth y0_AgAAAAAQJblaAArN0QAAAADxxu9tx4umNnbDQfmSGrbQXCSjNAVwRzI',
+            'Content-Type': 'application/json',
+        }
+
+
+        url = "https://api-metrika.yandex.net/cdp/api/v1/counter/94971306/schema/order_statuses"
+
+
+
+        data = {
+            "order_statuses": [{
+                "id": "in_progress",
+                "type": "IN_PROGRESS"
+            },
+            {
+                "id": "paid",
+                "type": "PAID"
+            }]
+        }
+
+        response = requests.post(url, headers=headers, data=json.dumps(data))
+
         print(response.json())
 
     async def cancel(self, update: Update, _: ContextTypes.DEFAULT_TYPE) -> None:
@@ -312,6 +354,10 @@ class ChatGPTTelegramBot:
 
 
                 await self.db.set_utm(user_id, arg[0], arg[1], arg[2], arg[3], arg[4], arg[5])
+                if arg[5] != None and arg[5] != '':
+                    await self.add_client(update, context, user_id, arg[5])
+
+
             except Exception as e:
                 print(traceback.format_exc())
                 pass
@@ -1136,8 +1182,9 @@ class ChatGPTTelegramBot:
 
             user_id = update.callback_query.from_user.id
             sub_id = query.data
+            order_id = payment_details['id']
             try:
-                await self.activate_sub(user_id, query.data)
+                await self.activate_sub(user_id, query.data, order_id)
             except Exception as e:
                 print(traceback.format_exc())
                 await self.send_to_admin( 'error in activate sub' + '\n' + str(e))
@@ -1160,6 +1207,18 @@ class ChatGPTTelegramBot:
                 print('error in send message' + '\n' + str(e))
                 pass
 
+            try:
+                order_id = await self.db_analytics_for_sessions.get_sub_stats_id(user_id)
+                order_info = await self.db.get_sub_info(sub_id)
+                cost = order_info['cost']
+                product = order_info['sub_name']
+                income = order_info['price']
+                await self.add_order(user_id, income, cost, order_id, product)
+            except Exception as e:
+                print('error in add order metrika')
+                await self.send_to_admin( 'error in add order metrika' + '\n' + str(e))
+                pass
+
 
             # await self.db_analytics_for_month.add_income(sub_id, await self.db.get_price(sub_id))
             # await self.db_analytics_for_month.add_sold(sub_id)
@@ -1167,7 +1226,7 @@ class ChatGPTTelegramBot:
         else:
             await update.message.reply_text("Платеж не прошёл, попробуйте ещё раз")
 
-    async def activate_sub(self, user_id, sub_id):
+    async def activate_sub(self, user_id, sub_id, order_id_payment):
 
         try:
 
@@ -1187,8 +1246,10 @@ class ChatGPTTelegramBot:
         try:
 
             income = await self.db.get_price(sub_id)
-            await self.db_analytics_for_sessions.new_sub_stats(user_id, sub_id, income)
-            price = await self.db.get_price(sub_id)
+            cost = 0
+            await self.db_analytics_for_sessions.new_sub_stats(user_id, sub_id, order_id_payment, income)
+
+
 
         except Exception as e:
             print(traceback.format_exc())
@@ -1763,8 +1824,8 @@ class ChatGPTTelegramBot:
         application.add_handler(CommandHandler('model', self.model))
         application.add_handler(CommandHandler('imagine', self.imagine))
         application.add_handler(CommandHandler('quality', self.quality))
-        application.add_handler(CommandHandler('test', self.test))
-        application.add_handler(CommandHandler('test2', self.test2))
+
+        application.add_handler(CommandHandler('orders', self.orders))
 
 
 

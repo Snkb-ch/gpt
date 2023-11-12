@@ -366,6 +366,7 @@ class OpenAIHelper:
                 return result.text
         except Exception as e:
             logging.exception(e)
+
             raise Exception(f"⚠️ _{localized_text('error', self.config['bot_language'])}._ ⚠️\n{str(e)}") from e
 
     def reset_chat_history(self, chat_id, content=''):
