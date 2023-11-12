@@ -19,6 +19,7 @@ urlpatterns = [
     path('unique', views.unique, name='unique'),
     path('cloud', views.cloud, name='cloud'),
 
+
     path('contact/', views.contact, name='contact'),
     path('error/', views.error, name='error'),
     path('audio/', views.audio, name='audio'),

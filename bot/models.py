@@ -55,13 +55,14 @@ class User(models.Model):
     utm_source = models.CharField(max_length=50, null=True, blank=True)
     utm_campaign = models.BigIntegerField(null=True, blank=True)
 
-    phrase_id = models.BigIntegerField(null=True, blank=True)
+    group_id = models.BigIntegerField(null=True, blank=True)
     # utm_content
 
     device_type = models.CharField(max_length=50, null=True, blank=True)
 
 
     ad_id = models.BigIntegerField(null=True, blank=True)
+    client_id = models.BigIntegerField(null=True, blank=True)
 
 
     class Meta:

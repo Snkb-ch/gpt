@@ -345,16 +345,17 @@ class Database:
 
 
     @sync_to_async
-    def set_utm(self, user_id, utm_source, utm_campaign = None, phrase_id= None, device_type= None, ad_id= None):
+    def set_utm(self, user_id, utm_source, utm_campaign = None, group_id= None, device_type= None, ad_id= None, client_id= None):
 
         user = User.objects.get(user_id=user_id)
         user.utm_source = utm_source if utm_source and utm_source!= 'None' else None
         user.utm_campaign = utm_campaign if utm_campaign and utm_campaign!= 'None' else None
 
-        user.phrase_id = phrase_id if phrase_id and phrase_id!= 'None' else None
+        user.group_id = group_id if group_id and group_id!= 'None' else None
 
         user.device_type = device_type if device_type and device_type!= 'None' else None
 
 
         user.ad_id = ad_id if ad_id and ad_id != 'None' else None
+        user.client_id = client_id if client_id and client_id != 'None' else None
         user.save()

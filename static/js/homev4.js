@@ -258,3 +258,12 @@ function showBlock(type) {
       $('input[name="slider"]').eq(currentIndex).prop('checked', true).change();
     });
   });
+
+//  if button-tg clicked send Client ID to django
+
+ym(94971306, 'getClientID', function(clientID) {
+
+  var link = $('.button-tg').attr('href'); // Получаем текущий href
+  link += '_'+clientID; // Добавляем clientID к href
+  $('.button-tg').attr('href', link); // Обновляем href
+});

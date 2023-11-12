@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 from openai_async import openai_async
 from urllib.parse import quote, urlencode
 from .prompts import *
@@ -605,7 +606,6 @@ def success_result(request):
         elif order.result == False and order.refund == False:
             response = ({'type': 'wait', 'status': 'wait'})
             return JsonResponse(response)
-
 
 
 
