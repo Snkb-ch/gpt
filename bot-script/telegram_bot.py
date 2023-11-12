@@ -158,6 +158,7 @@ class ChatGPTTelegramBot:
 
         # Создаем объект datetime
         dt = datetime.now() - timedelta(seconds=60)
+        dt = dt.strftime("%Y-%m-%d %H:%M:%S")
 
 
         data = {
@@ -196,7 +197,7 @@ class ChatGPTTelegramBot:
         # minus 60 sec
         date = datetime.now() - timedelta(seconds=60)
         date = date.strftime("%Y-%m-%d %H:%M:%S")
-        print(date)
+
         data = {
             "orders": [
         {
@@ -205,7 +206,7 @@ class ChatGPTTelegramBot:
             "client_type" : "CONTACT",
             "create_date_time": date,
             "revenue" : 600,
-            "order_status" : "paid",
+            "order_status" : "1",
             "cost" : cost,
 
         }
@@ -233,12 +234,9 @@ class ChatGPTTelegramBot:
 
 
         data = {
-            "order_statuses": [{
-                "id": "in_progress",
-                "type": "IN_PROGRESS"
-            },
+            "order_statuses": [
             {
-                "id": "paid",
+                "id": "1",
                 "type": "PAID"
             }]
         }
