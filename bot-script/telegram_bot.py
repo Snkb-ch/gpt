@@ -205,7 +205,7 @@ class ChatGPTTelegramBot:
             "client_uniq_id" : str(user_id),
             "client_type" : "CONTACT",
             "create_date_time": date,
-            "revenue" : 600,
+            "revenue" : revenue,
             "order_status" : "1",
             "cost" : cost,
 
