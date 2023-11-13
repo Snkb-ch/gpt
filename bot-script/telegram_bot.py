@@ -169,7 +169,7 @@ class ChatGPTTelegramBot:
 
             "create_date_time" : dt,
 
-            "client_ids": [str(client_id), ],
+            "client_ids": [str(client_id) ],
 
 
         }
@@ -206,7 +206,7 @@ class ChatGPTTelegramBot:
             "client_type" : "CONTACT",
             "create_date_time": date,
             "revenue" : revenue,
-            "order_status" : "paid",
+            "order_status" : "1",
             "cost" : cost,
 
         }
@@ -370,11 +370,11 @@ class ChatGPTTelegramBot:
 
 ⏬ Вам доступно ⏬
 
-✅ Дней: 14
+✅ Дней: 5
 
 ✅ Модель: GPT-3.5
 
-✅ Токенов: 4000 в день
+✅ Токенов: 5000 в день
 
 <b>Важно</b>🔻
 
