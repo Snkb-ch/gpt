@@ -61,6 +61,7 @@ class User(models.Model):
     client_id_metrika = models.BigIntegerField(null=True, blank=True)
 
 
+
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['user_id'], name='users_user_id_key'),

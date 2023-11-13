@@ -326,7 +326,11 @@ class Database:
 
     @sync_to_async
     def get_admin_users(self):
-        return list(User.objects.filter(admin=True, blocked = False).values_list('user_id', flat=True))
+        return list(User.objects.filter(admin=True, blocked = False).values_list('user_id', flat=True))\
+
+    @sync_to_async
+    def get_client_id(self, user_id):
+        return User.objects.get(user_id=user_id).client_id_metrika
 
 
     @sync_to_async
