@@ -337,7 +337,7 @@ class ChatGPTTelegramBot:
 
                 await self.db_analytics_for_sessions.new_sub_stats(user_id, sub_id)
             except Exception as e:
-                print(e)
+                print(traceback.format_exc())
                 pass
 
             try:
@@ -1222,7 +1222,10 @@ class ChatGPTTelegramBot:
             # await self.db_analytics_for_month.add_sold(sub_id)
 
         else:
-            await update.message.reply_text("Платеж не прошёл, попробуйте ещё раз")
+            await update.effective_message.reply_text(
+                message_thread_id=get_thread_id(update),
+                text="Платеж не прошёл, попробуйте ещё раз"
+            )
 
     async def activate_sub(self, user_id, sub_id, order_id_payment):
 
