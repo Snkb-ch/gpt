@@ -147,7 +147,7 @@ class ChatGPTTelegramBot:
         import requests
         import json
 
-        url = " https://api-metrika.yandex.net/cdp/api/v1/counter/94971306/data/contacts?merge_mode=SAVE"
+        url = " https://api-metrika.yandex.net/cdp/api/v1/counter/94971306/data/contacts?merge_mode=APPEND"
 
         headers = {
             'Authorization': 'OAuth y0_AgAAAAAQJblaAArN0QAAAADxxu9tx4umNnbDQfmSGrbQXCSjNAVwRzI',
@@ -188,7 +188,7 @@ class ChatGPTTelegramBot:
         import requests
         import json
 
-        url = "https://api-metrika.yandex.net/cdp/api/v1/counter/94971306/data/orders?merge_mode=SAVE"
+        url = "https://api-metrika.yandex.net/cdp/api/v1/counter/94971306/data/orders?merge_mode=APPEND"
 
         headers = {
             'Authorization': 'OAuth y0_AgAAAAAQJblaAArN0QAAAADxxu9tx4umNnbDQfmSGrbQXCSjNAVwRzI',
