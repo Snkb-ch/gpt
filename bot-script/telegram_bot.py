@@ -147,7 +147,7 @@ class ChatGPTTelegramBot:
         import requests
         import json
 
-        url = " https://api-metrika.yandex.net/cdp/api/v1/counter/94971306/data/contacts?merge_mode=APPEND"
+        url = " https://api-metrika.yandex.net/cdp/api/v1/counter/94971306/data/contacts?merge_mode=SAVE"
 
         headers = {
             'Authorization': 'OAuth y0_AgAAAAAQJblaAArN0QAAAADxxu9tx4umNnbDQfmSGrbQXCSjNAVwRzI',
@@ -188,7 +188,7 @@ class ChatGPTTelegramBot:
         import requests
         import json
 
-        url = "https://api-metrika.yandex.net/cdp/api/v1/counter/94971306/data/orders?merge_mode=APPEND"
+        url = "https://api-metrika.yandex.net/cdp/api/v1/counter/94971306/data/orders?merge_mode=SAVE"
 
         headers = {
             'Authorization': 'OAuth y0_AgAAAAAQJblaAArN0QAAAADxxu9tx4umNnbDQfmSGrbQXCSjNAVwRzI',
@@ -206,7 +206,7 @@ class ChatGPTTelegramBot:
             "client_type" : "CONTACT",
             "create_date_time": date,
             "revenue" : revenue,
-            "order_status" : "1",
+            "order_status" : "paid",
             "cost" : cost,
 
         }
@@ -241,7 +241,7 @@ class ChatGPTTelegramBot:
             }]
         }
 
-        response = requests.post(url, headers=headers, data=json.dumps(data))
+        response = requests.get(url, headers=headers, data=json.dumps(data))
 
         print(response.json())
 
@@ -346,14 +346,14 @@ class ChatGPTTelegramBot:
                 arg = arg.split('_')
                 print(arg)
                 # если в списке нет 5 элементов, запонить его None
-                if len(arg) < 6:
-                    for i in range(6 - len(arg)):
+                if len(arg) < 4:
+                    for i in range(4 - len(arg)):
                         arg.append('')
 
 
-                await self.db.set_utm(user_id, arg[0], arg[1], arg[2], arg[3], arg[4], arg[5])
-                if arg[5] != None and arg[5] != '':
-                    await self.add_client(update, context, user_id, arg[5])
+                await self.db.set_utm(user_id, arg[0], arg[1], arg[2], arg[3])
+                if arg[3] != None and arg[3] != '':
+                    await self.add_client(update, context, user_id, arg[3])
 
 
             except Exception as e:

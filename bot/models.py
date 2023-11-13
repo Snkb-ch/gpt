@@ -58,11 +58,6 @@ class User(models.Model):
 
     group_id = models.BigIntegerField(null=True, blank=True)
     # utm_content
-
-    device_type = models.CharField(max_length=50, null=True, blank=True)
-
-
-    ad_id = models.BigIntegerField(null=True, blank=True)
     client_id_metrika = models.BigIntegerField(null=True, blank=True)
 
 
