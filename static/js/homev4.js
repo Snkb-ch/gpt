@@ -196,13 +196,13 @@ function showBlock(type) {
     buttons.forEach(function(button) {
       button.classList.remove('type-active');
     });
-    $('.light').removeClass('light');
+
 
     // Add 'type-active' class to the clicked button
     var clickedButton = document.querySelector('[data-type="' + type + '"]');
     clickedButton.classList.add('type-active');
-        var faqblocks =  document.getElementsByClassName('faq-block');
-        var lightblocks =  document.getElementsByClassName('light-text');
+
+
         if (window.innerWidth < 800) {
 
         var blocks = document.getElementsByClassName('cards');
@@ -213,12 +213,8 @@ function showBlock(type) {
         for (var i = 0; i < blocks.length; i++) {
             blocks[i].style.display = 'none';
         }
-        for (var i = 0; i < faqblocks.length; i++) {
-            faqblocks[i].style.display = 'none';
-        }
-        for (var i = 0; i < lightblocks.length; i++) {
-            lightblocks[i].style.display = 'none';
-        }
+
+
          if (window.innerWidth < 800) {
 
         // Show the selected block
@@ -226,10 +222,10 @@ function showBlock(type) {
         }
         else{
         document.getElementById(type + 'Blockwide').style.display = 'flex';
+        document.getElementById(type + 'Blockwide2').style.display = 'flex';
         }
-        document.getElementById(type + 'faq').style.display = 'block';
-        document.getElementById(type + 'light').style.display = 'block';
-        $('.' + type + 'light').addClass('light');
+
+
 
     }
 
@@ -271,3 +267,34 @@ ym(94971306, 'getClientID', function(clientID) {
   $('.button-tg').attr('href', link); // Обновляем href
   $('.button-tg-2').attr('href', link); // Обновляем href
 });
+
+
+//$(document).ready(function(){
+//  var container = document.querySelector('.scroll-container');
+//  var images = document.querySelectorAll('.homev4-container-task-img');
+//
+//  // Клонируем изображения для заполнения контейнера
+//  function cloneImages() {
+//    for (let i = 0; i < images.length; i++) {
+//      var clone = images[i].cloneNode(true);
+//      container.appendChild(clone);
+//    }
+//  }
+//
+//  // Клонируем изображения дважды для создания эффекта бесконечности
+//  cloneImages();
+//  cloneImages();
+//
+//  // Используем MutationObserver для отслеживания, когда клонируемые элементы выходят за границу контейнера
+//  var observer = new MutationObserver(function(mutations) {
+//    mutations.forEach(function(mutation) {
+//      if (mutation.addedNodes.length) {
+//        // Когда новый клон добавляется, вновь клонируем изображения
+//        cloneImages();
+//      }
+//    });
+//  });
+//
+//  // Настройка observer
+//  observer.observe(container, { childList: true });
+//});

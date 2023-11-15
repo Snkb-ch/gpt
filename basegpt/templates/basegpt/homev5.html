@@ -67,7 +67,218 @@
   <div class="homev4-container">
     <div class="homev4-container01">
 
-      <div class="homev4-container06" >
+
+      <div class="homev4-container33">
+        <h1 class="homev4-text20">
+          <span class="homev4-text21">Подбери нейросеть под задачу</span>
+          <br class="homev4-text22" />
+        </h1>
+      </div>
+
+
+      <div class="homev4-container34">
+        {% if type == 'image' %}
+       <button class="homev4-container36" data-type="text"  onclick="showBlock('text')">для текста</button>
+        <button  class="homev4-container36 type-active " data-type="image"  onclick="showBlock('image')">для изображений</button>
+
+
+                    {% else %}
+ <button class="homev4-container36 type-active" data-type="text"  onclick="showBlock('text')">для текста</button>
+        <button  class="homev4-container36 " data-type="image"  onclick="showBlock('image')">для изображений</button>
+
+                  {% endif %}
+
+      </div>
+
+
+
+        {% if type == 'image' %}
+
+          <span class="homev4-container-tasks" id="imageBlockwide2">Примеры изображений DALLE 3</span>
+
+            <div class="container">
+    <input type="radio" name="slider" id="item-1" checked >
+    <input type="radio" name="slider" id="item-2" >
+    <input type="radio" name="slider" id="item-3">
+
+
+<div class="cards" id="imageBlock"  >
+
+    <label class="card" for="item-1" id="song-1">
+
+      <img src="{% static 'images/im4.jpg' %}" class="homev4-container-task "/>
+
+    </label>
+<label class="card" for="item-2" id="song-2">
+           <img src="{% static 'images/im2.jpg' %}" class="homev4-container-task "/>
+    </label>
+
+
+
+    <label class="card" for="item-3" id="song-3">
+
+               <img src="{% static 'images/im3.jpg' %}" class="homev4-container-task "/>
+    </label>
+
+
+  </div>
+                  <div class="cards" id="textBlock" style="display:none" >
+
+    <label class="card" for="item-1" id="song-1">
+
+      <div class="homev4-container-task task1" style="min-height:255px;">
+           <span class="task-hed"> Анализ фото</span>
+           <br>
+ <span >Больше не нужны сервисы по переводу фото в текст. Нейросеть поймет, что на картинке и даст быстрый ответ всего в два клика.
+</span>
+        </div>
+    </label>
+<label class="card" for="item-2" id="song-2">
+     <div class="homev4-container-task task2" style="min-height:255px;">
+           <span class="task-hed" >Две модели</span>
+           <br>
+ <span >Выберите модель под задачу. GPT-3.5 для работы, где не нужна точность. И GPT-4 для работы с фактами
+</span>
+        </div>
+    </label>
+
+
+
+    <label class="card" for="item-3" id="song-3">
+
+    <div class="homev4-container-task task3"  style="min-height:255px;">
+           <span  class="task-hed">Экономь время </span>
+           <br>
+          <span>Все знания у тебя в кармане. Не трать время на рутину. Больше не нужно часами искать источники</span>
+        </div>
+
+    </label>
+
+
+  </div>
+            </div>
+                 <div class="homev4-container-tasks"  id="imageBlockwide">
+
+
+
+
+
+
+
+
+
+    <div class="scroll-container">
+
+        <img src="{% static 'images/im4.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im2.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+        <img src="{% static 'images/im1.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+        <img src="{% static 'images/im5.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im6.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im7.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im8.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+         <img src="{% static 'images/im14.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im9.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+        <img src="{% static 'images/im10.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+             <img src="{% static 'images/im3.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im11.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im12.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im13.jpg' %}" class="homev4-container-task-img " style="width :400px;"/><img src="{% static 'images/im4.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im2.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+        <img src="{% static 'images/im1.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+        <img src="{% static 'images/im5.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im6.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im7.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im8.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+         <img src="{% static 'images/im14.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im9.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+        <img src="{% static 'images/im10.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+             <img src="{% static 'images/im3.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im11.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im12.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im13.jpg' %}" class="homev4-container-task-img " style="width :400px;"/><img src="{% static 'images/im4.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im2.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+        <img src="{% static 'images/im1.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+        <img src="{% static 'images/im5.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im6.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im7.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im8.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+         <img src="{% static 'images/im14.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im9.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+        <img src="{% static 'images/im10.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+             <img src="{% static 'images/im3.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im11.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im12.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im13.jpg' %}" class="homev4-container-task-img " style="width :400px;"/><img src="{% static 'images/im4.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im2.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+        <img src="{% static 'images/im1.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+        <img src="{% static 'images/im5.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im6.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im7.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im8.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+         <img src="{% static 'images/im14.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im9.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+        <img src="{% static 'images/im10.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+             <img src="{% static 'images/im3.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im11.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im12.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im13.jpg' %}" class="homev4-container-task-img " style="width :400px;"/><img src="{% static 'images/im4.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im2.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+        <img src="{% static 'images/im1.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+        <img src="{% static 'images/im5.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im6.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im7.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im8.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+         <img src="{% static 'images/im14.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im9.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+        <img src="{% static 'images/im10.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+             <img src="{% static 'images/im3.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im11.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im12.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im13.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+
+
+   </div>
+
+
+                 </div>
+        <div>
+        <div class="homev4-container-tasks"  id="textBlockwide" style="display:none">
+             <div class="homev4-container-task task1">
+           <span class="task-hed">Анализ фото
+</span>
+           <br>
+          <span>Больше не нужны сервисы по переводу фото в текст. Нейросеть поймет, что на картинке и даст быстрый ответ всего в два клика.
+</span>
+        </div>
+        <div class="homev4-container-task task2">
+           <span class="task-hed">Две модели</span>
+           <br>
+          <span>Выберите модель под задачу. GPT-3.5 для работы, где не нужна точность. И GPT-4 для работы с фактами</span>
+        </div>
+            <div class="homev4-container-task task3">
+           <span class="task-hed"> Экономь время</span>
+           <br>
+          <span>Все знания у тебя в кармане. Не трать время на рутину. Больше не нужно часами искать источники</span>
+        </div>
+
+      </div>
+                   <div class="homev4-container06" >
         <div class="homev4-container07">
           <div class="homev4-container08">
             <h1 class="homev4-text02">Почему ChatGPT в Telegram лучше</h1>
@@ -135,211 +346,222 @@ style='fill:#000000;'>
 </ul>
                   </div>
                 </div>
-
             </div>
           </div>
-<!--          <div class="homev4-container12">-->
-<!--            <h1 class="homev4-text07">Четыре подписки для учебы</h1>-->
-
-<!--          </div>-->
-
-
-
-
         </div>
-      </div>
-      <div class="homev4-container33">
-        <h1 class="homev4-text20">
-          <span class="homev4-text21">Подбери нейросеть под задачу</span>
-          <br class="homev4-text22" />
-        </h1>
-
-
-
-
-      </div>
-
-
-      <div class="homev4-container34">
-
-       <button class="homev4-container36 type-active" data-type="work"  onclick="showBlock('work')">для работы</button>
-        <button  class="homev4-container36" data-type="study"  onclick="showBlock('study')">для учебы</button>
-           <button class="homev4-container36" data-type="home"  onclick="showBlock('home')">для начала</button>
-
-
-
-      </div>
-
-        <div>
-
-
-        <div class="homev4-container-tasks" id="workBlockwide">
-       <div class="homev4-container-task task1">
-           <span class="task-hed"> Создавай контент</span>
-           <br>
-          <span>Сделай уникальную статью, сценарий, песню вместе с нейросетью</span>
+           </div>
         </div>
-        <div class="homev4-container-task task2">
-           <span class="task-hed" >Пиши код</span>
-           <br>
-          <span> С ИИ аситентом разработка стала проще и быстрее</span>
-        </div>
-            <div class="homev4-container-task task3">
-           <span  class="task-hed">Экономь время </span>
-           <br>
-          <span> Не трать время на рутину. Больше не нужно смотреть часовые ролики или читать статьи по 10 страниц</span>
-        </div>
-      </div>
 
-
-        <div class="homev4-container-tasks"  id="studyBlockwide"  style="display: none;">
-       <div class="homev4-container-task task1">
-           <span class="task-hed"> Узнавай новое </span>
-           <br>
-          <span>Получи ответ на вопросы в любой области: философия, математика, биология, программирование</span>
-        </div>
-        <div class="homev4-container-task task2">
-           <span class="task-hed">Учись проще</span>
-           <br>
-          <span>Пиши работы, делай презентации, готовься к сессии быстрее всех</span>
-        </div>
-            <div class="homev4-container-task task3">
-           <span class="task-hed"> Экономь время</span>
-           <br>
-          <span>Все знания у тебя в кармане. Не трать время на рутину. Больше не нужно часами искать источники</span>
-        </div>
-      </div>
-
-        <div class="homev4-container-tasks" id="homeBlockwide"  style="display: none;">
-       <div class="homev4-container-task task1">
-           <span class="task-hed">Узнавай новое</span>
-           <br>
-          <span>Получи ответ на вопросы в любой области: кулинария, наука, культура, работа</span>
-        </div>
-        <div class="homev4-container-task task2">
-           <span class="task-hed">  Будь круче всех </span>
-           <br>
-          <span>Пользуйся самой умной и новой технологией в быту</span>
-        </div>
-            <div class="homev4-container-task task3">
-           <span class="task-hed"> Экономь время </span>
-           <br>
-          <span>Все знания у тебя в кармане. Не трать время на рутину. Больше не нужно смотреть часовые ролики или читать статьи по 10 страниц</span>
-        </div>
-      </div>
-
-
-
+{% else %}
+        <span class="homev4-container-tasks" id="imageBlockwide2"  style="display:none">Примеры изображений DALLE 3</span>
             <div class="container">
-    <input type="radio" name="slider" id="item-1" checked>
-    <input type="radio" name="slider" id="item-2">
+    <input type="radio" name="slider" id="item-1" checked >
+    <input type="radio" name="slider" id="item-2" >
     <input type="radio" name="slider" id="item-3">
 
-  <div class="cards" id="workBlock">
+  <div class="cards" id="imageBlock" style="display:none"  >
 
     <label class="card" for="item-1" id="song-1">
 
-      <div class="homev4-container-task task1">
-           <span class="task-hed"> Создавай контент</span>
+      <img src="{% static 'images/im4.jpg' %}" class="homev4-container-task "/>
+
+    </label>
+<label class="card" for="item-2" id="song-2">
+           <img src="{% static 'images/im2.jpg' %}" class="homev4-container-task "/>
+    </label>
+
+
+
+    <label class="card" for="item-3" id="song-3">
+
+               <img src="{% static 'images/im3.jpg' %}" class="homev4-container-task "/>
+    </label>
+
+
+  </div>
+  <div class="cards" id="textBlock" >
+
+    <label class="card" for="item-1" id="song-1">
+
+      <div class="homev4-container-task task1" style="min-height:255px;">
+           <span class="task-hed">Анализ фото</span>
            <br>
-          <span>Сделай уникальную статью, сценарий, песню вместе с нейросетью</span>
+<span>Больше не нужны сервисы по переводу фото в текст. Нейросеть поймет, что на картинке и даст быстрый ответ всего в два клика.
+</span>
         </div>
     </label>
 <label class="card" for="item-2" id="song-2">
-     <div class="homev4-container-task task2">
-           <span class="task-hed" >Пиши код</span>
+     <div class="homev4-container-task task2"  style="min-height:255px;">
+           <span class="task-hed" >Две модели</span>
            <br>
-          <span> С ИИ аситентом разработка стала проще и быстрее</span>
+<span>Выберите модель под задачу. GPT-3.5 для работы, где не нужна точность. И GPT-4 для работы с фактами
+</span>
         </div>
     </label>
 
 
 
-    <label class="card" for="item-3" id="song-3">
+    <label class="card" for="item-3" id="song-3" >
 
-    <div class="homev4-container-task task3">
+    <div class="homev4-container-task task3"  style="min-height:255px;">
            <span  class="task-hed">Экономь время </span>
            <br>
-          <span> Не трать время на рутину. Больше не нужно смотреть часовые ролики или читать статьи по 10 страниц</span>
+                  <span>Все знания у тебя в кармане. Не трать время на рутину. Больше не нужно часами искать источники</span>
+
         </div>
 
     </label>
 
 
   </div>
+            </div>
+ <div class="homev4-container-tasks"  id="imageBlockwide" style="display:none">
 
-  <div class="cards" id="studyBlock"  style="display: none;">
+    <div class="scroll-container">
 
-    <label class="card" for="item-1" id="song-1">
+        <img src="{% static 'images/im4.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im2.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
 
-        <div class="homev4-container-task task1">
-           <span class="task-hed"> Узнавай новое </span>
+        <img src="{% static 'images/im1.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+        <img src="{% static 'images/im5.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im6.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im7.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im8.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+         <img src="{% static 'images/im14.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im9.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+        <img src="{% static 'images/im10.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+             <img src="{% static 'images/im3.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im11.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im12.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im13.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im4.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im2.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+        <img src="{% static 'images/im1.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+        <img src="{% static 'images/im5.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im6.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im7.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im8.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im14.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im9.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+        <img src="{% static 'images/im10.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+             <img src="{% static 'images/im3.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im11.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im12.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im13.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+
+
+   </div>
+
+
+                 </div>
+
+  <div class="homev4-container-tasks"  id="textBlockwide" >
+       <div class="homev4-container-task task1">
+           <span class="task-hed">Анализ фото
+</span>
            <br>
-          <span>Получи ответ на вопросы в любой области: философия, математика, биология, программирование</span>
+          <span>Больше не нужны сервисы по переводу фото в текст. Нейросеть поймет, что на картинке и даст быстрый ответ всего в два клика.
+</span>
         </div>
-
-
-    </label>
-   <label class="card" for="item-2" id="song-2">
-    <div class="homev4-container-task task2">
-           <span class="task-hed">Учись проще</span>
+        <div class="homev4-container-task task2">
+           <span class="task-hed">Две модели</span>
            <br>
-          <span>Пиши работы, делай презентации, готовься к сессии быстрее всех</span>
+          <span>Выберите модель под задачу. GPT-3.5 для работы, где не нужна точность. И GPT-4 для работы с фактами</span>
         </div>
- </label>
-
-    <label class="card" for="item-3" id="song-3">
-
-    <div class="homev4-container-task task3">
+            <div class="homev4-container-task task3">
            <span class="task-hed"> Экономь время</span>
            <br>
           <span>Все знания у тебя в кармане. Не трать время на рутину. Больше не нужно часами искать источники</span>
         </div>
 
-    </label>
+      </div>
+           <div class="homev4-container06" >
+        <div class="homev4-container07">
+          <div class="homev4-container08">
+            <h1 class="homev4-text02">Почему ChatGPT в Telegram лучше</h1>
+          </div>
+          <div class="homev4-container09">
+            <div class="homev4-container10">
+                <h1 class="h-dif">Сайт OpenAI</h1>
+              <div class="homev4-container-diff">
+                  <div>
+                  <ul>
+
+<li class='item-d'><svg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' width='24' height='24' viewBox='0 0 48 48'>
+<linearGradient id='hbE9Evnj3wAjjA2RX0We2a_OZuepOQd0omj_gr1' x1='7.534' x2='27.557' y1='7.534' y2='27.557' gradientUnits='userSpaceOnUse'><stop offset='0' stop-color='#f44f5a'></stop><stop offset='.443' stop-color='#ee3d4a'></stop><stop offset='1' stop-color='#e52030'></stop></linearGradient><path fill='url(#hbE9Evnj3wAjjA2RX0We2a_OZuepOQd0omj_gr1)' d='M42.42,12.401c0.774-0.774,0.774-2.028,0-2.802L38.401,5.58c-0.774-0.774-2.028-0.774-2.802,0	L24,17.179L12.401,5.58c-0.774-0.774-2.028-0.774-2.802,0L5.58,9.599c-0.774,0.774-0.774,2.028,0,2.802L17.179,24L5.58,35.599	c-0.774,0.774-0.774,2.028,0,2.802l4.019,4.019c0.774,0.774,2.028,0.774,2.802,0L42.42,12.401z'></path><linearGradient id='hbE9Evnj3wAjjA2RX0We2b_OZuepOQd0omj_gr2' x1='27.373' x2='40.507' y1='27.373' y2='40.507' gradientUnits='userSpaceOnUse'><stop offset='0' stop-color='#a8142e'></stop><stop offset='.179' stop-color='#ba1632'></stop><stop offset='.243' stop-color='#c21734'></stop></linearGradient><path fill='url(#hbE9Evnj3wAjjA2RX0We2b_OZuepOQd0omj_gr2)' d='M24,30.821L35.599,42.42c0.774,0.774,2.028,0.774,2.802,0l4.019-4.019	c0.774-0.774,0.774-2.028,0-2.802L30.821,24L24,30.821z'></path>
+</svg><pre class='list_text_d'>Не работает в России</pre></li>
+<li class='item-d'><svg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' width='24' height='24' viewBox='0 0 48 48'>
+<linearGradient id='hbE9Evnj3wAjjA2RX0We2a_OZuepOQd0omj_gr1' x1='7.534' x2='27.557' y1='7.534' y2='27.557' gradientUnits='userSpaceOnUse'><stop offset='0' stop-color='#f44f5a'></stop><stop offset='.443' stop-color='#ee3d4a'></stop><stop offset='1' stop-color='#e52030'></stop></linearGradient><path fill='url(#hbE9Evnj3wAjjA2RX0We2a_OZuepOQd0omj_gr1)' d='M42.42,12.401c0.774-0.774,0.774-2.028,0-2.802L38.401,5.58c-0.774-0.774-2.028-0.774-2.802,0	L24,17.179L12.401,5.58c-0.774-0.774-2.028-0.774-2.802,0L5.58,9.599c-0.774,0.774-0.774,2.028,0,2.802L17.179,24L5.58,35.599	c-0.774,0.774-0.774,2.028,0,2.802l4.019,4.019c0.774,0.774,2.028,0.774,2.802,0L42.42,12.401z'></path><linearGradient id='hbE9Evnj3wAjjA2RX0We2b_OZuepOQd0omj_gr2' x1='27.373' x2='40.507' y1='27.373' y2='40.507' gradientUnits='userSpaceOnUse'><stop offset='0' stop-color='#a8142e'></stop><stop offset='.179' stop-color='#ba1632'></stop><stop offset='.243' stop-color='#c21734'></stop></linearGradient><path fill='url(#hbE9Evnj3wAjjA2RX0We2b_OZuepOQd0omj_gr2)' d='M24,30.821L35.599,42.42c0.774,0.774,2.028,0.774,2.802,0l4.019-4.019	c0.774-0.774,0.774-2.028,0-2.802L30.821,24L24,30.821z'></path>
+</svg><span class='list_text_d'>Доступ к GPT-4 за 20$</span></li>
+
+<li class='item-d'><svg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' width='24' height='24' viewBox='0 0 48 48'>
+<linearGradient id='hbE9Evnj3wAjjA2RX0We2a_OZuepOQd0omj_gr1' x1='7.534' x2='27.557' y1='7.534' y2='27.557' gradientUnits='userSpaceOnUse'><stop offset='0' stop-color='#f44f5a'></stop><stop offset='.443' stop-color='#ee3d4a'></stop><stop offset='1' stop-color='#e52030'></stop></linearGradient><path fill='url(#hbE9Evnj3wAjjA2RX0We2a_OZuepOQd0omj_gr1)' d='M42.42,12.401c0.774-0.774,0.774-2.028,0-2.802L38.401,5.58c-0.774-0.774-2.028-0.774-2.802,0	L24,17.179L12.401,5.58c-0.774-0.774-2.028-0.774-2.802,0L5.58,9.599c-0.774,0.774-0.774,2.028,0,2.802L17.179,24L5.58,35.599	c-0.774,0.774-0.774,2.028,0,2.802l4.019,4.019c0.774,0.774,2.028,0.774,2.802,0L42.42,12.401z'></path><linearGradient id='hbE9Evnj3wAjjA2RX0We2b_OZuepOQd0omj_gr2' x1='27.373' x2='40.507' y1='27.373' y2='40.507' gradientUnits='userSpaceOnUse'><stop offset='0' stop-color='#a8142e'></stop><stop offset='.179' stop-color='#ba1632'></stop><stop offset='.243' stop-color='#c21734'></stop></linearGradient><path fill='url(#hbE9Evnj3wAjjA2RX0We2b_OZuepOQd0omj_gr2)' d='M24,30.821L35.599,42.42c0.774,0.774,2.028,0.774,2.802,0l4.019-4.019	c0.774-0.774,0.774-2.028,0-2.802L30.821,24L24,30.821z'></path>
+</svg><pre class='list_text_d'>Нужна зарубежная
+карта</pre></li>
+<li class='item-d'><svg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' width='24' height='24' viewBox='0 0 48 48'>
+<linearGradient id='hbE9Evnj3wAjjA2RX0We2a_OZuepOQd0omj_gr1' x1='7.534' x2='27.557' y1='7.534' y2='27.557' gradientUnits='userSpaceOnUse'><stop offset='0' stop-color='#f44f5a'></stop><stop offset='.443' stop-color='#ee3d4a'></stop><stop offset='1' stop-color='#e52030'></stop></linearGradient><path fill='url(#hbE9Evnj3wAjjA2RX0We2a_OZuepOQd0omj_gr1)' d='M42.42,12.401c0.774-0.774,0.774-2.028,0-2.802L38.401,5.58c-0.774-0.774-2.028-0.774-2.802,0	L24,17.179L12.401,5.58c-0.774-0.774-2.028-0.774-2.802,0L5.58,9.599c-0.774,0.774-0.774,2.028,0,2.802L17.179,24L5.58,35.599	c-0.774,0.774-0.774,2.028,0,2.802l4.019,4.019c0.774,0.774,2.028,0.774,2.802,0L42.42,12.401z'></path><linearGradient id='hbE9Evnj3wAjjA2RX0We2b_OZuepOQd0omj_gr2' x1='27.373' x2='40.507' y1='27.373' y2='40.507' gradientUnits='userSpaceOnUse'><stop offset='0' stop-color='#a8142e'></stop><stop offset='.179' stop-color='#ba1632'></stop><stop offset='.243' stop-color='#c21734'></stop></linearGradient><path fill='url(#hbE9Evnj3wAjjA2RX0We2b_OZuepOQd0omj_gr2)' d='M24,30.821L35.599,42.42c0.774,0.774,2.028,0.774,2.802,0l4.019-4.019	c0.774-0.774,0.774-2.028,0-2.802L30.821,24L24,30.821z'></path>
+</svg><pre class='list_text_d'>Ограничение на
+сообщения в час</pre></li>
 
 
-  </div>
 
-  <div class="cards" id="homeBlock"  style="display: none;">
 
-    <label class="card" for="item-1" id="song-1">
+</ul>
 
-      <div class="homev4-container-task task1">
-           <span class="task-hed">Узнавай новое</span>
-           <br>
-          <span>Получи ответ на вопросы в любой области: кулинария, наука, культура, работа</span>
+
+                  </div>
+                </div>
+
+            </div>
+            <div class="homev4-container11">
+                <h1 class="h-dif">Telegram Bot</h1>
+             <div class="homev4-container-diff">
+                  <div>
+                                     <ul>
+
+<li class='item-d'><svg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' width='24' height='24' viewBox='0,0,256,256'
+style='fill:#000000;'>
+<defs><linearGradient x1='21.241' y1='39.241' x2='3.541' y2='21.541' gradientUnits='userSpaceOnUse' id='color-1_VFaz7MkjAiu0_gr1'><stop offset='0.108' stop-color='#0d7044'></stop><stop offset='0.433' stop-color='#11945a'></stop></linearGradient><linearGradient x1='44.41029' y1='9.58989' x2='14.59' y2='39.41123' gradientUnits='userSpaceOnUse' id='color-2_VFaz7MkjAiu0_gr2'><stop offset='0' stop-color='#2ac782'></stop><stop offset='1' stop-color='#21b876'></stop></linearGradient></defs><g fill='none' fill-rule='nonzero' stroke='none' stroke-width='1' stroke-linecap='butt' stroke-linejoin='miter' stroke-miterlimit='10' stroke-dasharray='' stroke-dashoffset='0' font-family='none' font-weight='none' font-size='none' text-anchor='none' style='mix-blend-mode: normal'><g transform='scale(5.33333,5.33333)'><path d='M16.599,41.42l-15.019,-15.019c-0.774,-0.774 -0.774,-2.028 0,-2.802l4.019,-4.019c0.774,-0.774 2.028,-0.774 2.802,0l15.019,15.019c0.774,0.774 0.774,2.028 0,2.802l-4.019,4.019c-0.774,0.773 -2.028,0.773 -2.802,0z' fill='url(#color-1_VFaz7MkjAiu0_gr1)'></path><path d='M12.58,34.599l27.019,-27.019c0.774,-0.774 2.028,-0.774 2.802,0l4.019,4.019c0.774,0.774 0.774,2.028 0,2.802l-27.019,27.019c-0.774,0.774 -2.028,0.774 -2.802,0l-4.019,-4.019c-0.773,-0.774 -0.773,-2.028 0,-2.802z' fill='url(#color-2_VFaz7MkjAiu0_gr2)'></path></g></g>
+</svg><pre class='list_text_d'>Без VPN и виртуальных
+номеров</pre></li>
+<li class='item-d'><svg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' width='24' height='24' viewBox='0,0,256,256'
+style='fill:#000000;'>
+<defs><linearGradient x1='21.241' y1='39.241' x2='3.541' y2='21.541' gradientUnits='userSpaceOnUse' id='color-1_VFaz7MkjAiu0_gr1'><stop offset='0.108' stop-color='#0d7044'></stop><stop offset='0.433' stop-color='#11945a'></stop></linearGradient><linearGradient x1='44.41029' y1='9.58989' x2='14.59' y2='39.41123' gradientUnits='userSpaceOnUse' id='color-2_VFaz7MkjAiu0_gr2'><stop offset='0' stop-color='#2ac782'></stop><stop offset='1' stop-color='#21b876'></stop></linearGradient></defs><g fill='none' fill-rule='nonzero' stroke='none' stroke-width='1' stroke-linecap='butt' stroke-linejoin='miter' stroke-miterlimit='10' stroke-dasharray='' stroke-dashoffset='0' font-family='none' font-weight='none' font-size='none' text-anchor='none' style='mix-blend-mode: normal'><g transform='scale(5.33333,5.33333)'><path d='M16.599,41.42l-15.019,-15.019c-0.774,-0.774 -0.774,-2.028 0,-2.802l4.019,-4.019c0.774,-0.774 2.028,-0.774 2.802,0l15.019,15.019c0.774,0.774 0.774,2.028 0,2.802l-4.019,4.019c-0.774,0.773 -2.028,0.773 -2.802,0z' fill='url(#color-1_VFaz7MkjAiu0_gr1)'></path><path d='M12.58,34.599l27.019,-27.019c0.774,-0.774 2.028,-0.774 2.802,0l4.019,4.019c0.774,0.774 0.774,2.028 0,2.802l-27.019,27.019c-0.774,0.774 -2.028,0.774 -2.802,0l-4.019,-4.019c-0.773,-0.774 -0.773,-2.028 0,-2.802z' fill='url(#color-2_VFaz7MkjAiu0_gr2)'></path></g></g>
+</svg><span class='list_text_d'>GPT-4 от 260 рублей</span></li>
+<li class='item-d'><svg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' width='24' height='24' viewBox='0,0,256,256'
+style='fill:#000000;'>
+<defs><linearGradient x1='21.241' y1='39.241' x2='3.541' y2='21.541' gradientUnits='userSpaceOnUse' id='color-1_VFaz7MkjAiu0_gr1'><stop offset='0.108' stop-color='#0d7044'></stop><stop offset='0.433' stop-color='#11945a'></stop></linearGradient><linearGradient x1='44.41029' y1='9.58989' x2='14.59' y2='39.41123' gradientUnits='userSpaceOnUse' id='color-2_VFaz7MkjAiu0_gr2'><stop offset='0' stop-color='#2ac782'></stop><stop offset='1' stop-color='#21b876'></stop></linearGradient></defs><g fill='none' fill-rule='nonzero' stroke='none' stroke-width='1' stroke-linecap='butt' stroke-linejoin='miter' stroke-miterlimit='10' stroke-dasharray='' stroke-dashoffset='0' font-family='none' font-weight='none' font-size='none' text-anchor='none' style='mix-blend-mode: normal'><g transform='scale(5.33333,5.33333)'><path d='M16.599,41.42l-15.019,-15.019c-0.774,-0.774 -0.774,-2.028 0,-2.802l4.019,-4.019c0.774,-0.774 2.028,-0.774 2.802,0l15.019,15.019c0.774,0.774 0.774,2.028 0,2.802l-4.019,4.019c-0.774,0.773 -2.028,0.773 -2.802,0z' fill='url(#color-1_VFaz7MkjAiu0_gr1)'></path><path d='M12.58,34.599l27.019,-27.019c0.774,-0.774 2.028,-0.774 2.802,0l4.019,4.019c0.774,0.774 0.774,2.028 0,2.802l-27.019,27.019c-0.774,0.774 -2.028,0.774 -2.802,0l-4.019,-4.019c-0.773,-0.774 -0.773,-2.028 0,-2.802z' fill='url(#color-2_VFaz7MkjAiu0_gr2)'></path></g></g>
+</svg><span class='list_text_d'>Анализ и генерация фото</span></li>
+<li class='item-d'><svg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' width='24' height='24' viewBox='0,0,256,256'
+style='fill:#000000;'>
+
+<defs><linearGradient x1='21.241' y1='39.241' x2='3.541' y2='21.541' gradientUnits='userSpaceOnUse' id='color-1_VFaz7MkjAiu0_gr1'><stop offset='0.108' stop-color='#0d7044'></stop><stop offset='0.433' stop-color='#11945a'></stop></linearGradient><linearGradient x1='44.41029' y1='9.58989' x2='14.59' y2='39.41123' gradientUnits='userSpaceOnUse' id='color-2_VFaz7MkjAiu0_gr2'><stop offset='0' stop-color='#2ac782'></stop><stop offset='1' stop-color='#21b876'></stop></linearGradient></defs><g fill='none' fill-rule='nonzero' stroke='none' stroke-width='1' stroke-linecap='butt' stroke-linejoin='miter' stroke-miterlimit='10' stroke-dasharray='' stroke-dashoffset='0' font-family='none' font-weight='none' font-size='none' text-anchor='none' style='mix-blend-mode: normal'><g transform='scale(5.33333,5.33333)'><path d='M16.599,41.42l-15.019,-15.019c-0.774,-0.774 -0.774,-2.028 0,-2.802l4.019,-4.019c0.774,-0.774 2.028,-0.774 2.802,0l15.019,15.019c0.774,0.774 0.774,2.028 0,2.802l-4.019,4.019c-0.774,0.773 -2.028,0.773 -2.802,0z' fill='url(#color-1_VFaz7MkjAiu0_gr1)'></path><path d='M12.58,34.599l27.019,-27.019c0.774,-0.774 2.028,-0.774 2.802,0l4.019,4.019c0.774,0.774 0.774,2.028 0,2.802l-27.019,27.019c-0.774,0.774 -2.028,0.774 -2.802,0l-4.019,-4.019c-0.773,-0.774 -0.773,-2.028 0,-2.802z' fill='url(#color-2_VFaz7MkjAiu0_gr2)'></path></g></g>
+</svg><pre class='list_text_d'>Несколько запросов
+одновременно</pre></li>
+
+
+</ul>
+                  </div>
+                </div>
+            </div>
+          </div>
         </div>
+           </div>
 
-    </label>
-
-   <label class="card" for="item-2" id="song-2">
-    <div class="homev4-container-task task2">
-           <span class="task-hed">  Будь круче всех </span>
-           <br>
-          <span>Пользуйся самой умной и новой технологией в быту</span>
-        </div>
- </label>
-
-    <label class="card" for="item-3" id="song-3">
-
-  <div class="homev4-container-task task3">
-           <span class="task-hed"> Экономь время </span>
-           <br>
-          <span>Все знания у тебя в кармане. Не трать время на рутину. Больше не нужно смотреть часовые ролики или читать статьи по 10 страниц</span>
-        </div>
-
-    </label>
-
-
-  </div>
+                  {% endif %}
 
 
 
 
-</div>
 
-        </div>
+      </div>
+
 
 
 
@@ -416,8 +638,8 @@ description
                 </div>
               </div>
                     </div>
-                <div class="sub-unit"><span class = "light-text" id = "studylight" style="display: none;">Рекомендуем</span>
-              <div class="homev4-container19 tariff studylight">
+                <div class="sub-unit"><span class = "light-text"  style="display: none;">Рекомендуем</span>
+              <div class="homev4-container19 tariff textlight">
                 <div class="homev4-container20">
                   <h3 class="homev4-text11">GPT-3.5 PRO</h3>
                   <div class="homev4-container21">
@@ -460,8 +682,8 @@ description
                 </div>
             </div>
             <div class="homev4-container23 ">
-                <div class="sub-unit"><span class = "light-text" id = "worklight">Рекомендуем</span>
-              <div class="homev4-container24 tariff worklight light">
+                <div class="sub-unit"><span class = "light-text" >Рекомендуем</span>
+              <div class="homev4-container24 tariff imagelight light">
                 <div class="homev4-container25">
                   <h3 class="homev4-text14">Multi GPT-4 Standart</h3>
                   <div class="homev4-container26">
@@ -588,387 +810,106 @@ style='fill:#000000;'>
             <!-- faq -->
             <div class="faq-box-container">
 
-                 <div class="faq-block" id="homefaq"  style="display: none;" >
+                 <div class="faq-block" >
                 <div class="faq-box">
                     <div class="faq-box-question ">
-                            <h4>Что такое нейросеть?</h4>
+                            <h4>Всё, что нужно знать о нейросети
+</h4>
                             <span class="faq-box-icon"></span>
                     </div>
                     <div class="faq-box-answer">
-                        <p>Нейросеть называют искусственным интеллектом. Это программа, которая пытается имитировать человеческий интеллект. Нейросеть понимает вопрос, даёт осмысленные ответы и поддерживает диалог понимая его контекст.</p>
-
-                        <br>
-                        <p>Она знает больше, чем любой человек. Но важно помнить, что нейросети ещё развиваются. Они могут ошибаться и отвечать не так, как вы хотите. Чтобы избежать этого представьте, что вы общаетесь с ребёнком и задавайте максимально подробные вопросы. </p>
-                    </div>
-                </div>
-<div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Пользоваться нейросетью сложно?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>Нет, это просто. Задайте нейросети вопрос и получите ответ. Вот и всё. Чем точнее и детальнее вопрос, тем лучше. </p>
-                        <br>
-                        <p>Например, ответ на запрос «напиши мне текст на тему путешествий» будет так себе. Нейросеть расскажет обобщенно, что путешествия — это хорошо для здоровья, а ещё лучше ездить с семьёй. И желательно в теплые места. Но если уточнить: «напиши текст о путешествиях, где должны быть плюсы бюджетного отдыха, риски отдыхать одному и советы о том, какие лекарства брать». Вот тогда текст будет значительно лучше. Вы дали нейросети базу, которую она использовала.</p>
-                        <br>
-                        <p>Конечно, существуют тонкости в работе с GPT. Но многие из них мы объяснили. Так что листайте дальше и узнайте, как добиться желаемого результата.</p>
-                    </div>
-                </div>
-                <div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Как начать пользоваться?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>Нажимаете попробовать, переходите в Telegram и можете пользоваться</p>
-                    </div>
-                </div>
-                 <div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Какая модель лучше?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>Обе модели помогут написать текст, решить задачу по физике написать код на любом языке. Когда «тройка» и «четверка» выполняют простую задачу, разница почти на заметна.</p>
+                        <p><b>Какая модель лучше?</b>
+</p>
 
 
+                        <p>Обе модели помогут написать текст, решить задачу по физике написать код на любом языке. Когда «тройка» и «четверка» выполняют простую задачу, разница почти на заметна.
+ </p> <br>
+                        <p>Для наглядности пример, GPT-3.5 сдала олимпиаду по биологии лучше, чем 31% людей, а GPT-4, чем 99%. Это реальное исследование компании OpenAI. Плюс GPT-4 может анализировать фото
+</p>
                         <br>
-                        <p>Но в тексте «четверки» меньше воды, фактов больше на 40%, да и ошибок она делает меньше. Для наглядности пример, GPT-3.5 сдала олимпиаду по биологии лучше, чем 31% людей, а GPT-4, чем 99%. Это реальное исследование компании OpenAI. Плюс GPT-4 может анализировать фото</p>
-                    </div>
-                </div>
-
-                <div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Что такое токены?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>Токен – это условная единица для нейросети. Это как кусочки информации, которые получаются из исходных данных. Проще говоря, есть предложение "Нейросеть поможет тебе". Если его разделить на токены, получится примерно так: "Нейросеть", "поможет", "тебе".</p>
+                        <p><b>Почему нейросеть отвечает так абстрактно?</b></p>
+<p>Абстрактный вопрос – абстрактный ответ. Дайте нейросети конкретный, детальный запрос. Например, вместо «напиши SEO-статью о машинах» скажите: «Напиши SEO-статью используя слова BMW, доступная цена, небольшой пробег, качественная, надежная. С разной длинной предложений. По структуре Введение, Основная часть, Конец. Шесть абзацев. На каждый тезис по примеру». Вот тогда ответ будет хорошим. Чем больше таких «деталей», тем лучше текст
+</p>
                         <br>
-                        <p>То есть, GPT разбирает предложение на кусочки, токены, и каждый кусочек рассматривает отдельно. Это помогает нейросети понимать смысл текста и находить связи между словами.
+                        <p><b>Текст от нейросети пройдет антиплагиат?</b></p>
+                        <p>Да, пройдут. Если текст от нейросети редактировать, то узнать, что он написан не вами – невозможно. Об этом говорили даже Microsoft. Сегодня не существует систем, которые могут это определить. Те, кто говорят обратное – лгут или хотят заработать на этом
+</p>
+                        <br>
+                        <p><b>Что такое температура и роль?</b></p>
+                        <p>Команда /temperature нужна, чтобы регулировать креативность от 0 до 1.25. Чем меньше значение, тем чаще GPT повторяется, но уменьшается шанс ошибки.  Чем выше, тем креативнее и безумнее становится нейросеть. Начальное, самое стабильное значение 1.
+</p>
+                        <br>
+                        <p>После ввода команды /role вы пишете условия, которые нейросеть обязана соблюдать. Например, можно задать роль профессионального копирайтера, который пишет без воды в мире читателя. Скорее всего такой текст будет не очень. Роль слишком абстрактна. Поэтому записывайте в роль конкретные условия: какой стиль, какая длина предложений, сколько абзацев, сколько тем, сколько примеров и так далее
+</p><br>
+                        <p><b>Как работает мультимодельность?
+</b></p>
+                        <p>В мультимодельных подписках можно переключаться между GPT-4 и GPT-3.5 с помощью команды /model. Используя «тройку» расход токенов уменьшается в 10 раз. Получается, что 80 000 токенов «четвёрки» фактически 800 000 в GPT-3.5
 </p>
 
                     </div>
                 </div>
-
-                <div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Тысяча токенов это сколько слов?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>Один токен не равен одному слову. Точного отношения нет. Приблизительно 1000 токенов – 300 слов.</p>
-                    </div>
-
-                </div>
-                <div class="faq-box">
-
-                    <div class="faq-box-question ">
-                            <h4>Почему в подписках отношение токенов к страницам неверное?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>Да, вы правильно заметили. Но это не ошибка. Давайте разбираться.</p>
-                        <br>
-                        <p>К примеру, возьмём модель GPT-3.5 PRO. Купив её у вас будет 200 000 токенов. В ответах на вопросы мы говорили, что это должно быть где-то 200 страниц текста. Но в описании написано 100. </p>
-                        <br>
-                        <p>Дело в том, что токены тратятся не только на ответ, но и на вопрос. Получается, что мы делим токены на 50%, предполагая, что половина уйдет на вопрос. А другая половина на ответ. Поэтому получите вы не 200 страниц, а 100.</p>
-                    </div>
-                </div>
-                <div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Что такое анализ фото?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>Анализ фото доступен только тем, у кого есть подписка с GPT-4. Просто прикрепляете фото в чат, задаёте вопрос и всё. Готово. Но помните, что одна фотография весит 1500 токенов</p>
-
-                       </div>
-                </div>
-                     <div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Как работает генерация изображений?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>Наша нейросеть, которая генерирует фото - это DALL-E 3. Её создатели компания OpenAI, это они разработали ChatGPT.  В её картинках меньше артефактов, больше деталей, но с её помощью пока нельзя обрабатывать фото. Чтобы сгенерировать изображение введите команду /imagine. После отдельным сообщением введите запрос, что именно вы хотите получить на фото. Команда /quality - это выбор качества между Standard и HD.</p>
-
-                       </div>
-                </div>
-
-                 </div>
-
-                 <div class="faq-block" id="workfaq">
-                <div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Какая модель лучше?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>Обе модели помогут написать текст, решить задачу по физике написать код на любом языке. Когда «тройка» и «четверка» выполняют простую задачу, разница почти на заметна.</p>
-                        <br>
-                        <p>Но в тексте «четверки» меньше воды, фактов больше на 40%, да и ошибок она делает меньше. Для наглядности пример, GPT-3.5 сдала олимпиаду по биологии лучше, чем 31% людей, а GPT-4, чем 99%. Это реальное исследование компании OpenAI. Плюс GPT-4 может анализировать фото</p>
-
-                    </div>
-                </div>
-                <div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Какую модель выбрать для работы?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>Для работы рекомендуем GPT-4. «Четвёрка» ошибается реже, всегда соблюдает роль. В её текстах меньше воды и они более структурированы.</p>
-                    </div>
-                </div>
-                <div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Как работает мультимодельность?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>В мультимодельных подписках можно переключаться между GPT-4 и GPT-3.5 с помощью команды /model. Используя «тройку» расход токенов уменьшается в 10 раз. Получается, что 80 000 токенов «четвёрки» фактически 800 000 в GPT-3.5.</p>
-                        <br>
-                    </div>
-                </div>
-                <div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Почему нейросеть отвечает так абстрактно?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>Абстрактный вопрос – абстрактный ответ. Это главное правило в работе с любой нейросетью. Дайте нейросети конкретный, детальный запрос. Например, вместо «напиши SEO-статью о машинах» скажите: «Напиши SEO-статью используя слова BMW, доступная цена, небольшой пробег, качественная, надежная. С разной длинной предложений. По структуре Введение Основная часть Конец. Шесть абзацев. На каждый тезис по примеру». Вот тогда ответ будет удовлетворимым. Чем больше таких «деталей», тем лучше текст.</p>
-                        <br>
-                        <p>Ещё зависит и от модели. Если пользуетесь GPT-3.5, то вода в тексте для неё это норма. GPT-4 тоже может «наводнить» текст. Но чтобы такого не случалось ставьте четкую задачу и роль.</p>
-
-                    </div>
-                </div>
-                <div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Тексты от нейросети пройдут антиплагиат?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>Да, пройдут. Если текст от нейросети редактировать, то узнать, что он написан не вами – невозможно. Об этом говорили даже Microsoft. Сегодня не существует систем, которые могут это определить. Те, кто говорят обратное – лгут или хотят заработать на этом.</p>
-                    </div>
-                </div>
-
-                <div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Что такое токены?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>Токен – это условная единица для нейросети. Это как кусочки информации, которые получаются из исходных данных. Проще говоря, есть предложение "Нейросеть поможет тебе". Если его разделить на токены, получится примерно так: "Нейросеть", "поможет", "тебе".</p>
-                        <br>
-                        <p>То есть, GPT разбирает предложение на кусочки, токены, и каждый кусочек рассматривается отдельно. Это помогает нейросети понимать смысл текста и находить связи между словами.</p>
-                    </div>
-                </div>
-
-                <div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Один токен это сколько символов?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>Один токен не равен одному символу. Точного отношения нет. Приблизительно 1000 токенов – 2300 символов.</p>
-                    </div>
-                </div>
-
-               <div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Почему в подписках отношение токенов к страницам неверное?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>Да, вы правильно заметили. Но это не ошибка. Давайте разбираться.</p>
-                        <br>
-                        <p>К примеру, возьмём модель GPT-3.5 PRO. Купив её у вас будет 200 000 токенов. В ответах на вопросы мы говорили, что это должно быть где-то 200 страниц текста. Но в описании написано 100. </p>
-                        <br>
-                        <p>Дело в том, что токены тратятся не только на ответ, но и на вопрос. Получается, что мы делим токены на 50%, предполагая, что половина уйдет на вопрос. А другая половина на ответ. Поэтому получите вы не 200 страниц, а 100.</p>
-                    </div>
-                </div>
 <div class="faq-box">
                     <div class="faq-box-question ">
-                            <h4>Что такое анализ фото?</h4>
+                            <h4>Всё, что нужно знать о токенах</h4>
                             <span class="faq-box-icon"></span>
                     </div>
                     <div class="faq-box-answer">
-                        <p>Анализ фото доступен только тем, у кого есть подписка с GPT-4. Просто прикрепляете фото в чат, задаёте вопрос и всё. Готово. Но помните, что одна фотография весит 1500 токенов</p>
+                        <p><b>Что такое токены?
+</b>
+</p>
 
-                       </div>
-                </div>
-                     <div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Как работает генерация изображений?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>Наша нейросеть, которая генерирует фото - это DALL-E 3. Её создатели компания OpenAI, это они разработали ChatGPT.  В её картинках меньше артефактов, больше деталей, но с её помощью пока нельзя обрабатывать фото. Чтобы сгенерировать изображение введите команду /imagine. После отдельным сообщением введите запрос, что именно вы хотите получить на фото. Команда /quality - это выбор качества между Standard и HD.</p>
-
-                       </div>
-                </div>
-
-                <div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Что такое роль у нейросети?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>После ввода команды /role вы пишете условия, которые нейросеть обязана соблюдать. Например, можно задать роль профессионального копирайтера, который пишет без воды в мире читателя. Скорее всего такой текст будет не очень. Роль слишком абстрактна. Поэтому записывайте в роль конкретные условия: какой стиль, какая длина предложений, сколько абзацев, сколько тем, сколько примеров и так далее.</p>
-                    </div>
-                </div>
-                <div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Что такое температура у нейросети?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>Команда /temperature нужна, чтобы регулировать креативность от 0 до 1.25. Чем меньше значение, тем чаще GPT повторяется, но уменьшается шанс ошибки.  Чем выше, тем креативнее и безумнее становится нейросеть. Начальное, самое стабильное значение 1.</p>
-                    </div>
-                </div>
-                 </div>
-
-                <div class="faq-block" id="studyfaq"  style="display: none;">
-                <div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Какая модель лучше?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>Обе модели помогут написать текст, решить задачу по физике написать код на любом языке. Когда «тройка» и «четверка» выполняют простую задачу, разница почти на заметна.</p>
-                       <br>
-                        <p>Но в тексте «четверки» меньше воды, фактов больше на 40%, да и ошибок она делает меньше. Для наглядности пример, GPT-3.5 сдала олимпиаду по биологии лучше, чем 31% людей, а GPT-4, чем 99%. Это реальное исследование компании OpenAI. Плюс GPT-4 может анализировать фото</p>
-
-                    </div>
-                </div>
-                <div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Какую модель выбрать для учёбы?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>Для учёбы лучше выбрать GPT-4 и GPT-3.5 одновременно. Да, «четвёрка» дороже. Но пользы от неё больше, чем от GPT-3.5. GPT-4 ошибается реже, всегда соблюдает роль и пишет лучше. Использует реальные факты, а не выдумывает их. Текст более структурированный, да и повторяется «четвёрка» меньше.</p>
-                   <br>
-                        <p>
-                       Но для воды «тройка» самое то. Её можно использовать, чтобы создать план работы. Поможет написать предмет, объект, цель, задачи и т.д.
-                   </p>
+                        <p>Токен – это условная единица для нейросети. Это как кусочки информации, которые получаются из исходных данных. Проще говоря, есть предложение "Нейросеть поможет тебе". Если его разделить на токены, получится примерно так: "Нейросеть", "поможет", "тебе".
+</p>
                         <br>
-                        <p>Для «списка литературы» всегда выбирайте GPT-4. Иначе среди научной литературы обязательно появиться «Хоббит» Толкиена или вообще несуществующая книга. </p>
-
-                    </div>
-                </div>
-                <div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Как работает мультимодельность?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>В мультимодельных подписках можно переключаться между GPT-4 и GPT-3.5 с помощью команды /model. Используя «тройку» расход токенов уменьшается в 10 раз. Получается, что 80 000 токенов «четвёрки» фактически 800 000 в GPT-3.5.</p>
-                        <br>
-                    </div>
-                </div>
-                <div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Почему нейросеть отвечает так абстрактно?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>Абстрактный вопрос – абстрактный ответ. Это главное правило в работе с любой нейросетью. Дайте нейросети конкретный, детальный запрос. Например, вместо «придумай текст для презентации о истории Руси» скажите: «Напиши текст о древней Руси. В нём должен быть разбор политического устройства, экономических условий и культурных обычаев. По структуре Введение Основная часть Конец. Как можно меньше абзацев. На каждый тезис и факт по реальному примеру. Ссылайся на существующие работы, настоящих ученых по этой теме». Вот тогда ответ будет удовлетворимым. Чем больше таких «деталей», тем лучше текст.</p>
+                        <p>То есть, GPT разбирает предложение на кусочки, токены, и каждый кусочек рассматривается отдельно. Это помогает нейросети понимать смысл текста и находить связи между словами</p>
                     <br>
-                        <p>Ещё зависит от модели. Если пользуетесь GPT-3.5, то вода в тексте для неё это норма. GPT-4 тоже может «наводнить» текст. Чтобы такого не случалось ставьте четкую задачу и роль.</p>
+                        <p><b>Один токен это сколько символов?</b></p>
+                        <p>Один токен не равен одному символу. Точного отношения нет. Приблизительно 1000 токенов – 2300 символов
+</p>
 
-
-                    </div>
-                </div>
-
-                <div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Тексты от нейросети пройдут антиплагиат?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>Да, пройдут. Если текст от нейросети редактировать, то узнать, что он написан не вами – невозможно. Об этом говорили даже Microsoft. Сегодня не существует систем, которые могут это определить. Те, кто говорят обратное – лгут или хотят заработать на этом.</p>
-                    </div>
-                </div>
-
-                <div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Что такое токены?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>Токен – это условная единица для нейросети. Это как кусочки информации, которые получаются из исходных данных. Проще говоря, есть предложение "Нейросеть поможет тебе". Если его разделить на токены, получится примерно так: "Нейросеть", "поможет", "тебе".</p>
                         <br>
-                        <p>То есть, GPT разбирает предложение на кусочки, токены, и каждый кусочек рассматривается отдельно. Это помогает нейросети понимать смысл текста и находить связи между словами.</p>
+                        <p><b>Почему в тарифах отношение токенов к страницам не верное?</b></p>
 
-                    </div>
-                </div>
-
-                <div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Тысяча токенов это сколько страниц?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>Один токен не равен одному символу. Точного отношения нет. Приблизительно 1000 токенов – это полторы страницы А4, Times New Roman 14.</p>
-                    </div>
-                </div>
-
-                <div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Почему в подписках отношение токенов к страницам неверное?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
                         <p>Да, вы правильно заметили. Но это не ошибка. Давайте разбираться.</p>
                         <br>
-                        <p>К примеру, возьмём модель GPT-3.5 PRO. Купив её у вас будет 200 000 токенов. В ответах на вопросы мы говорили, что это должно быть где-то 200 страниц текста. Но в описании написано 100. </p>
-                        <br>
+<p>К примеру, возьмём модель GPT-3.5 PRO. Купив её у вас будет 200 000 токенов. В ответах на вопросы мы говорили, что это должно быть где-то 200 страниц текста. Но в описании написано 100.</p>
+<br>
                         <p>Дело в том, что токены тратятся не только на ответ, но и на вопрос. Получается, что мы делим токены на 50%, предполагая, что половина уйдет на вопрос. А другая половина на ответ. Поэтому получите вы не 200 страниц, а 100.</p>
-                    </div>
-                </div>
-<div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Что такое анализ фото?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>Анализ фото доступен только тем, у кого есть подписка с GPT-4. Просто прикрепляете фото в чат, задаёте вопрос и всё. Готово. Но помните, что одна фотография весит 1500 токенов</p>
+<br>
 
-                       </div>
-                </div>
-
-                    <div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Как работает генерация изображений?</h4>
-                            <span class="faq-box-icon"></span>
                     </div>
-                    <div class="faq-box-answer">
-                        <p>Наша нейросеть, которая генерирует фото - это DALL-E 3. Её создатели компания OpenAI, это они разработали ChatGPT.  В её картинках меньше артефактов, больше деталей, но с её помощью пока нельзя обрабатывать фото. Чтобы сгенерировать изображение введите команду /imagine. После отдельным сообщением введите запрос, что именно вы хотите получить на фото. Команда /quality - это выбор качества между Standard и HD.</p>
-
-                       </div>
                 </div>
                 <div class="faq-box">
                     <div class="faq-box-question ">
-                            <h4>Что такое роль у нейросети?</h4>
+                            <h4>О фотографиях и картинках в нейросети</h4>
                             <span class="faq-box-icon"></span>
                     </div>
                     <div class="faq-box-answer">
-                        <p>После ввода команды /role вы пишете условия, которые нейросеть обязана соблюдать. Например, можно задать роль профессора, который пишет научную работу. Скорее всего такой текст будет не очень. Роль слишком абстрактна. Поэтому записывайте в роль конкретные условия: какой стиль, какая длина предложений, сколько абзацев, сколько тем, сколько примеров и так далее.</p>
-                    </div>
-                </div>
+                        <p><b>Что такое анализ фото?</b></p>
+                        <p>Анализ фото доступен только тем, у кого есть подписка с GPT-4. Просто прикрепляете фото в чат, задаёте вопрос и всё. Готово. GPT поймет, что написано на фото и даст ответ. Но помните, что одна фотография весит 1500 токенов.</p>
+                    <br>
+                        <p><b>Как сгенерировать изображение?</b></p>
+<p>Чтобы сгенерировать изображение введите команду /imagine. После отдельным сообщением введите запрос, что именно вы хотите получить на фото. Команда /quality - это выбор качества между Standard и HD.</p>
 
-                <div class="faq-box">
-                    <div class="faq-box-question ">
-                            <h4>Что такое температура у нейросети?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>Команда /temperature нужна, чтобы регулировать креативность от 0 до 1.25. Чем меньше значение, тем чаще GPT повторяется, но уменьшается шанс ошибки.  Чем выше, тем креативнее и безумнее становится нейросеть. Для списка литературы советуем ставить 0. Но начальное, самое стабильное значение 1.
+<br>
+                        <p><b>Какая нейросеть генерирует картинки?</b></p>
+                        <p>Мы пользуемся DALL-E 3. Её создатели компания OpenAI, это они разработали ChatGPT. В её изображениях меньше артефактов, больше деталей, но с её помощью пока нельзя обрабатывать фото. </p>
+<br>
+                        <p><b>Какие ограничения?</b></p>
+                        <p>Компания OpenAI не разрешает генерировать фото с известными личностями. Также запрет на генерацию откровенного 18+ контента.
 </p>
+                        <br>
+                        <p><b>Сколько стоит?</b></p>
+                        <p>Одна Standard генерация 1024х1024 стоит 2000 токенов. Сгенерировать 1024х1024 HD стоит 4000 токенов.</p>
+
+
                     </div>
                 </div>
-</div>
+
+
+                 </div>
+
+
 
             </div>
 

@@ -132,7 +132,7 @@ def home(request):
     value = request.GET.get('type')
 
     if not value:
-            value = 'work'
+            value = 'text'
 
     context = {
         'utm_source': utm_source,

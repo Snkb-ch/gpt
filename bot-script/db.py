@@ -332,7 +332,9 @@ class Database:
     def get_client_id(self, user_id):
         return User.objects.get(user_id=user_id).client_id_metrika
 
-
+    @sync_to_async
+    def client_id_exist(self, user_id):
+        return User.objects.get(user_id=user_id).client_id_metrika
     @sync_to_async
     def count_new_users_trial(self):
         date = datetime.now()

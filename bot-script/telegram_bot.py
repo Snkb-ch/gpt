@@ -1213,7 +1213,7 @@ class ChatGPTTelegramBot:
                 income = order_info['price']
                 client_id = await self.db.get_client_id(user_id)
                 count = await self.db_analytics_for_sessions.count_orders(user_id)
-                if count == 2 and client_id != None:
+                if count == 2 and client_id is not None:
 
                     await self.add_client(update, context, user_id, client_id)
                 await self.add_order(user_id, income, cost, order_id, product)
