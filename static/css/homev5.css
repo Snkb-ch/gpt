@@ -799,7 +799,7 @@ display:none;
     padding-right:15px;
   justify-content: center;
   border-radius: 32px;
-    background-color: #ffd21e;
+    background-color: white;
     border-color: #ffffff;
     color: black;
     font-weight: 600;
@@ -808,8 +808,8 @@ display:none;
 
 }
 .homev4-container36:hover{
-background-color: #ffffff;
-box-shadow: 0px 0px 10px 0px #ffffff;
+background-color: #ffd21e;
+transition:0.8s;
 color: black;
 }
 .im{
@@ -922,8 +922,9 @@ font-weight: 600;
 
 .type-active{
 color: black;
-background-color: white;
+background-color: #ffd21e;
 }
+
 
 .homev4-image {
   width: 100%;
