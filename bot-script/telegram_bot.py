@@ -344,7 +344,7 @@ class ChatGPTTelegramBot:
                 arg = update.message.text[7:]
 
                 arg = arg.split('_')
-                print(arg)
+                print(arg, user_id)
                 # если в списке нет 5 элементов, запонить его None
                 if len(arg) < 4:
                     for i in range(4 - len(arg)):
