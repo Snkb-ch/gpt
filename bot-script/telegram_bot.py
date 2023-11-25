@@ -329,6 +329,7 @@ class ChatGPTTelegramBot:
 
 
         if not await self.db.user_exists(user_id):
+            print('start' + str(user_id))
             await self.db.add_user(user_id)
             await self.calc_end_time(user_id)
             sub_id = await self.db.get_sub_type(user_id)
