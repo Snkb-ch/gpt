@@ -1406,6 +1406,19 @@ class ChatGPTTelegramBot:
 
         chat_id = update.effective_chat.id
         user_id = update.message.from_user.id
+
+
+        if not await self.db.user_exists(user_id):
+            print("user not in db " + str(user_id) )
+            try:
+                await update.message.reply_text(
+                    message_thread_id=get_thread_id(update),
+                    text='Введите команду /start для начала использования бота',
+                )
+            except:
+                print("error in message that user not in db")
+                pass
+
         model_config = await self.db.get_model_config(user_id)
         photo_list = []
 
