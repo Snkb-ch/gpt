@@ -187,11 +187,46 @@
     }
 
 })();
+function showfromtype(type) {
 
+
+var fifferblock = document.getElementById('texttype06');
+var prich = document.getElementById('pric-h');
+var prichim = document.getElementById('pric-h-im');
+var tr1 = document.getElementById('tr-1');
+var text23 = document.getElementById('23text');
+var im23 = document.getElementById('23im');
+var imageex = document.getElementById('imageex');
+
+
+
+
+if (type == 'image') {
+    fifferblock.style.display = 'none';
+    tr1.style.display = 'none';
+    prich.style.display = 'none';
+    text23.style.display = 'none';
+    im23.style.display = 'flex';
+    prichim.style.display = 'flex';
+    imageex.style.display = 'block';
+} else if (type == 'text') {
+    fifferblock.style.display = 'flex';
+    tr1.style.display = 'flex';
+    prich.style.display = 'flex';
+    prichim.style.display = 'none';
+        text23.style.display = 'flex';
+    im23.style.display = 'none';
+    imageex.style.display = 'none';
+}
+
+       console.log(type + 'f');
+
+}
 
 
 function showBlock(type) {
         // Hide all blocks
+    showfromtype(type)
          var buttons = document.querySelectorAll('.homev4-container36');
     buttons.forEach(function(button) {
       button.classList.remove('type-active');
@@ -200,7 +235,9 @@ function showBlock(type) {
 
     // Add 'type-active' class to the clicked button
     var clickedButton = document.querySelector('[data-type="' + type + '"]');
+
     clickedButton.classList.add('type-active');
+
 
 
         if (window.innerWidth < 800) {
@@ -222,14 +259,52 @@ function showBlock(type) {
         }
         else{
         document.getElementById(type + 'Blockwide').style.display = 'flex';
-        document.getElementById(type + 'Blockwide2').style.display = 'flex';
+
+
         }
+
 
 
 
     }
 
   $(document).ready(function () {
+
+  var urlParams = new URLSearchParams(window.location.search);
+var type = urlParams.get('type') || 'text';
+console.log(type);
+showfromtype(type)
+   var clickedButton = document.querySelector('[data-type="' + type + '"]');
+    clickedButton.classList.add('type-active');
+
+
+
+        if (window.innerWidth < 800) {
+
+        var blocks = document.getElementsByClassName('cards');
+        }
+        else{
+        var blocks = document.getElementsByClassName('homev4-container-tasks');
+        }
+        for (var i = 0; i < blocks.length; i++) {
+            blocks[i].style.display = 'none';
+        }
+
+
+
+         if (window.innerWidth < 800) {
+
+        // Show the selected block
+        document.getElementById(type + 'Block').style.display = 'flex';
+        }
+        else{
+        document.getElementById(type + 'Blockwide').style.display = 'flex';
+
+
+
+        }
+
+
     // Initialize Hammer.js on the container element
     var container = document.querySelector('.container');
     var hammer = new Hammer(container);
@@ -268,33 +343,3 @@ ym(94971306, 'getClientID', function(clientID) {
   $('.button-tg-2').attr('href', link); // Обновляем href
 });
 
-
-//$(document).ready(function(){
-//  var container = document.querySelector('.scroll-container');
-//  var images = document.querySelectorAll('.homev4-container-task-img');
-//
-//  // Клонируем изображения для заполнения контейнера
-//  function cloneImages() {
-//    for (let i = 0; i < images.length; i++) {
-//      var clone = images[i].cloneNode(true);
-//      container.appendChild(clone);
-//    }
-//  }
-//
-//  // Клонируем изображения дважды для создания эффекта бесконечности
-//  cloneImages();
-//  cloneImages();
-//
-//  // Используем MutationObserver для отслеживания, когда клонируемые элементы выходят за границу контейнера
-//  var observer = new MutationObserver(function(mutations) {
-//    mutations.forEach(function(mutation) {
-//      if (mutation.addedNodes.length) {
-//        // Когда новый клон добавляется, вновь клонируем изображения
-//        cloneImages();
-//      }
-//    });
-//  });
-//
-//  // Настройка observer
-//  observer.observe(container, { childList: true });
-//});

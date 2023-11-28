@@ -311,7 +311,7 @@ margin-bottom:20px;
 .item{
 height:24px;
 display:flex;
-margin-bottom: 20px;
+margin-bottom: 30px;
   align-items: center;
 
 }.item_or{
@@ -649,9 +649,14 @@ color: grey;
   background-color: #1d2a49;
   color: white;
 }
+.tarif-list{
+
+  line-height: 3;
+
+}
 .tariff{
   width: 280px;
-  height: 530px;
+  height: 550px;
   line-height: 2;
 }
 .homev4-container29 {
@@ -2058,4 +2063,15 @@ input[type=radio] {
 
 flex-direction: column;
 }
+}
+
+.texttype06{
+
+display:flex;
+
+}
+.imagetype06{
+
+display:none;
+
 }
