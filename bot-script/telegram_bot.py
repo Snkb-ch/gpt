@@ -1071,9 +1071,7 @@ class ChatGPTTelegramBot:
 
     async def button(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_id = update.callback_query.from_user.id
-        if not await self.is_active(update, context, update.callback_query.from_user.id):
-            await self.send_end_of_subscription_message(update, context)
-            return
+
         if update.callback_query.data == 'st-1':
             self.quality_list[user_id] = 'st-1'
             await update.effective_message.reply_text(
