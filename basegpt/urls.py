@@ -31,6 +31,7 @@ path('register/', views.RegisterPage.as_view(), name='register'),
     path('success_result', views.success_result, name='success_result'),
 path('exam_text_get_idea', views.exam_text_get_idea, name='exam_text_get_idea'),
     path('check_idea/<int:id>/', views.check_idea, name='check_idea'),
+    path('session/', views.session, name='session'),
 
 
 

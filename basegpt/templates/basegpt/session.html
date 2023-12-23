@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form method="POST" action="{% url 'session' %}">
+  {% csrf_token %}
+  <textarea name="message"></textarea>
+  <select name="input1">
+     <option value="gpt-4-vision-preview">gpt-4-vision-preview</option>
+     <option value="gpt-3.5-turbo-1106">gpt-3.5-turbo-1106</option>
+
+  </select>
+    <input type="text" name="input2" value="helpful assistant">
+    <input type="text" name="input3" value="1">
+  <button type="submit">Send</button>
+
+</form>
+  <textarea>{{ text }}</textarea>
+
+</body>
+</html>

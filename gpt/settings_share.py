@@ -95,11 +95,11 @@ DATABASES = {
     'bottg': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'bottg',
-        'USER': 'snk',
-        'PASSWORD': '99679926',
-        'HOST': 'localhost',
+        'USER': 'gen_user',
+        'PASSWORD': 'snk99679926',
+        'HOST': '217.25.92.7',
         'PORT': '5432',
-}
+    }
 }
 
 # Password validation

@@ -1137,3 +1137,41 @@ def contact(request):
     else:
         form = ContactForm()
     return render(request, 'basegpt/contact.html', {'form': form})
+
+
+def session(request):
+    if request.method == 'POST':
+        ans = ''
+        text = request.POST['message']
+        model = request.POST['input1']
+        role = request.POST['input2']
+        temp = float(request.POST['input3'])
+        # split texzt by $
+        new_text = text.split('$')
+        if model == 'gpt-3.5-turbo-1106':
+            max_tokens = 4096
+        elif model == 'gpt-4-vision-preview':
+            max_tokens = 128000
+
+        openai.api_key = settings.OPENAI_API_KEY
+        for i in new_text:
+            res = openai.ChatCompletion.create(
+                model=model,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": role
+                    },
+
+                    {"role": "user",
+                     "content": i},
+                ],
+                temperature=temp,
+                max_tokens=max_tokens,
+            )
+            res_text = res.choices[0]['message']['content']
+
+            ans += res_text + '\n'
+        return render(request, 'basegpt/session.html', {'text': ans})
+
+    return render(request, 'basegpt/session.html')

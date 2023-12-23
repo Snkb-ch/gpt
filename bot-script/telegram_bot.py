@@ -1071,7 +1071,7 @@ class ChatGPTTelegramBot:
 
     async def button(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_id = update.callback_query.from_user.id
-
+ 
         if update.callback_query.data == 'st-1':
             self.quality_list[user_id] = 'st-1'
             await update.effective_message.reply_text(
