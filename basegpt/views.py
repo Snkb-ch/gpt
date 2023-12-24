@@ -1173,12 +1173,12 @@ def session(request):
 
             ans += res_text + '\n'
         # ans in txt file
-        with open('session.txt', 'w') as f:
+        with open('static/session.txt', 'w') as f:
             f.write(ans)
 
     # if file exists, read it
-    if os.path.exists('session.txt'):
-        with open('session.txt', 'r') as f:
+    if os.path.exists('static/session.txt'):
+        with open('static/session.txt', 'r') as f:
             ans = f.read()
     else:
         ans = ''
