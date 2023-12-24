@@ -1138,7 +1138,29 @@ def contact(request):
         form = ContactForm()
     return render(request, 'basegpt/contact.html', {'form': form})
 
+def answer(new_text, model, role, temp, max_tokens):
+    ans = ''
+    for i in new_text:
+        res = openai.ChatCompletion.create(
+            model=model,
+            messages=[
+                {
+                    "role": "system",
+                    "content": role
+                },
 
+                {"role": "user",
+                 "content": i},
+            ],
+            temperature=temp,
+            max_tokens=max_tokens,
+        )
+        res_text = res.choices[0]['message']['content']
+
+        ans += res_text + '\n'
+    # ans in txt file
+    with open('static/session.txt', 'w') as f:
+        f.write(ans)
 def session(request):
     if request.method == 'POST':
         ans = ''
@@ -1154,27 +1176,15 @@ def session(request):
             max_tokens = 128000
 
         openai.api_key = settings.OPENAI_API_KEY
-        for i in new_text:
-            res = openai.ChatCompletion.create(
-                model=model,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": role
-                    },
+        # thread
+        t = threading.Thread(target=answer, args=(new_text, model, role, temp, max_tokens), daemon=True)
+        t.start()
 
-                    {"role": "user",
-                     "content": i},
-                ],
-                temperature=temp,
-                max_tokens=max_tokens,
-            )
-            res_text = res.choices[0]['message']['content']
+        return redirect('session')
 
-            ans += res_text + '\n'
-        # ans in txt file
-        with open('static/session.txt', 'w') as f:
-            f.write(ans)
+
+
+
 
     # if file exists, read it
     if os.path.exists('static/session.txt'):
