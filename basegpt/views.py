@@ -1172,6 +1172,15 @@ def session(request):
             res_text = res.choices[0]['message']['content']
 
             ans += res_text + '\n'
-        return render(request, 'basegpt/session.html', {'text': ans})
+        # ans in txt file
+        with open('session.txt', 'w') as f:
+            f.write(ans)
 
-    return render(request, 'basegpt/session.html')
+    # if file exists, read it
+    if os.path.exists('session.txt'):
+        with open('session.txt', 'r') as f:
+            ans = f.read()
+    else:
+        ans = ''
+
+    return render(request, 'basegpt/session.html', {'ans': ans})
