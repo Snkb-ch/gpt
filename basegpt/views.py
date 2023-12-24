@@ -1153,7 +1153,7 @@ def answer(new_text, model, role, temp, max_tokens):
                  "content": i},
             ],
             temperature=temp,
-            max_tokens=max_tokens,
+            max_tokens=4096,
         )
         res_text = res.choices[0]['message']['content']
 
