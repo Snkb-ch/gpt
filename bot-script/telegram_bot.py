@@ -391,6 +391,12 @@ class ChatGPTTelegramBot:
 Подробнее /help
 ''',
             )
+
+            await update.effective_message.reply_text(
+                message_thread_id=get_thread_id(update),
+                text='Подпишитесь на канал @echokosmosa и получите скидку 20%',
+            )
+
             return
         else:
             await self.db.set_unblocked_user(user_id)
