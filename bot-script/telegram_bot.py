@@ -965,6 +965,11 @@ class ChatGPTTelegramBot:
             reply_markup=reply_markup
         )
 
+        await update.effective_message.reply_text(
+            message_thread_id=get_thread_id(update),
+            text='Подпишитесь на канал @echokosmosa и получите скидку 20%',
+        )
+
     async def send_end_of_subscription_message(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
             message_thread_id=get_thread_id(update),
@@ -1135,7 +1140,30 @@ class ChatGPTTelegramBot:
 
         Configuration.account_id = self.config['shop_id']
         Configuration.secret_key = self.config['yookassa_key']
+        discount = False
+        try:
+            user_channel_status = await self.bot.get_chat_member(chat_id='@echokosmosa', user_id=user_id)
+            print(user_channel_status.status)
+            if user_channel_status.status != 'left':
+                discount = True
+            else:
+                pass
+        except Exception as e:
+            print(e)
+            pass
+
+
         price = await self.db.get_price(query.data)
+
+        if discount:
+            price = price * 0.8
+
+            await update.effective_message.reply_text(
+                message_thread_id=get_thread_id(update),
+                text='Вам предоставлена скидка 20% за подписку на канал @echokosmosa',
+            )
+
+
         sub_name = await self.db.get_sub_name(query.data)
         email = await self.db.get_email(query.from_user.id)
         try:
