@@ -1140,7 +1140,10 @@ def contact(request):
 
 def answer(new_text, model, role, temp, max_tokens):
     ans = ''
+    print(len(new_text))
     for i in new_text:
+        print('text')
+        print(i)
         res = openai.ChatCompletion.create(
             model=model,
             messages=[

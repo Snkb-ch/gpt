@@ -59,6 +59,8 @@ class User(models.Model):
     group_id = models.BigIntegerField(null=True, blank=True)
     # utm_content
     client_id_metrika = models.BigIntegerField(null=True, blank=True)
+    tg_channel_used = models.IntegerField(null=True, blank=True, default=0)
+
 
 
 
@@ -131,3 +133,5 @@ class AdminStats(models.Model):
     personal_cost = models.FloatField(default=0)
     type_now = models.CharField(max_length=50, null=True)
     objects = BotTGUserManager()
+
+

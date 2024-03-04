@@ -370,3 +370,14 @@ class Database:
 
         user.client_id_metrika = client_id_metrika if client_id_metrika and client_id_metrika != 'None' else None
         user.save()
+
+    @sync_to_async
+    def get_promo_used(self, user_id):
+        return User.objects.get(user_id=user_id).tg_channel_used
+
+
+    @sync_to_async
+    def add_promo_used(self, user_id):
+        user = User.objects.get(user_id=user_id)
+        user.tg_channel_used += 1
+        user.save()

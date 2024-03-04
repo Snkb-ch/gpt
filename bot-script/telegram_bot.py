@@ -971,11 +971,15 @@ class ChatGPTTelegramBot:
             reply_markup=reply_markup
         )
 
-        await update.effective_message.reply_text(
-            message_thread_id=get_thread_id(update),
-            text='Подпишитесь на канал @echokosmosa и получите скидку 20%',
-        )
+        try:
+            if await self.db.get_promo_used(user_id) == 0:
 
+                await update.effective_message.reply_text(
+                    message_thread_id=get_thread_id(update),
+                    text='Подпишитесь на канал @echokosmosa и получите скидку 20%',
+                )
+        except:
+            pass
     async def send_end_of_subscription_message(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
             message_thread_id=get_thread_id(update),
@@ -1148,12 +1152,15 @@ class ChatGPTTelegramBot:
         Configuration.secret_key = self.config['yookassa_key']
         discount = False
         try:
-            user_channel_status = await self.bot.get_chat_member(chat_id='@echokosmosa', user_id=user_id)
-            print(user_channel_status.status)
-            if user_channel_status.status != 'left':
-                discount = True
-            else:
-                pass
+            if await self.db.get_promo_used(user_id) == 0:
+
+
+                user_channel_status = await self.bot.get_chat_member(chat_id='@echokosmosa', user_id=user_id)
+                print(user_channel_status.status)
+                if user_channel_status.status != 'left':
+                    discount = True
+                else:
+                    pass
         except Exception as e:
             print(e)
             pass
@@ -1163,6 +1170,7 @@ class ChatGPTTelegramBot:
 
         if discount:
             price = price * 0.8
+
 
             await update.effective_message.reply_text(
                 message_thread_id=get_thread_id(update),
@@ -1210,6 +1218,11 @@ class ChatGPTTelegramBot:
 
 
         if payment_success:
+
+            try:
+                await self.db.add_promo_used(user_id)
+            except:
+                pass
 
 
             user_id = update.callback_query.from_user.id
