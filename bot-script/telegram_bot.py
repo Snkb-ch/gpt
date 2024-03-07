@@ -859,7 +859,20 @@ class ChatGPTTelegramBot:
 
     async def buy(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
 
+
+
         user_id = update.message.from_user.id
+
+        if not await self.db.user_exists(user_id):
+            print("user not in db " + str(user_id) )
+            try:
+                await update.message.reply_text(
+                    message_thread_id=get_thread_id(update),
+                    text='Введите команду /start для начала использования бота',
+                )
+            except:
+                print("error in buy that user not in db")
+                pass
 
         sub = await self.db.get_sub_type(user_id)
         if await  self.db.get_status(user_id) == 'active' and sub != 1:
