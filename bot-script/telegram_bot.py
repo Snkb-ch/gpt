@@ -394,7 +394,9 @@ class ChatGPTTelegramBot:
 
             await update.effective_message.reply_text(
                 message_thread_id=get_thread_id(update),
-                text='Подпишитесь на канал @echokosmosa и получите скидку 20%',
+
+                parse_mode='HTML',
+                text='Подпишись на канал <a href="https://t.me/+lvsQbyECDwE0MDdi">@echokosmosa</a> и получи скидку 20%',
             )
 
             return
@@ -976,7 +978,8 @@ class ChatGPTTelegramBot:
 
                 await update.effective_message.reply_text(
                     message_thread_id=get_thread_id(update),
-                    text='Подпишитесь на канал @echokosmosa и получите скидку 20%',
+                    parse_mode='HTML',
+                    text='Подпишись на канал <a href="https://t.me/+lvsQbyECDwE0MDdi">@echokosmosa</a> и получи скидку 20%',
                 )
         except:
             pass
