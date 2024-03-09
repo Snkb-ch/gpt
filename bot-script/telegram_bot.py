@@ -624,6 +624,7 @@ class ChatGPTTelegramBot:
 
     async def model(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_id = update.message.from_user.id
+        self.status[user_id] = 'prompt'
         if await self.is_active(update, context, update.message.from_user.id) == False:
             await update.message.reply_text(
                 message_thread_id=get_thread_id(update),
@@ -882,16 +883,36 @@ class ChatGPTTelegramBot:
 
 При повторной покупке неиспользованные токены не переносятся''',
             )
+        discount = False
+        prices = [50, 90, 260, 650]
+        prices_new = prices
+        prices_old = ['' for i in prices]
+        try:
+            if await self.db.get_promo_used(user_id) == 0:
+
+                user_channel_status = await self.bot.get_chat_member(chat_id='@echokosmosa', user_id=user_id)
+                print(user_channel_status.status)
+                if user_channel_status.status != 'left':
+                    discount = True
+                    prices_old = prices
+                    prices_new = [int(i * 0.8) for i in prices]
+
+                else:
+                    pass
 
 
+        except:
+            pass
         subs = await  self.db.get_subs_for_sale()
 
         reply_markup_buttons = []
 
         try:
             for sub in subs:
-
-                button_text = sub['sub_name'] + ' ' + str(sub['price']) + ' руб'
+                if discount:
+                    button_text = sub['sub_name'] + ' ' + str(int(sub['price']*0.8)) + ' руб'
+                else:
+                    button_text = sub['sub_name'] + ' ' + str(sub['price']) + ' руб'
                 button_callback = sub['sub_id']
                 reply_markup_buttons.append([InlineKeyboardButton(text=button_text, callback_data=button_callback)])
         except Exception as e:
@@ -902,47 +923,29 @@ class ChatGPTTelegramBot:
         # Создаем разметку с кнопками из списка reply_markup_buttons
         reply_markup = InlineKeyboardMarkup(reply_markup_buttons)
 
-        # reply_markup = InlineKeyboardMarkup(
-        #     [
-        #         [
-        #             InlineKeyboardButton(
-        #                 text='Купить подписку 1',
-        #                 callback_data=3
-        #             )
-        #         ],
-        #         [
-        #             InlineKeyboardButton(
-        #                 text='Купить подписку 2',
-        #                 callback_data=4
-        #             )
-        #
-        #         ]
-        #     ]
-        # # )
-        # Цена: < s > < i > 50 < / i > < / s > 40
-        # руб / 30
-        # дней
-        text = '''
+
+
+        text = f'''
 Описание подписок:
 
 
 
 <b>GPT-3.5 Standart</b>
-Цена: 50 руб / 30 дней
+Цена: <s><i>{prices_old[0]}</i></s> {prices_new[0]} руб / 30 дней
 Модель: GPT-3.5
 40 000 токенов - около 20 стр. А4
 
 
 
 <b>GPT-3.5 PRO</b>
-Цена: 90 руб / 30 дней
+Цена: <s><i>{prices_old[1]}</i></s> {prices_new[1]} руб / 30 дней
 Модель: GPT-3.5
 200 000 токенов - около 100 стр. А4
 
 
 
 <b>Multi Standart</b>
-Цена: 260 руб / 30 дней
+Цена: <s><i>{prices_old[2]}</i></s> {prices_new[2]} руб / 30 дней
 Модели: GPT-4, GPT-3.5, DALLE-3
 Доступно 80 000 токенов в GPT-4
 Расход токенов при «тройке» уменьшается в 10 раз
@@ -953,7 +956,7 @@ class ChatGPTTelegramBot:
 
 
 <b>Multi PRO</b>
-Цена: 650 руб / 30 дней
+Цена: <s><i>{prices_old[3]}</i></s> {prices_new[3]} руб / 30 дней
 Модели: GPT-4, GPT-3.5, DALLE-3
 Доступно 200 000 токенов в GPT-4
 Расход токенов при «тройке» уменьшается в 10 раз
@@ -988,12 +991,19 @@ class ChatGPTTelegramBot:
 
         try:
             if await self.db.get_promo_used(user_id) == 0:
+                if not discount:
 
-                await update.effective_message.reply_text(
-                    message_thread_id=get_thread_id(update),
-                    parse_mode='HTML',
-                    text='Подпишись на канал <a href="https://t.me/+lvsQbyECDwE0MDdi">@echokosmosa</a> и получи скидку 20%',
-                )
+                    await update.effective_message.reply_text(
+                        message_thread_id=get_thread_id(update),
+                        parse_mode='HTML',
+                        text='Подпишись на канал <a href="https://t.me/+lvsQbyECDwE0MDdi">@echokosmosa</a> и получи скидку 20%',
+                    )
+                else:
+                    await update.effective_message.reply_text(
+                        message_thread_id=get_thread_id(update),
+                        parse_mode='HTML',
+                        text='Скидка 20% за подписку на канал @echokosmosa применена',
+                    )
         except:
             pass
     async def send_end_of_subscription_message(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -1188,10 +1198,7 @@ class ChatGPTTelegramBot:
             price = price * 0.8
 
 
-            await update.effective_message.reply_text(
-                message_thread_id=get_thread_id(update),
-                text='Вам предоставлена скидка 20% за подписку на канал @echokosmosa',
-            )
+
 
 
         sub_name = await self.db.get_sub_name(query.data)
