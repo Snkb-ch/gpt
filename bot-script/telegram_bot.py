@@ -1002,7 +1002,7 @@ class ChatGPTTelegramBot:
                     await update.effective_message.reply_text(
                         message_thread_id=get_thread_id(update),
                         parse_mode='HTML',
-                        text='Скидка 20% за подписку на канал @echokosmosa применена',
+                        text='Скидка применена',
                     )
         except:
             pass
