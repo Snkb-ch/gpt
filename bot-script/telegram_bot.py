@@ -146,11 +146,15 @@ class ChatGPTTelegramBot:
     async def add_client(self, update: Update, _: ContextTypes.DEFAULT_TYPE, user_id, client_id):
         import requests
         import json
+        from dotenv import load_dotenv
+        load_dotenv()
+
 
         url = " https://api-metrika.yandex.net/cdp/api/v1/counter/94971306/data/contacts?merge_mode=APPEND"
+        token = os.environ.get('METRICS_BOT_TOKEN')
 
         headers = {
-            'Authorization': 'OAuth y0_AgAAAAAQJblaAArN0QAAAADxxu9tx4umNnbDQfmSGrbQXCSjNAVwRzI',
+            'Authorization': token,
             "Content-Type": "application/json",
         }
 
@@ -404,6 +408,7 @@ class ChatGPTTelegramBot:
             return
         else:
             await self.db.set_unblocked_user(user_id)
+            
 
 
     async def save(self, update:Update, context: ContextTypes.DEFAULT_TYPE):
