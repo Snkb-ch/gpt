@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+from dotenv import load_dotenv
 import base64
 import signal
 import asyncio
@@ -191,7 +191,7 @@ class ChatGPTTelegramBot:
     async def add_order(self, user_id, revenue, cost, order_id, product):
         import requests
         import json
-        from dotenv import load_dotenv
+
         load_dotenv()
         token = os.environ.get('METRICS_BOT_TOKEN')
         url = "https://api-metrika.yandex.net/cdp/api/v1/counter/94971306/data/orders?merge_mode=APPEND"
@@ -226,11 +226,12 @@ class ChatGPTTelegramBot:
     async def orders(self, update: Update, _: ContextTypes.DEFAULT_TYPE):
         import requests
         import json
-
+        load_dotenv()
+        token = os.environ.get('METRICS_BOT_TOKEN')
 
 
         headers = {
-            'Authorization': 'OAuth y0_AgAAAAAQJblaAArN0QAAAADxxu9tx4umNnbDQfmSGrbQXCSjNAVwRzI',
+            'Authorization': token,
             'Content-Type': 'application/json',
         }
 
