@@ -191,11 +191,13 @@ class ChatGPTTelegramBot:
     async def add_order(self, user_id, revenue, cost, order_id, product):
         import requests
         import json
-
+        from dotenv import load_dotenv
+        load_dotenv()
+        token = os.environ.get('METRICS_BOT_TOKEN')
         url = "https://api-metrika.yandex.net/cdp/api/v1/counter/94971306/data/orders?merge_mode=APPEND"
 
         headers = {
-            'Authorization': 'OAuth y0_AgAAAAAQJblaAArN0QAAAADxxu9tx4umNnbDQfmSGrbQXCSjNAVwRzI',
+            'Authorization': token,
             'Content-Type': 'application/json',
         }
         # minus 60 sec
