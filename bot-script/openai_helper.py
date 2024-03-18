@@ -231,6 +231,7 @@ class OpenAIHelper:
             yield answer, tokens_used
 
         else:
+            print('ошибка при обработке запроса')
             yield 'Произошла ошибка при обработке запроса, приносим извенения', 0
 
     @retry(
