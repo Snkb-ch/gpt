@@ -342,7 +342,7 @@ class ChatGPTTelegramBot:
             try:
                 await self.db.add_user(user_id)
             except Exception as e:
-                print(traceback.format_exc())
+                print('error in adding user')
             await self.calc_end_time(user_id)
             sub_id = await self.db.get_sub_type(user_id)
             try:
