@@ -330,7 +330,11 @@ class ChatGPTTelegramBot:
 
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
+
         user_id = update.message.from_user.id
+
+        logging.info(f'User {update.message.from_user.name} (id: {user_id}) started the bot')
+
         self.status[user_id] = 'prompt'
 
 
@@ -338,11 +342,11 @@ class ChatGPTTelegramBot:
 
 
         if not await self.db.user_exists(user_id):
-            print('start' + str(user_id))
+
             try:
                 await self.db.add_user(user_id)
             except Exception as e:
-                print('error in adding user')
+                logging.error(f'Error adding user {user_id} to the database: {e}')
             await self.calc_end_time(user_id)
             sub_id = await self.db.get_sub_type(user_id)
             try:
@@ -350,7 +354,7 @@ class ChatGPTTelegramBot:
 
                 await self.db_analytics_for_sessions.new_sub_stats(user_id, sub_id)
             except Exception as e:
-                print(traceback.format_exc())
+
                 pass
 
             try:
@@ -370,7 +374,7 @@ class ChatGPTTelegramBot:
 
 
             except Exception as e:
-                print(traceback.format_exc())
+
                 pass
 
             await update.message.reply_text(
@@ -445,13 +449,13 @@ class ChatGPTTelegramBot:
         if update.message.reply_to_message:
             # убрать 27 симовлов с конца
             text_message = update.message.reply_to_message.text
-            print(text_message)
+
              # list od dicts
             deleted= False
 
             if self.openai.conversations.get(user_id):
                 for item in self.openai.conversations[user_id]:
-                    print(item)
+
 
                     if item['role'] == 'user' and item['content'] == text_message:
                         self.openai.conversations[user_id].remove(item)
@@ -460,7 +464,7 @@ class ChatGPTTelegramBot:
                     elif item['role'] == 'assistant':
 
                         short_text_message = text_message[0:len(text_message) - 28]
-                        print(short_text_message)
+
                         if item['content'] in short_text_message:
                             self.openai.conversations[user_id].remove(item)
                             deleted = True
@@ -875,18 +879,20 @@ class ChatGPTTelegramBot:
         user_id = update.message.from_user.id
 
         if not await self.db.user_exists(user_id):
-            print("user not in db " + str(user_id) )
+            logging.info(f'User {update.message.from_user.name} (id: {user_id}) is not in the database. Buying a subscription...')
             try:
                 await update.message.reply_text(
                     message_thread_id=get_thread_id(update),
                     text='Введите команду /start для начала использования бота',
                 )
+
             except:
-                print("error in buy that user not in db")
+
                 pass
 
-        sub = await self.db.get_sub_type(user_id)
-        if await  self.db.get_status(user_id) == 'active' and sub != 1:
+        plan = await self.db.get_sub_name_from_user(user_id)
+
+        if await  self.db.get_status(user_id) == 'active' and plan != 'trial':
             await update.message.reply_text(
                 message_thread_id=get_thread_id(update),
                 text='''У вас уже есть активная подписка.
@@ -901,7 +907,7 @@ class ChatGPTTelegramBot:
             if await self.db.get_promo_used(user_id) == 0:
 
                 user_channel_status = await self.bot.get_chat_member(chat_id='@echokosmosa', user_id=user_id)
-                print(user_channel_status.status)
+                logging.info(f'User {update.message.from_user.name} (id: {user_id}) status in channel: {user_channel_status.status}')
                 if user_channel_status.status != 'left':
                     discount = True
                     prices_old = prices
@@ -1096,7 +1102,7 @@ class ChatGPTTelegramBot:
             else:
                 await self.db_analytics_for_sessions.role_edited(user_id)
         except Exception as e:
-            print(traceback.format_exc())
+            logging.error(f'Error in set_role: {e}')
             pass
         # await self.db_analytics_for_month.add_role_edited(await self.db.get_sub_type(user_id))
 
@@ -1119,13 +1125,13 @@ class ChatGPTTelegramBot:
 
                         await self.db_analytics_for_sessions.temp_edited(user_id)
                 except Exception as e:
-                    print(traceback.format_exc())
+                    logging.error(f'Error in set_temperature: {e}')
                     pass
 
                 # await self.db_analytics_for_month.add_temp_edited(await self.db.get_sub_type(user_id))
 
         except Exception as e:
-            print(traceback.format_exc())
+            logging.error(f'Error in set_temperature: {e}')
             await update.message.reply_text(
                 message_thread_id=get_thread_id(update),
                 text='Введите температуру от 0 до 1.25 или /cancel для отмены',
@@ -1210,7 +1216,7 @@ class ChatGPTTelegramBot:
                 else:
                     pass
         except Exception as e:
-            print(e)
+
             pass
 
 
@@ -1228,7 +1234,7 @@ class ChatGPTTelegramBot:
         try:
             payment_details =  payment.payment(price, sub_name, email)
         except Exception as e:
-            print(e)
+            logging.error(f'Error in create payment: {e}')
             if 'email' in str(e):
 
                 await self.db.reset_email(query.from_user.id)
@@ -1257,7 +1263,7 @@ class ChatGPTTelegramBot:
         try:
             payment_success = await payment.check_payment(payment_details['id'])
         except Exception as e:
-            print(f' payment check error: {e}')
+            logging.error(f'Error in check payment: {e}')
             await self.send_to_admin( 'error in check payment' + '\n' + 'for user:' + str(user_id) + '\n' + str(e))
 
 
@@ -1276,14 +1282,14 @@ class ChatGPTTelegramBot:
             try:
                 await self.activate_sub(user_id, query.data, order_id)
             except Exception as e:
-                print(traceback.format_exc())
+                logging.error(f'Error in activate sub: {e}')
                 await self.send_to_admin( 'error in activate sub' + '\n' + str(e))
                 pass
             try:
 
                 await self.send_to_admin('Платеж прошел' + '\n' + 'Пользователь: ' + str(user_id) + '\n' + 'Подписка: ' + sub_name + '\n' + 'Цена: ' + str(price) + '\n' + 'Email: ' + email)
             except Exception as e:
-                print('error in send admin message' + '\n' + str(e))
+                logging.error(f'Error in send message: {e}')
                 pass
             try:
                 if await self.db.get_sub_multimodel(sub_id):
@@ -1294,7 +1300,7 @@ class ChatGPTTelegramBot:
                     )
                 await update.effective_message.reply_text("Платеж прошел")
             except Exception as e:
-                print('error in send message' + '\n' + str(e))
+
                 pass
 
             try:
@@ -1310,7 +1316,7 @@ class ChatGPTTelegramBot:
                     await self.add_client(update, context, user_id, client_id)
                 await self.add_order(user_id, income, cost, order_id, product)
             except Exception as e:
-                print('error in add order metrika')
+                logging.error(f'Error in add order to metrika: {e}')
                 await self.send_to_admin( 'error in add order metrika' + '\n' + str(e))
                 pass
 
@@ -1333,7 +1339,7 @@ class ChatGPTTelegramBot:
 
 
         except Exception as e:
-            print(traceback.format_exc())
+            logging.error(f'Error in activate sub analytics1: {e}')
             await self.send_to_admin( 'error in activate sub analytics' + '\n' + str(e))
 
             pass
@@ -1350,7 +1356,7 @@ class ChatGPTTelegramBot:
 
 
         except Exception as e:
-            print(traceback.format_exc())
+            logging.error(f'Error in activate sub analytics2: {e}')
             await self.send_to_admin( 'error in activate sub analytics2' + '\n' + str(e))
             pass
 
@@ -1466,7 +1472,7 @@ class ChatGPTTelegramBot:
                         await self.db_analytics_for_sessions.set_inactive(user_id, 'tokens')
 
                 except Exception as e:
-                    print(traceback.format_exc())
+                    logging.error(f'Error in inactivate: {e}')
                     await self.send_to_admin('error in is active' + '\n' + str(e))
                     pass
 
@@ -1490,21 +1496,20 @@ class ChatGPTTelegramBot:
         logging.info(
             f'New message received from user {update.message.from_user.name} (id: {update.message.from_user.id})')
 
-        # Добавляем в базу данных
 
         chat_id = update.effective_chat.id
         user_id = update.message.from_user.id
 
 
         if not await self.db.user_exists(user_id):
-            print("user not in db " + str(user_id) )
+            logging.error(f'User {update.message.from_user.name} (id: {user_id}) is not in the database. In prompt')
             try:
                 await update.message.reply_text(
                     message_thread_id=get_thread_id(update),
                     text='Введите команду /start для начала использования бота',
                 )
             except:
-                print("error in message that user not in db")
+
                 pass
 
         model_config = await self.db.get_model_config(user_id)
@@ -1892,10 +1897,15 @@ class ChatGPTTelegramBot:
                 except Exception as e:
                     # traceback
                     await self.send_to_admin('error in prompt' + '\n' + str(e) + str(traceback.format_exc()))
-                    print(traceback.format_exc())
+
                     self.prompts[chat_id] = 0
 
-                    logging.exception(e)
+                    logging.exception(traceback.format_exc())
+                    logging.error(f'Error in prompt: {e}')
+                    await update.effective_message.reply_text(
+                        message_thread_id=get_thread_id(update),
+                        text='Произошла ошибка, попробуйте еще раз',
+                    )
 
 
     async def post_init(self, application: Application) -> None:
