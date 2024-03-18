@@ -133,6 +133,7 @@ class ChatGPTTelegramBot:
 
 
     async def send_info_message(self, users, text):
+
         try:
             for user in users:
                 await self.bot.send_message(
@@ -140,7 +141,7 @@ class ChatGPTTelegramBot:
                     text=text,
                 )
         except Exception as e:
-            print(e)
+            logging.error(f'Error sending info message: {e}')
             pass
 
     async def add_client(self, update: Update, _: ContextTypes.DEFAULT_TYPE, user_id, client_id):
@@ -1484,299 +1485,301 @@ class ChatGPTTelegramBot:
 
 
     async def prompt(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """
-        React to incoming messages and respond accordingly.
-        """
-        if update.edited_message or not update.message or update.message.via_bot:
-            return
 
-        # if not await self.check_allowed_and_within_budget(update, context):
-        #     return
-
-        logging.info(
-            f'New message received from user {update.message.from_user.name} (id: {update.message.from_user.id})')
-
-
-        chat_id = update.effective_chat.id
-        user_id = update.message.from_user.id
-
-
-        if not await self.db.user_exists(user_id):
-            logging.error(f'User {update.message.from_user.name} (id: {user_id}) is not in the database. In prompt')
-            try:
-                await update.message.reply_text(
-                    message_thread_id=get_thread_id(update),
-                    text='Введите команду /start для начала использования бота',
-                )
-            except:
-
-                pass
-
-        model_config = await self.db.get_model_config(user_id)
-        photo_list = []
-
-        # get photos from message and send to ai
-        if update.message.photo:
-            try:
-                await self.db_analytics_for_sessions.photo_send(user_id)
-            except:
-                pass
-
-            if model_config['model'] == 'gpt-3.5-turbo-1106' or model_config['model'] == 'gpt-3.5-turbo':
-                await update.message.reply_text(
-                    message_thread_id=get_thread_id(update),
-                    text='Модель GPT-3.5 не поддерживает распознавание фото. Чтобы сменить модель, введите команду /model',
-                )
-                self.prompts[chat_id] -= 1
+        try:
+            """
+            React to incoming messages and respond accordingly.
+            """
+            if update.edited_message or not update.message or update.message.via_bot:
                 return
 
-            file = update.message.photo[-1].file_id  # get the file_id of the largest size photo
-            obj = await context.bot.get_file(file)
-            out = io.BytesIO()
-            await obj.download_to_memory(out=out)
-            out.seek(0)  # reset file pointer to the beginning
-            base64_image = base64.b64encode(out.read()).decode('utf-8')
+            # if not await self.check_allowed_and_within_budget(update, context):
+            #     return
 
-            # Add the base64 image to the list
-            photo_list.append(base64_image)
+            logging.info(
+                f'New message received from user {update.message.from_user.name} (id: {update.message.from_user.id})')
 
-        # Create a list to store the prompts
-        prompt = []
 
-        # Check if there are any photos in the list
-        if photo_list:
-            # Add a text prompt
-            if update.message.caption:
-                text = update.message.caption
-            else:
-                text = 'что на фото?'
-            prompt.append({
-                "type": "text",
-                "text": text
-            })
+            chat_id = update.effective_chat.id
+            user_id = update.message.from_user.id
 
-            # Add image prompts for each photo in the list
-            for base64_image in photo_list:
+
+            if not await self.db.user_exists(user_id):
+                logging.error(f'User {update.message.from_user.name} (id: {user_id}) is not in the database. In prompt')
+                try:
+                    await update.message.reply_text(
+                        message_thread_id=get_thread_id(update),
+                        text='Введите команду /start для начала использования бота',
+                    )
+                except:
+
+                    pass
+
+            model_config = await self.db.get_model_config(user_id)
+            photo_list = []
+
+            # get photos from message and send to ai
+            if update.message.photo:
+                try:
+                    await self.db_analytics_for_sessions.photo_send(user_id)
+                except:
+                    pass
+
+                if model_config['model'] == 'gpt-3.5-turbo-1106' or model_config['model'] == 'gpt-3.5-turbo':
+                    await update.message.reply_text(
+                        message_thread_id=get_thread_id(update),
+                        text='Модель GPT-3.5 не поддерживает распознавание фото. Чтобы сменить модель, введите команду /model',
+                    )
+                    self.prompts[chat_id] -= 1
+                    return
+
+                file = update.message.photo[-1].file_id  # get the file_id of the largest size photo
+                obj = await context.bot.get_file(file)
+                out = io.BytesIO()
+                await obj.download_to_memory(out=out)
+                out.seek(0)  # reset file pointer to the beginning
+                base64_image = base64.b64encode(out.read()).decode('utf-8')
+
+                # Add the base64 image to the list
+                photo_list.append(base64_image)
+
+            # Create a list to store the prompts
+            prompt = []
+
+            # Check if there are any photos in the list
+            if photo_list:
+                # Add a text prompt
+                if update.message.caption:
+                    text = update.message.caption
+                else:
+                    text = 'что на фото?'
                 prompt.append({
-                    "type": "image_url",
-                    "image_url": f"data:image/jpeg;base64,{base64_image}"
-
+                    "type": "text",
+                    "text": text
                 })
 
-        else:
-            prompt = update.message.text
-        if user_id not in self.status:
-            self.status[user_id] = 'prompt'
+                # Add image prompts for each photo in the list
+                for base64_image in photo_list:
+                    prompt.append({
+                        "type": "image_url",
+                        "image_url": f"data:image/jpeg;base64,{base64_image}"
 
-        if update.message:
-            if self.status[user_id] == 'set_email':
-                if self.is_email(update.message.text) == False:
-                    await update.message.reply_text(
-                        message_thread_id=get_thread_id(update),
-                        text='Неверный формат email',
-                    )
-                    return
-                await self.db.set_email(user_id, update.message.text)
-                await update.message.reply_text(
-                    message_thread_id=get_thread_id(update),
-                    text='Email установлен, выберите подписку',
-                )
-                self.status[user_id] = 'prompt'
+                    })
 
-                await self.buy(update, context)
-                return
-            elif self.status[user_id] == 'image':
-
-                self.status[user_id] = 'prompt'
-
+            else:
                 prompt = update.message.text
-                res = self.get_quality(user_id)
-                quality = res['quality']
-                size = res['size']
-                price = res['price']
-                tokens = res['tokens']
+            if user_id not in self.status:
+                self.status[user_id] = 'prompt'
 
-                url = await self.openai.generate_image( quality, size, prompt)
-                if url == False:
+            if update.message:
+                if self.status[user_id] == 'set_email':
+                    if self.is_email(update.message.text) == False:
+                        await update.message.reply_text(
+                            message_thread_id=get_thread_id(update),
+                            text='Неверный формат email',
+                        )
+                        return
+                    await self.db.set_email(user_id, update.message.text)
                     await update.message.reply_text(
                         message_thread_id=get_thread_id(update),
-                        text='Произошла ошибка, попробуйте еще раз',
+                        text='Email установлен, выберите подписку',
                     )
+                    self.status[user_id] = 'prompt'
+
+                    await self.buy(update, context)
                     return
-                else:
+                elif self.status[user_id] == 'image':
 
-                    try:
-                        await update.message.reply_photo(
-                        photo=url,
-                        message_thread_id=get_thread_id(update),
-                        )
+                    self.status[user_id] = 'prompt'
 
-                        await self.db.update_used_tokens(user_id, tokens)
-                    except Exception as e:
-                        if 'Failed to get http url content' in e:
-                            print(str(url))
+                    prompt = update.message.text
+                    res = self.get_quality(user_id)
+                    quality = res['quality']
+                    size = res['size']
+                    price = res['price']
+                    tokens = res['tokens']
 
-                            await update.message.reply_text(
-                                text=str(url),
-                            )
-                        elif 'safety system' in e:
-                            await update.message.reply_text(
-                                message_thread_id=get_thread_id(update),
-                                text='Ваш запрос не прошел модерацию',
-                            )
-
-                        else:
-                            await update.message.reply_text(
-                                message_thread_id=get_thread_id(update),
-                                text='Произошла ошибка, попробуйте еще раз',
-                            )
-                        return
-
-
-
-
-                    try:
-
-                        sub_name = await self.db.get_sub_name_from_user(user_id)
-                        cost={ 'output' : price,'input' : price}
-                        if sub_name == 'ultimate admin':
-                            await self.db_admin_stats.add(user_id,1/2,1/2, cost)
-                            print('admin')
-                        else:
-                            print('not admin')
-                            await self.db_analytics_for_sessions.image_generated(user_id)
-                            await self.db_statistic_by_day.add(user_id, 1/2, 1/2, cost)
-                    except Exception as e:
-                        print('error in analytics image' + '\n' + str(e))
-                        pass
-
-                    return
-
-            elif self.status[user_id] == 'admin_message':
-
-                self.status[user_id] = 'prompt'
-                users = await self.db.get_all_users()
-                k = 0
-                err =0
-                for user in users:
-                    try:
-                        await self.bot.send_message(chat_id=user, text=update.message.text,parse_mode = 'HTML')
-                        k+=1
-                    except Exception as e:
-                        err+=1
-                        await self.db.set_blocked_user(user)
-
-                        pass
-
-                print(k)
-                await self.send_to_admin('send message to all users' + '\n' + str(k) + 'error: ' + str(err))
-                return
-
-            elif not await self.is_active(update, context, user_id):
-                await self.send_end_of_subscription_message(update, context)
-                return
-
-            if self.status[user_id] == 'set_role':
-                await self.set_role(update, context, update.message.text)
-
-                return
-            elif self.status[user_id] == 'set_temperature':
-
-                await self.set_temperature(update, context, update.message.text)
-
-
-
-
-
-            elif self.status[user_id] == 'prompt':
-
-
-                plan = await self.db.get_sub_type(user_id)
-                plan_name = await self.db.get_sub_name_from_user(user_id)
-                model = await self.db.get_model(user_id)
-                date = datetime.now().date()
-                last_message = await self.db.get_last_message(user_id)
-
-
-
-                self.prompts[chat_id] = self.prompts.get(chat_id, 0) + 1
-                print(self.prompts[chat_id])
-
-                if self.prompts[chat_id] >1:
-                    available_tokens = await self.db.get_max_tokens(user_id) - await self.db.get_used_tokens(user_id)
-                    if (default_max_tokens(model) + self.openai.count_tokens(([{"role": "user", "content": prompt}]), model) ) * self.prompts[chat_id] > available_tokens:
-                        await update.effective_message.reply_text(
+                    url = await self.openai.generate_image( quality, size, prompt)
+                    if url == False:
+                        await update.message.reply_text(
                             message_thread_id=get_thread_id(update),
-                            text='К сожалению у вас заканчиваются токены, поэтому мы не можем выполнить ваши запросы параллельно. Пожалуйста, подождите ответа на прошлое сообщение и попробуйте снова',
+                            text='Произошла ошибка, попробуйте еще раз',
                         )
-                        self.prompts[chat_id] -= 1
+                        return
+                    else:
+
+                        try:
+                            await update.message.reply_photo(
+                            photo=url,
+                            message_thread_id=get_thread_id(update),
+                            )
+
+                            await self.db.update_used_tokens(user_id, tokens)
+                        except Exception as e:
+                            if 'Failed to get http url content' in e:
+                                print(str(url))
+
+                                await update.message.reply_text(
+                                    text=str(url),
+                                )
+                            elif 'safety system' in e:
+                                await update.message.reply_text(
+                                    message_thread_id=get_thread_id(update),
+                                    text='Ваш запрос не прошел модерацию',
+                                )
+
+                            else:
+                                await update.message.reply_text(
+                                    message_thread_id=get_thread_id(update),
+                                    text='Произошла ошибка, попробуйте еще раз',
+                                )
+                            return
+
+
+
+
+                        try:
+
+                            sub_name = await self.db.get_sub_name_from_user(user_id)
+                            cost={ 'output' : price,'input' : price}
+                            if sub_name == 'ultimate admin':
+                                await self.db_admin_stats.add(user_id,1/2,1/2, cost)
+                                print('admin')
+                            else:
+                                print('not admin')
+                                await self.db_analytics_for_sessions.image_generated(user_id)
+                                await self.db_statistic_by_day.add(user_id, 1/2, 1/2, cost)
+                        except Exception as e:
+                            print('error in analytics image' + '\n' + str(e))
+                            pass
+
                         return
 
-                if last_message != date:
+                elif self.status[user_id] == 'admin_message':
+
+                    self.status[user_id] = 'prompt'
+                    users = await self.db.get_all_users()
+                    k = 0
+                    err =0
+                    for user in users:
+                        try:
+                            await self.bot.send_message(chat_id=user, text=update.message.text,parse_mode = 'HTML')
+                            k+=1
+                        except Exception as e:
+                            err+=1
+                            await self.db.set_blocked_user(user)
+
+                            pass
+
+                    print(k)
+                    await self.send_to_admin('send message to all users' + '\n' + str(k) + 'error: ' + str(err))
+                    return
+
+                elif not await self.is_active(update, context, user_id):
+                    await self.send_end_of_subscription_message(update, context)
+                    return
+
+                if self.status[user_id] == 'set_role':
+                    await self.set_role(update, context, update.message.text)
+
+                    return
+                elif self.status[user_id] == 'set_temperature':
+
+                    await self.set_temperature(update, context, update.message.text)
 
 
 
-                    if plan_name == 'trial':
-                        await self.db.set_used_tokens(user_id, 0)
-                        self.openai.reset_chat_history(chat_id=user_id)
-                    elif  last_message == date - timedelta(days=2):
-                        self.openai.reset_chat_history(chat_id=user_id)
-
-                    await self.db.set_last_message(user_id, date)
 
 
-                self.last_message[chat_id] = prompt
+                elif self.status[user_id] == 'prompt':
+
+
+                    plan = await self.db.get_sub_type(user_id)
+                    plan_name = await self.db.get_sub_name_from_user(user_id)
+                    model = await self.db.get_model(user_id)
+                    date = datetime.now().date()
+                    last_message = await self.db.get_last_message(user_id)
 
 
 
-                model_config = await self.db.get_model_config(update.effective_chat.id)
-                tokens_in_message = self.openai.count_tokens(([{"role": "user", "content": prompt}]), model_config['model'])
-                tokens_input = tokens_in_message + self.openai.get_conversation_stats(chat_id=chat_id, model=model_config['model'])[1]
+                    self.prompts[chat_id] = self.prompts.get(chat_id, 0) + 1
+                    print(self.prompts[chat_id])
 
-                while not await self.is_input_in_tokens(update, context, user_id, tokens_input, model_config):
-                    try:
-                        if self.openai.remove_messages(chat_id):
-                            tokens_input = tokens_in_message + self.openai.get_conversation_stats(chat_id=chat_id, model=model_config['model'])[1]
-                        else:
-
+                    if self.prompts[chat_id] >1:
+                        available_tokens = await self.db.get_max_tokens(user_id) - await self.db.get_used_tokens(user_id)
+                        if (default_max_tokens(model) + self.openai.count_tokens(([{"role": "user", "content": prompt}]), model) ) * self.prompts[chat_id] > available_tokens:
                             await update.effective_message.reply_text(
                                 message_thread_id=get_thread_id(update),
-                                text='Осталось ' + ' ' + str(
-                                    await self.db.get_max_tokens(user_id) - await self.db.get_used_tokens(
-                                        user_id)) + ' токенов' + '\n' + 'Ваше сообщение слишком длинное, сократите его ',
+                                text='К сожалению у вас заканчиваются токены, поэтому мы не можем выполнить ваши запросы параллельно. Пожалуйста, подождите ответа на прошлое сообщение и попробуйте снова',
                             )
                             self.prompts[chat_id] -= 1
                             return
-                    except Exception as e:
-                        await self.send_to_admin('error in remove messages' + '\n' + str(e))
-                        break
+
+                    if last_message != date:
 
 
 
-                try:
-                    total_tokens = 0
-                    input_tokens = 0
+                        if plan_name == 'trial':
+                            await self.db.set_used_tokens(user_id, 0)
+                            self.openai.reset_chat_history(chat_id=user_id)
+                        elif  last_message == date - timedelta(days=2):
+                            self.openai.reset_chat_history(chat_id=user_id)
 
-                    if self.config['stream']:
+                        await self.db.set_last_message(user_id, date)
 
 
-
-                        # get photo from message and send to ai
-                        # get photo from message and send to ai
-
-                        text = update.message.text
-
-                        base64_image = None
-                        # get photo from message and send to ai
+                    self.last_message[chat_id] = prompt
 
 
 
-                        async def _reply():
-                            nonlocal total_tokens
-                            await update.effective_message.reply_chat_action(
-                                action=constants.ChatAction.TYPING,
-                                message_thread_id=get_thread_id(update)
-                            )
+                    model_config = await self.db.get_model_config(update.effective_chat.id)
+                    tokens_in_message = self.openai.count_tokens(([{"role": "user", "content": prompt}]), model_config['model'])
+                    tokens_input = tokens_in_message + self.openai.get_conversation_stats(chat_id=chat_id, model=model_config['model'])[1]
+
+                    while not await self.is_input_in_tokens(update, context, user_id, tokens_input, model_config):
+                        try:
+                            if self.openai.remove_messages(chat_id):
+                                tokens_input = tokens_in_message + self.openai.get_conversation_stats(chat_id=chat_id, model=model_config['model'])[1]
+                            else:
+
+                                await update.effective_message.reply_text(
+                                    message_thread_id=get_thread_id(update),
+                                    text='Осталось ' + ' ' + str(
+                                        await self.db.get_max_tokens(user_id) - await self.db.get_used_tokens(
+                                            user_id)) + ' токенов' + '\n' + 'Ваше сообщение слишком длинное, сократите его ',
+                                )
+                                self.prompts[chat_id] -= 1
+                                return
+                        except Exception as e:
+                            await self.send_to_admin('error in remove messages' + '\n' + str(e))
+                            break
+
+
+
+                    try:
+                        total_tokens = 0
+                        input_tokens = 0
+
+                        if self.config['stream']:
+
+
+
+                            # get photo from message and send to ai
+                            # get photo from message and send to ai
+
+                            text = update.message.text
+
+                            base64_image = None
+                            # get photo from message and send to ai
+
+
+
+                            async def _reply():
+                                nonlocal total_tokens
+                                await update.effective_message.reply_chat_action(
+                                    action=constants.ChatAction.TYPING,
+                                    message_thread_id=get_thread_id(update)
+                                )
 
 
 
@@ -1785,101 +1788,101 @@ class ChatGPTTelegramBot:
 
 
 
-                            stream_response = self.openai.get_chat_response_stream(chat_id=chat_id, query=prompt,
-                                                                                       model_config=model_config, sub_type = plan)
+                                stream_response = self.openai.get_chat_response_stream(chat_id=chat_id, query=prompt,
+                                                                                           model_config=model_config, sub_type = plan)
 
-                            i = 0
-                            prev = ''
-                            sent_message = None
-                            backoff = 0
-                            stream_chunk = 0
+                                i = 0
+                                prev = ''
+                                sent_message = None
+                                backoff = 0
+                                stream_chunk = 0
 
-                            async for content, tokens in stream_response:
+                                async for content, tokens in stream_response:
 
-                                if len(content.strip()) == 0:
-                                    continue
+                                    if len(content.strip()) == 0:
+                                        continue
 
-                                stream_chunks = split_into_chunks(content)
-                                if len(stream_chunks) > 1:
-                                    content = stream_chunks[-1]
-                                    if stream_chunk != len(stream_chunks) - 1:
-                                        stream_chunk += 1
+                                    stream_chunks = split_into_chunks(content)
+                                    if len(stream_chunks) > 1:
+                                        content = stream_chunks[-1]
+                                        if stream_chunk != len(stream_chunks) - 1:
+                                            stream_chunk += 1
+                                            try:
+                                                await edit_message_with_retry(context, chat_id,
+                                                                              str(sent_message.message_id),
+                                                                              stream_chunks[-2])
+                                            except:
+                                                pass
+                                            try:
+                                                sent_message = await update.effective_message.reply_text(
+                                                    message_thread_id=get_thread_id(update),
+                                                    text=content if len(content) > 0 else "..."
+                                                )
+                                            except:
+                                                pass
+                                            continue
+
+                                    cutoff = get_stream_cutoff_values(update, content)
+                                    cutoff += backoff
+
+                                    if i == 0:
                                         try:
-                                            await edit_message_with_retry(context, chat_id,
-                                                                          str(sent_message.message_id),
-                                                                          stream_chunks[-2])
-                                        except:
-                                            pass
-                                        try:
+                                            if sent_message is not None:
+                                                await context.bot.delete_message(chat_id=sent_message.chat_id,
+                                                                                 message_id=sent_message.message_id)
                                             sent_message = await update.effective_message.reply_text(
                                                 message_thread_id=get_thread_id(update),
-                                                text=content if len(content) > 0 else "..."
+                                                reply_to_message_id=get_reply_to_message_id(self.config, update),
+                                                text=content
                                             )
                                         except:
-                                            pass
-                                        continue
+                                            continue
 
-                                cutoff = get_stream_cutoff_values(update, content)
-                                cutoff += backoff
+                                    elif abs(len(content) - len(prev)) > cutoff or tokens != 'not_finished':
+                                        prev = content
 
-                                if i == 0:
-                                    try:
-                                        if sent_message is not None:
-                                            await context.bot.delete_message(chat_id=sent_message.chat_id,
-                                                                             message_id=sent_message.message_id)
-                                        sent_message = await update.effective_message.reply_text(
-                                            message_thread_id=get_thread_id(update),
-                                            reply_to_message_id=get_reply_to_message_id(self.config, update),
-                                            text=content
-                                        )
-                                    except:
-                                        continue
+                                        try:
+                                            use_markdown = tokens != 'not_finished'
+                                            await edit_message_with_retry(context, chat_id, str(sent_message.message_id),
+                                                                          text=content, markdown=use_markdown)
 
-                                elif abs(len(content) - len(prev)) > cutoff or tokens != 'not_finished':
-                                    prev = content
+                                        except RetryAfter as e:
+                                            backoff += 5
+                                            await asyncio.sleep(e.retry_after)
+                                            continue
 
-                                    try:
-                                        use_markdown = tokens != 'not_finished'
-                                        await edit_message_with_retry(context, chat_id, str(sent_message.message_id),
-                                                                      text=content, markdown=use_markdown)
+                                        except TimedOut:
+                                            backoff += 5
+                                            await asyncio.sleep(0.5)
+                                            continue
 
-                                    except RetryAfter as e:
-                                        backoff += 5
-                                        await asyncio.sleep(e.retry_after)
-                                        continue
+                                        except Exception:
+                                            backoff += 5
+                                            continue
 
-                                    except TimedOut:
-                                        backoff += 5
-                                        await asyncio.sleep(0.5)
-                                        continue
+                                        await asyncio.sleep(0.01)
 
-                                    except Exception:
-                                        backoff += 5
-                                        continue
-
-                                    await asyncio.sleep(0.01)
-
-                                i += 1
-                                if tokens != 'not_finished':
-                                    total_tokens = int(tokens)
+                                    i += 1
+                                    if tokens != 'not_finished':
+                                        total_tokens = int(tokens)
 
 
-                        await wrap_with_indicator(update, context, _reply, constants.ChatAction.TYPING)
-                        self.prompts[chat_id] -= 1
-                        # await self.db.update_used_tokens(user_id, total_tokens)
+                            await wrap_with_indicator(update, context, _reply, constants.ChatAction.TYPING)
+                            self.prompts[chat_id] -= 1
+                            # await self.db.update_used_tokens(user_id, total_tokens)
 
-                        # await self.db_analytics_for_month.add_input_tokens(plan, input_tokens)
-                        # await self.db_analytics_for_month.add_total_tokens(plan, total_tokens)
-                        # await self.db_analytics_for_month.add_output_tokens(plan, total_tokens - input_tokens)
-                        # await self.db_analytics_for_periods.add(plan, total_tokens)
+                            # await self.db_analytics_for_month.add_input_tokens(plan, input_tokens)
+                            # await self.db_analytics_for_month.add_total_tokens(plan, total_tokens)
+                            # await self.db_analytics_for_month.add_output_tokens(plan, total_tokens - input_tokens)
+                            # await self.db_analytics_for_periods.add(plan, total_tokens)
 
 
 
 
 
-                        if await self.is_in_tokens(update, context, user_id) == False:
+                            if await self.is_in_tokens(update, context, user_id) == False:
 
-                            await self.inactivate(user_id, update, context)
+                                await self.inactivate(user_id, update, context)
 
 
 
@@ -1894,18 +1897,23 @@ class ChatGPTTelegramBot:
 
 
 
-                except Exception as e:
-                    # traceback
-                    await self.send_to_admin('error in prompt' + '\n' + str(e) + str(traceback.format_exc()))
+                    except Exception as e:
+                        # traceback
+                        await self.send_to_admin('error in prompt' + '\n' + str(e) + str(traceback.format_exc()))
 
-                    self.prompts[chat_id] = 0
+                        self.prompts[chat_id] = 0
 
-                    logging.exception(traceback.format_exc())
-                    logging.error(f'Error in prompt: {e}')
-                    await update.effective_message.reply_text(
-                        message_thread_id=get_thread_id(update),
-                        text='Произошла ошибка, попробуйте еще раз',
-                    )
+                        logging.exception(traceback.format_exc())
+                        logging.error(f'Error in prompt: {e}')
+                        await update.effective_message.reply_text(
+                            message_thread_id=get_thread_id(update),
+                            text='Произошла ошибка, попробуйте еще раз',
+                        )
+        except:
+            logging.error(f'Error in prompt: {e}')
+            logging.exception(traceback.format_exc())
+
+
 
 
     async def post_init(self, application: Application) -> None:
