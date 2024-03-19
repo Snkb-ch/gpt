@@ -1909,7 +1909,7 @@ class ChatGPTTelegramBot:
                             message_thread_id=get_thread_id(update),
                             text='Произошла ошибка, попробуйте еще раз',
                         )
-        except:
+        except Exception as e:
             logging.error(f'Error in prompt: {e}')
             logging.exception(traceback.format_exc())
 
