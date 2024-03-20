@@ -1637,7 +1637,10 @@ class ChatGPTTelegramBot:
                         message_thread_id=get_thread_id(update),
                         text='Модель GPT-3.5 не поддерживает распознавание фото. Чтобы сменить модель, введите команду /model',
                     )
-                    self.prompts[chat_id] -= 1
+                    try:
+                        self.prompts[chat_id] -= 1
+                    except:
+                        pass
                     return
 
                 file = update.message.photo[-1].file_id  # get the file_id of the largest size photo
