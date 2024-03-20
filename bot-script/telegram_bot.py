@@ -1,4 +1,7 @@
 from __future__ import annotations
+
+from collections import defaultdict
+
 from dotenv import load_dotenv
 import base64
 import signal
@@ -29,7 +32,7 @@ from telegram import InlineKeyboardMarkup, InlineKeyboardButton, InlineQueryResu
 from telegram import InputTextMessageContent, BotCommand
 from telegram.error import RetryAfter, TimedOut
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, \
-    filters, InlineQueryHandler, CallbackQueryHandler, Application, ContextTypes, CallbackContext
+    filters, InlineQueryHandler, CallbackQueryHandler, Application, ContextTypes, CallbackContext, PollAnswerHandler
 
 from pydub import AudioSegment
 
@@ -130,6 +133,110 @@ class ChatGPTTelegramBot:
         self.inline_queries_cache = {}
         self.bot = Bot(token=self.config['token'])
         self.dispatcher = Dispatcher(bot=self.bot, loop=asyncio.get_event_loop())
+        self.poll_results = defaultdict(int)
+
+    async def test_poll(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+
+        if not is_admin(self.config, update.message.from_user.id):
+            return
+
+
+        admin_users = await self.db.get_admin_users()
+
+
+        for user in admin_users:
+            await update.message.reply_text(
+                message_thread_id=get_thread_id(update),
+                text='Друзья, мы хотим сделать бот лучше! И нам нужна ваша помощь. Расскажите:',
+            )
+
+
+            message = await self.bot.send_poll(
+                chat_id=user,
+                question='Почему вы не готовы купить подписку?',
+                options=['Пока не надо', 'Дорого', 'Мало токенов в подписке', 'Система токенов сложная — не понимаю'],
+                is_anonymous=False,
+                allows_multiple_answers=True,
+            )
+
+
+
+
+            payload = {
+                message.poll.id: message.message_id,
+                user: message.poll.id,
+
+
+            }
+            context.bot_data.update(payload)
+
+    async def poll(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+
+        if not is_admin(self.config, update.message.from_user.id):
+            return
+
+
+        users = await self.db.get_all_users()
+
+
+        for user in users:
+            await update.message.reply_text(
+                message_thread_id=get_thread_id(update),
+                text='Друзья, мы хотим сделать бот лучше! И нам нужна ваша помощь. Расскажите:',
+            )
+
+
+            message = await self.bot.send_poll(
+                chat_id=user,
+                question='Почему вы не готовы купить подписку?',
+                options=['Пока не надо', 'Дорого', 'Мало токенов в подписке', 'Система токенов сложная — не понимаю'],
+                is_anonymous=False,
+                allows_multiple_answers=True,
+            )
+
+
+
+
+            payload = {
+                message.poll.id: message.message_id,
+                user: message.poll.id,
+
+
+            }
+            context.bot_data.update(payload)
+
+
+
+    async def receive_poll_answer(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        """Summarize a users poll vote"""
+        logging.info('Poll answer: %s', update.poll_answer)
+        answer = update.poll_answer
+        selected_options = answer.option_ids
+        answer = ''
+        for option_id in selected_options:
+            self.poll_results[option_id] += 1
+            answer += f'{option_id}' + ' '
+        logging.info('Poll results: %s', self.poll_results)
+        await self.db.add_poll_answer(user_id=update.poll_answer.user.id, answer=answer)
+
+
+
+
+    async def show_results(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        # check admin
+        if not is_admin(self.config, update.message.from_user.id):
+            return
+        result_message = ""
+        for option in self.poll_results:
+            result_message += f"{option}: {self.poll_results[option]}\n"
+
+        if result_message:
+            await update.message.reply_text(
+                message_thread_id=get_thread_id(update),
+                text=result_message,
+            )
+
+
 
 
     async def send_info_message(self, users, text):
@@ -1955,8 +2062,12 @@ class ChatGPTTelegramBot:
         application.add_handler(CommandHandler('quality', self.quality))
 
         application.add_handler(CommandHandler('orders', self.orders))
+        application.add_handler(CommandHandler('poll', self.poll))
+        application.add_handler(CommandHandler('test_poll', self.test_poll))
+        application.add_handler(CommandHandler("result", self.show_results))
 
 
+        application.add_handler(PollAnswerHandler(self.receive_poll_answer))
 
 
         application.add_handler(CommandHandler('temperature', self.temperature))

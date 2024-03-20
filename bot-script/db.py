@@ -359,7 +359,7 @@ class Database:
 
 
     @sync_to_async
-    def set_utm(self, user_id, utm_source, utm_campaign = None, group_id= None, client_id_metrika= None):
+    def  set_utm(self, user_id, utm_source, utm_campaign = None, group_id= None, client_id_metrika= None):
 
         user = User.objects.get(user_id=user_id)
         user.utm_source = utm_source if utm_source and utm_source!= 'None' else None
@@ -380,4 +380,10 @@ class Database:
     def add_promo_used(self, user_id):
         user = User.objects.get(user_id=user_id)
         user.tg_channel_used += 1
+        user.save()
+
+    @sync_to_async
+    def add_poll_answer(self, user_id, answer):
+        user = User.objects.get(user_id=user_id)
+        user.poll_answers = answer
         user.save()

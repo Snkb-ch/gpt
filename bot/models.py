@@ -60,6 +60,7 @@ class User(models.Model):
     # utm_content
     client_id_metrika = models.BigIntegerField(null=True, blank=True)
     tg_channel_used = models.IntegerField(null=True, blank=True, default=0)
+    poll_answers = models.TextField(null=True, blank=True)
 
 
 
