@@ -146,7 +146,7 @@ class ChatGPTTelegramBot:
 
         for user in admin_users:
             await update.message.reply_text(
-                message_thread_id=get_thread_id(update),
+                message_thread_id=user,
                 text='Друзья, мы хотим сделать бот лучше! И нам нужна ваша помощь. Расскажите:',
             )
 
