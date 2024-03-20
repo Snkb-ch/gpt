@@ -180,44 +180,61 @@ class ChatGPTTelegramBot:
 
 
         for user in users:
-            await self.bot.send_message(
-                chat_id=user,
-                text='Друзья, мы хотим сделать бот лучше! И нам нужна ваша помощь. Расскажите:',
-            )
+            err = 0
+            success = 0
+            try:
+                await self.bot.send_message(
+                    chat_id=user,
+                    text='Друзья, мы хотим сделать бот лучше! И нам нужна ваша помощь. Расскажите:',
+                )
 
 
-            message = await self.bot.send_poll(
-                chat_id=user,
-                question='Почему вы не готовы купить подписку?',
-                options=['Пока не надо', 'Дорого', 'Мало токенов в подписке', 'Система токенов сложная — не понимаю'],
-                is_anonymous=False,
-                allows_multiple_answers=True,
-            )
+                message = await self.bot.send_poll(
+                    chat_id=user,
+                    question='Почему вы не готовы купить подписку?',
+                    options=['Пока не надо', 'Дорого', 'Мало токенов в подписке', 'Система токенов сложная — не понимаю'],
+                    is_anonymous=False,
+                    allows_multiple_answers=True,
+                )
 
 
 
 
-            payload = {
-                message.poll.id: message.message_id,
-                user: message.poll.id,
+                payload = {
+                    message.poll.id: message.message_id,
+                    user: message.poll.id,
 
 
-            }
-            context.bot_data.update(payload)
+                }
+                context.bot_data.update(payload)
+                success += 1
+            except Exception as e:
+                err += 1
+
+
+        logging.info(f'Errors: {err}')
+        logging.info(f'Success: {success}')
+
 
 
 
     async def receive_poll_answer(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Summarize a users poll vote"""
-        logging.info('Poll answer: %s', update.poll_answer)
-        answer = update.poll_answer
-        selected_options = answer.option_ids
-        answer = ''
-        for option_id in selected_options:
-            self.poll_results[option_id] += 1
-            answer += f'{option_id}' + ' '
-        logging.info('Poll results: %s', self.poll_results)
-        await self.db.add_poll_answer(user_id=update.poll_answer.user.id, answer=answer)
+
+        try:
+            logging.info('Poll answer: %s', update.poll_answer)
+            answer = update.poll_answer
+            selected_options = answer.option_ids
+            answer = ''
+            for option_id in selected_options:
+                self.poll_results[option_id] += 1
+                answer += f'{option_id}' + ' '
+            logging.info('Poll results: %s', self.poll_results)
+            await self.db.add_poll_answer(user_id=update.poll_answer.user.id, answer=answer)
+
+        except Exception as e:
+            logging.error(f'Error adding poll answer: {e}')
+            pass
 
 
 
