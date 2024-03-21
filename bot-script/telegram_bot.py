@@ -774,14 +774,14 @@ class ChatGPTTelegramBot:
         if await self.db.get_sub_multimodel(sub_id):
 
             current_model = await self.db.get_user_model(update.message.from_user.id)
-            if current_model == 'gpt-3.5-turbo-1106' or current_model == 'gpt-3.5-turbo':
+            if current_model == 'gpt-3.5-turbo-1106' or current_model == 'gpt-3.5-turbo' or current_model == 'gpt-3.5-turbo-0125':
                 await self.db.set_user_model(user_id, 'gpt-4-vision-preview')
                 await update.message.reply_text(
                     message_thread_id=get_thread_id(update),
                     text='Модель изменена на GPT-4',
                 )
             elif current_model == 'gpt-4-vision-preview' or current_model == 'gpt-4':
-                await self.db.set_user_model(user_id, 'gpt-3.5-turbo-1106')
+                await self.db.set_user_model(user_id, 'gpt-3.5-turbo')
                 await update.message.reply_text(
                     message_thread_id=get_thread_id(update),
                     text='Модель изменена на GPT-3.5',
@@ -1025,7 +1025,7 @@ class ChatGPTTelegramBot:
 При повторной покупке неиспользованные токены не переносятся''',
             )
         discount = False
-        prices = [50, 90, 260, 650]
+        prices = [80, 150, 260, 580]
         prices_new = prices
         prices_old = ['' for i in prices]
         try:
@@ -1036,7 +1036,7 @@ class ChatGPTTelegramBot:
                 if user_channel_status.status != 'left':
                     discount = True
                     prices_old = prices
-                    prices_new = [int(i * 0.8) for i in prices]
+                    prices_new = [int(i * 0.9) for i in prices]
 
                 else:
                     pass
@@ -1051,7 +1051,7 @@ class ChatGPTTelegramBot:
         try:
             for sub in subs:
                 if discount:
-                    button_text = sub['sub_name'] + ' ' + str(int(sub['price']*0.8)) + ' руб'
+                    button_text = sub['sub_name'] + ' ' + str(int(sub['price']*0.9)) + ' руб'
                 else:
                     button_text = sub['sub_name'] + ' ' + str(sub['price']) + ' руб'
                 button_callback = sub['sub_id']
@@ -1069,23 +1069,26 @@ class ChatGPTTelegramBot:
         text = f'''
 🗒Описание подписок:
 
-<b>🔸GPT-3.5 Standart🔸</b>
+<b>🔸GPT-3.5🔸</b>
 <blockquote>
 💰 <s><i>{prices_old[0]}</i></s> <b>{prices_new[0]} руб / 30 дней</b>
 
 ⚙️ GPT-3.5
-🔹 40 000 токенов - около 20 стр. А4
+🔹 300 000 токенов
 
 </blockquote>
 
-<b>🔸GPT-3.5 PRO🔸</b>
+<b>🔸Multi Light🔸</b>
 <blockquote>
 💰 <s><i>{prices_old[1]}</i></s> <b>{prices_new[1]} руб / 30 дней</b>
 
-⚙️ GPT-3.5
-🔹 200 000 токенов - около 100 стр. А4
+⚙️ <b>GPT-4</b>, GPT-3.5, DALLE-3
+🔹 Доступно 40 000 токенов в GPT-4
+🔹 Анализ фото
+🔹 Генерация до 20 изображений
+📢  <i><b>Расход токенов при переключении на GPT-3.5 уменьшается в 10 раз</b></i>
 
-</blockquote>
+</blockquote> 
 
 <b>🔸Multi Standart🔸</b>
 <blockquote>
@@ -1095,25 +1098,21 @@ class ChatGPTTelegramBot:
 🔹 Доступно 80 000 токенов в GPT-4
 🔹 Анализ фото
 🔹 Генерация до 40 изображений
+📢  <i><b>Расход токенов при переключении на GPT-3.5 уменьшается в 10 раз</b></i>
 
 </blockquote> 
 
-📢  <i>Расход токенов при «тройке» уменьшается <b>в 10 раз
-Так вместо 40 стр. в «четверке», через GPT-3.5 получится 400 стр.</b></i>
-
 <b>🔸Multi PRO🔸</b>
 <blockquote>
-💰 <s><i>{prices_old[3]}</i></s> <b>{prices_new[3]} руб / 30 дней</b>
+💰 <s><i>{prices_old[3]}</i></s> <b>{prices_new[3]} руб / 60 дней</b>
 
 ⚙️ <b>GPT-4</b>, GPT-3.5, DALLE-3
 🔹 Доступно 200 000 токенов в GPT-4
 🔹 Анализ фото
-🔹 Генерация до 40 изображений
+🔹 Генерация до 100 изображений
+📢  <i><b>Расход токенов при переключении на GPT-3.5 уменьшается в 10 раз</b></i>
 
 </blockquote>
-
-📢  <i>Расход токенов при «тройке» уменьшается <b>в 10 раз
-Так вместо 40 стр. в «четверке», через GPT-3.5 получится 400 стр.</b></i>
 
 ⚙️ Менять модель командой /model
 
@@ -1348,7 +1347,7 @@ class ChatGPTTelegramBot:
         price = await self.db.get_price(query.data)
 
         if discount:
-            price = price * 0.8
+            price = price * 0.9
 
 
 
@@ -1418,7 +1417,7 @@ class ChatGPTTelegramBot:
                 pass
             try:
                 if await self.db.get_sub_multimodel(sub_id):
-                    await self.db.set_user_model(user_id, 'gpt-3.5-turbo-1106')
+                    await self.db.set_user_model(user_id, 'gpt-3.5-turbo')
                     await update.effective_message.reply_text(
                         message_thread_id=get_thread_id(update),
                         text='Сейчас вы используете модель GPT-3.5, расход токенов уменьшен в 20 раз, для смены модели на GPT-4 введите /model',
@@ -1649,7 +1648,7 @@ class ChatGPTTelegramBot:
                 except:
                     pass
 
-                if model_config['model'] == 'gpt-3.5-turbo-1106' or model_config['model'] == 'gpt-3.5-turbo':
+                if model_config['model'] == 'gpt-3.5-turbo-1106' or model_config['model'] == 'gpt-3.5-turbo' or model_config['model'] == 'gpt-3.5-turbo-0125':
                     await update.message.reply_text(
                         message_thread_id=get_thread_id(update),
                         text='Модель GPT-3.5 не поддерживает распознавание фото. Чтобы сменить модель, введите команду /model',
