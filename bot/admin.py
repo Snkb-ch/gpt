@@ -62,9 +62,6 @@ class CustomSearchFields(admin.SimpleListFilter):
         return (
             ('user_id', 'User ID'),
             ('email', 'Email'),
-            ('sub_type__sub_name', 'Subscription Type'),
-            ('last_message', 'Last Message'),
-            ('time_sub', 'Subscription Time'),
 
         )
 
@@ -79,7 +76,7 @@ class UserAdmin(BotAdmin, admin.ModelAdmin):
 
     list_display = ('user_id', 'status', 'used_tokens', 'time_sub', 'end_time', 'sub_type', 'email', 'last_message', 'utm_source', 'utm_campaign','model', 'admin', 'blocked',  'group_id', 'client_id_metrika', 'poll_answers')
     list_filter = ('status', 'sub_type', 'blocked', CustomSearchFields)
-    search_fields = ('user_id', 'email', 'last_message', 'time_sub')
+    search_fields = ('user_id', 'email')
     ordering = ('-time_sub',)
 
 
