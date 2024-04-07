@@ -76,7 +76,7 @@ class UserAdmin(BotAdmin, admin.ModelAdmin):
 
     list_display = ('user_id', 'used_tokens', 'time_sub', 'sub_type', 'email', 'utm_campaign')
     list_filter = ('status', 'sub_type', 'blocked', CustomSearchFields)
-    search_fields = ('user_id', 'email')
+    search_fields = ('user_id', 'email', 'utm_campaign')
     ordering = ('-time_sub',)
     list_per_page = 20
 
