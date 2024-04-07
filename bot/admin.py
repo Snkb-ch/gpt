@@ -74,10 +74,18 @@ class CustomSearchFields(admin.SimpleListFilter):
 
 class UserAdmin(BotAdmin, admin.ModelAdmin):
 
-    list_display = ('user_id', 'status', 'used_tokens', 'time_sub', 'end_time', 'sub_type', 'email', 'last_message', 'utm_source', 'utm_campaign','model', 'admin', 'blocked',  'group_id', 'client_id_metrika', 'poll_answers')
+    list_display = ('user_id', 'used_tokens', 'time_sub', 'sub_type', 'email', 'utm_campaign', 'blocked', 'poll_answers')
     list_filter = ('status', 'sub_type', 'blocked', CustomSearchFields)
     search_fields = ('user_id', 'email')
     ordering = ('-time_sub',)
+    list_per_page = 20
+
+
+    # optimize
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related('sub_type')
 
 
 admin.site.register(User, UserAdmin)
