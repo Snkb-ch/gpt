@@ -80,6 +80,8 @@ class UserAdmin(BotAdmin, admin.ModelAdmin):
     list_display = ('user_id', 'status', 'used_tokens', 'time_sub', 'end_time', 'sub_type', 'email', 'last_message', 'utm_source', 'utm_campaign','model', 'admin', 'blocked',  'group_id', 'client_id_metrika', 'poll_answers')
     list_filter = ('status', 'sub_type', 'blocked', CustomSearchFields)
     search_fields = ('user_id', 'email', 'last_message', 'time_sub')
+    ordering = ('-time_sub',)
+
 
 admin.site.register(User, UserAdmin)
 
