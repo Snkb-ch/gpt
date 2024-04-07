@@ -62,6 +62,7 @@ class CustomSearchFields(admin.SimpleListFilter):
         return (
             ('user_id', 'User ID'),
             ('email', 'Email'),
+            ('utm_campaign', 'UTM Campaign'),
 
         )
 
