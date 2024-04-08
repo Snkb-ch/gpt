@@ -1,178 +1,289 @@
 {% extends "main.html" %}
 {% load static %}
-{% block title %}Повышение оригинальности{% endblock %}
+{% block title %}Реклама в информационном стиле{% endblock %}
 {% block extra_css %}
-  <link href="{% static 'css/uniquetext.css' %}" rel="stylesheet" />
+<link href="{% static 'css/uniquetext.css' %}" rel="stylesheet" xmlns="http://www.w3.org/1999/html"/>
 <script src = "{% static 'js/uniquetext.js' %}"></script>
-{% endblock %}
-{% block content %}
-      <div class="page-container">
-        <div class="page-container01">
-          <div class="page-container02">
-            <div class="page-container03">
-              <div class="page-container04">
-                <form class="page-form" id="post-form-unique-text" method="post" action="">
-                  {% csrf_token %}
-                  <div id = "error">{{error}}</div>
-                  <div class="page-container05">
-                    <div class="page-container06">
-                      <h1 class="page-text">
-                        <span class="page-text01">Повышение</span>
-                        <span class="page-text02">УНИКАЛЬНОСТИ</span>
-                      </h1>
-                    </div>
-                    <div class="page-container07">
-                      <a
-                        href="{% url 'uniquefile' %}"
 
-                        rel="noreferrer noopener"
-                        class="page-link"
-                      >
-                        <span>Загрузить файл</span>
-                        <br />
-                      </a>
-                    </div>
-                  </div>
-                  <div class="page-container08">
-                    <img
-                      alt="pastedImage"
-                      src="{% static 'images/pastedimage-cf5b-200h.png' %}"
-                      class="page-pasted-image"
-                    />
-                  </div>
-                  <div class="page-container09">
-                    <div class="page-container10">
-                      <textarea
-                              id="rawtext"
-                              name="rawtext"
-                        placeholder="Введите текст "
-                        class="page-textarea textarea"
-                              required
-                      ></textarea>
-                    </div>
-                    <div class="page-container11">
-                      <div class="page-container12">
-                        <span class="page-text05">Выбор режима</span>
-                      </div>
-                      <div class="page-container13">
-                        <div class="page-div">
+{% endblock %}
+
+{% block content %}
+
+<div>
+<div id="overlay" style="display: none;"></div>
+
+ <div id="loader-div" style="display: none;">
+
+<div class="loader">
+  <div>
+    <ul>
+      <li>
+        <svg fill="currentColor" viewBox="0 0 90 120">
+          <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z"></path>
+        </svg>
+      </li>
+      <li>
+        <svg fill="currentColor" viewBox="0 0 90 120">
+          <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z"></path>
+        </svg>
+      </li>
+      <li>
+        <svg fill="currentColor" viewBox="0 0 90 120">
+          <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z"></path>
+        </svg>
+      </li>
+      <li>
+        <svg fill="currentColor" viewBox="0 0 90 120">
+          <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z"></path>
+        </svg>
+      </li>
+      <li>
+        <svg fill="currentColor" viewBox="0 0 90 120">
+          <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z"></path>
+        </svg>
+      </li>
+      <li>
+        <svg fill="currentColor" viewBox="0 0 90 120">
+          <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z"></path>
+        </svg>
+      </li>
+    </ul>
+  </div><span>Loading</span></div>
+ </div>
+<div>
+ <form class="file-form" enctype="multipart/form-data" id="post-form-unique-file" method="post">
+                     {% csrf_token %}
+
+  <div class="filev2-container">
+    <div class="filev2-container01">
+      <div class="filev2-container02">
+        <div class="filev2-container03">
+          <div class="filev2-container04">
+            <h1 class="filev2-text">Рекламный текст в информационном стиле</h1>
+          </div>
+
+          <div class="filev2-container05">
+
+            <div class="filev2-container06">
+
+
+<div class="filev2-container08">
+                <h1 class="filev2-text01">Что прорекламировать</h1>
+              </div>
+                              <div class="filev2-container07">
+                <div class="filev2-div">
+
+
+
+
+
+
+
+
+
+
+<div class='form'>
+
+
+
+  <textarea class='filev2-textarea' id = 'rawtext' name='file' placeholder='Описание продукта' required></textarea>
+  <input class='filev2-textarea optional' id = 'audience' name='file' placeholder='Целевая аудитория' required></input>
+  <input class='filev2-textarea optional' id = 'platform' name='file' placeholder='Платформа для рекламы'></input>
+</div>
+
+                </div>
+              </div>
+              <div class="filev2-container08">
+                <h1 class="filev2-text01">Выберите длину</h1>
+              </div>
+              <div class="filev2-container09">
+                <div class="filev2-container10">
+                  <div class="filev2-div1">
+
+
+
+
 
 
 <div class='checkbox-container'>
   <label class='checkbox-label'>
-    <input type='radio' name='options' class='checkbox-input' value="red1" id = 'opt1ch' checked>
+    <input type='radio' value="short" name='options' class='checkbox-input' id = 'opt1ch' checked>
     <div class='checkbox-style' id = 'opt1'></div>
   </label>
   <label class='checkbox-label'>
-    <input type='radio' name='options' class='checkbox-input' value="red2" id = 'opt2ch'>
+    <input type='radio' value="long" name='options' class='checkbox-input' id = 'opt2ch'>
     <div class='checkbox-style' id = 'opt2'></div>
   </label>
-  <label class='checkbox-label'>
-    <input type='radio' name='options' class='checkbox-input' value="red3" id = 'opt3ch'>
-    <div class='checkbox-style' id = 'opt3'></div>
-  </label>
+
 </div>
 
-
-                        </div>
-                      </div>
-                      <div class="page-container14">
-                        <div class="page-container15">
-                          <img
-                            alt="image"
-                             src="{% static 'images/dangood-200h.png' %}"
-                            class="page-image"
-                          />
-                        </div>
-                        <div class="page-container16">
-                          <img
-                            alt="image"
-                            src="{% static 'images/dannormal-200h.png' %}"
-                            class="page-image1"
-                          />
-                        </div>
-                        <div class="page-container17">
-                          <img
-                            alt="image"
-                            src="{% static 'images/dansogood-200h.png' %}"
-                            class="page-image2"
-                          />
-                        </div>
-                      </div>
-                    </div>
                   </div>
-                  <div class="page-container18">
-                    <div class="page-container19">
-                      <button class="btn-get-price" type="submit" value="Цена" id = "submitunique-text-price"  name = "getprice">Посчитать цену</button>
-                    </div>
-                    <div class="page-container20" id = "price">
+                </div>
+              </div>
 
-                    </div>
-                    <div class="page-container21">
-                      {% if user.is_authenticated %}
-                      <button class="btn-pay" type="submit" value="Submit" id = "submitunique-order" name=" pay ">Купить</button>
+              <div class="filev2-container11">
+                <ul class="filev2-ul list">
+                  <li class="filev2-li list-item">
+                    <span class="filev2-text02">
+                      <span class="filev2-text03"><b>Короткая 50-100 слов</b></span>
+                    </span>
+                  </li>
+                  <li class="filev2-li1 list-item">
+                    <span class="filev2-text06">
+                      <span class="filev2-text07">
+                        <b>Средняя 100-200 слов</b>
+                      </span>
+                    </span>
+                  </li>
+
+                </ul>
+              </div>
+
+            </div>
+
+          </div>
+          <div class="filev2-container12">
+
+            <div class="filev2-container14"  id = "price">
+                <div id = "error">{{error}}</div>
+
+            </div>
+            <div class="filev2-container15">
+              {% if user.is_authenticated %}
+                      <button class="btn-pay" type="submit" value="Submit" id = "submit-button" name=" pay ">Купить</button>
 
                         {% else %}
                       <a href="{% url 'login' %}" class="btn-pay">Купить</a>
                       {% endif %}
-                    </div>
-                  </div>
-                </form>
-              </div>
-            </div>
-            <div class="page-container22">
-              <div class="page-container23">
-                <span class="page-text07">
-                  <span class="page-text08">Легкий режим</span>
-                  <span class="page-text09">+10-60%</span>
-                  <span class="page-text10">&nbsp;</span>
-                  <br class="page-text11" />
-                  <span class="page-text12">7 руб - 2000 символов</span>
-                  <br class="page-text13" />
-                  <br class="page-text14" />
-                  <span class="page-text15">Средний режим +85-90%&nbsp;</span>
-                  <br class="page-text16" />
-                  <span class="page-text17">12 руб</span>
-                  <span class="page-text18">- 2000 символов</span>
-                  <br class="page-text19" />
-                  <br class="page-text20" />
-                  <span class="page-text21">Безумный режим +95-100%</span>
-                  <span class="page-text22">&nbsp;</span>
-                  <br class="page-text23" />
-                  <span class="page-text24">12 руб - 2000 символов</span>
-                  <br />
-                </span>
-              </div>
-              <div class="page-container24">
-                <div class="page-container25"></div>
-                <div class="page-container26">
-                  <span class="page-text26">
-                    <span>Советуем убирать названия глав и&nbsp;</span>
-                    <span>заголовки, также сноски и источники</span>
-                    <br />
-                    <span>Текст более 10 страниц рекомендуем делить</span>
-                  </span>
-                </div>
-              </div>
-              <div class="page-container27">
-                <div class="page-container28"></div>
-                <div class="page-container29">
-                  <span class="page-text31">
-                    <span>
-                      Нажимая кнопку купить вы соглашаетесь ,что контент
-                      генерируемый нейросетью может содержать ошибки,
-                      неточности, и быть неполным.
-                    </span>
-                    <br />
-                    <span>
-                      Мы не несем ответственности за контент, генерируемый
-                      нейросетью
-                    </span>
-                  </span>
-                </div>
-              </div>
             </div>
           </div>
+          <div class="filev2-container16">
+            <h1 class="filev2-text16">Подсказки</h1>
+          </div>
+          <div class="filev2-container17">
+
+           <div class="container-red">
+
+               <h1 class="procent h-red1">Что написать ?</h1>
+               <div class = "text-red red1"><span><b></b>Опишите информацию, которую хотите увидеть в рекламе. Например, Мы продаем технику. Samsung S21 о скидкам до 12 сентября.</span></div>
+
+
+           </div>
+           <div class="container-red">
+               <h1 class="procent h-red2">Укажите целевую аудиторию</h1>
+               <div class = "text-red red2"><span><b></b>Студенты, которые хотят стать програмистами</span></div>
+
+           </div>
+          </div>
+            <div class="filev2-container172">
+
+           <div class="container-red">
+
+               <h1 class="procent h-red3">Пиши только факты</h1>
+               <div class = "text-red red3"><span><b></b></span></div>
+
+
+           </div>
+
+          </div>
+            <div class="homev4-containerfaq">
+                <section id="faq">
+
+        <!-- Heading -->
+        <div class="faq-heading">
+            <h1>Ответы на вопросы</h1>
+
         </div>
+
+        <!-- Container -->
+        <div class="faq-content">
+            <!-- faq -->
+            <div class="faq-box-container">
+
+
+<div class="faq-box">
+                    <div class="faq-box-question ">
+                            <h4>Как это работает?</h4>
+                            <span class="faq-box-icon"></span>
+                    </div>
+                    <div class="faq-box-answer">
+                        <p>Мы не используем скрытые пробелы, абзацы, символы, английские буквы и другие технические хитрости. Текст преобразует искусственный интеллект ChatGPT. Он переформулирует текст с помощью синонимов, но сохраняет цитаты, фамилии, названия произведений, даты и числа</p>
+                    </div>
+                </div>
+                <div class="faq-box">
+                    <div class="faq-box-question ">
+                            <h4>Тексты от нейросети пройдут антиплагиат?</h4>
+                            <span class="faq-box-icon"></span>
+                    </div>
+                    <div class="faq-box-answer">
+                        <p>Пока что не существует систем, которые точно определят был ли текст создан искусственным интеллектом или нет. Антиплагиат, особенно бесплатный, также не может это распознать. Единственное, что антиплагиат может обнаружить – это перефразирование. Избежать этого можно с помощью разных режимов на сайте</p>
+                    </div>
+                </div>
+                 <div class="faq-box">
+                    <div class="faq-box-question ">
+                            <h4>Стоит чистить текст перед отправкой?</h4>
+                            <span class="faq-box-icon"></span>
+                    </div>
+                    <div class="faq-box-answer">
+                        <p>Да, советуем убирать названия глав и заголовки, также сноски и источники</p>
+
+
+                        </div>
+                </div>
+
+                <div class="faq-box">
+                    <div class="faq-box-question ">
+                            <h4>Можно загрузить файл на 20 страниц?</h4>
+                            <span class="faq-box-icon"></span>
+                    </div>
+                    <div class="faq-box-answer">
+                        <p>Можно, но текст более 10 страниц рекомендуем делить. Чем больше файл, тем дольше время ожидания ответа. И соответсвено увеличивается шанс ошибки от сервера Microsoft</p>
+
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+
+
+
+            </div>
+
+
+        </div>
+
       </div>
-{% endblock %}
+    </div>
+  </div>
+ </form>
+</div>
+
+
+
+    <script>
+var faq = document.getElementsByClassName("faq-box-question");
+var i;
+for (i = 0; i < faq.length; i++) {
+    faq[i].addEventListener("click", function () {
+        /* Toggle between adding and removing the "active" class,
+        to highlight the button that controls the panel */
+        this.classList.toggle("active");
+        /* Toggle between hiding and showing the active panel */
+        var body = this.nextElementSibling;
+        if (body.style.maxHeight === "2000px") {
+            body.style.maxHeight = "0px";
+        } else {
+            body.style.maxHeight = "2000px";
+        }
+    });
+}
+    </script>
+
+    {% endblock %}

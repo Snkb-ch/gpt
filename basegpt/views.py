@@ -1,8 +1,11 @@
 import json
+import logging
+import time
 import traceback
 import  threading
+from adrf.views import APIView
 import asyncio
-
+from asgiref.sync import sync_to_async
 from asgiref.sync import sync_to_async
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -29,7 +32,7 @@ from django.http import JsonResponse
 
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
-from rest_framework.views import APIView
+# from rest_framework.views import APIView
 from .models import *
 
 from django.shortcuts import render, redirect
@@ -847,75 +850,44 @@ def get_price_text(text, code, request, type):
 
 
 def uniquetext(request):
-    if request.method == 'POST' and 'getprice' in request.POST:
-        obj = request.POST.get('rawtext')
-        code = request.POST.get('code')
-        type = request.POST.get('type')
 
-        if moderation(obj) == True:
-            return JsonResponse({'type': 'error', 'error': 'Текст не прошел модерацию'})
-        else:
-
-            price = str(get_price_text(obj, code, request, type))
-
-            return JsonResponse({'price': price})
-
-    if request.method == 'POST' and 'pay' in request.POST:
-        obj = request.POST.get('rawtext')
-        code = request.POST.get('code')
-        type = request.POST.get('options')
-
-        if moderation(obj) == True:
-            return render(request, 'basegpt/uniquetext.html', {'error': 'Текст не прошел модерацию'})
-        else:
-
-            price = str(get_price_text(obj, code, request, type))
-
-            Configuration.account_id = settings.YOOKASSA_SHOP_ID
-            Configuration.secret_key = settings.YOOKASSA_SECRET_KEY
-            payment = Payment.create({
-                "amount": {
-                    "value": price,
-                    "currency": "RUB"
-                },
-                "confirmation": {
-                    "type": "redirect",
-                    "return_url": "https://brainstormai.ru/success"
-                },
-                "capture": True,
-                "description": "oreder unique text " + str(type),
-                "receipt": {
-                    "customer": {
-
-                        "email": request.user.email,
-                    },
-                    "items": [
-                        {
-                            "description": "Повышение уникальности" + str(type),
-                            "quantity": "1",
-                            "amount": {
-                                "value": price,
-                                "currency": "RUB"
-                            },
-                            "vat_code": 1
-
-                        }
-                    ]
-                }
-
-            }, uuid.uuid4())
-
-            if code and is_valid_promo_code(code, request):
-                Order.objects.create(user=request.user, price=price, rawtext=obj, type='unique_text', type2=type,
-                                     transaction_id=payment.id, promo_code=PromoCode.objects.get(code=code))
-            else:
-                Order.objects.create(user=request.user, price=price, rawtext=obj, type='unique_text',
-                                     transaction_id=payment.id, type2=type)
-            return HttpResponseRedirect(payment.confirmation.confirmation_url)
-
-            # create payment and redirect to payment page
 
     return render(request, 'basegpt/uniquetext.html')
+@sync_to_async
+def generate_info_text(text, type):
+
+    time.sleep(15)
+    response_text = text + ' success'
+    logging.info('start generating test text')
+    return response_text
+
+class infotext(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+
+    async def post(self, request):
+        text = request.data.get('rawtext')
+        type = request.data.get('type')
+        user = request.user
+
+        # t = threading.Thread(target=generate_info_text, args=(text, type), daemon=True)
+        #
+        # t.start()
+
+        response_text =  await generate_info_text(text, type)
+
+
+        # return OK status
+        return JsonResponse({'status': 'ok', 'result':  response_text})
+
+class infotext_result(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self,request):
+        user = request.user
+        result= 'test ok'
+        return JsonResponse({'status': 'ok', 'result': result})
+
 
 
 

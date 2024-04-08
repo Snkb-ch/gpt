@@ -28,6 +28,8 @@ urlpatterns = [
 
 path('register/', views.RegisterPage.as_view(), name='register'),
     path('success_api', views.success_api, name='success_api'),
+    path('infotext', views.infotext.as_view(), name='infotext'),
+    path('infotext_result', views.infotext_result.as_view(), name='infotext_result'),
     path('success_result', views.success_result, name='success_result'),
 path('exam_text_get_idea', views.exam_text_get_idea, name='exam_text_get_idea'),
     path('check_idea/<int:id>/', views.check_idea, name='check_idea'),
