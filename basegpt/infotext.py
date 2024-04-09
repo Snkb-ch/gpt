@@ -3,17 +3,10 @@ import logging
 
 import openai
 
-from gpt.gpt import settings
+
 import re
 
-def start_generate(product, audience,platform,type):
-    if product == 'GPT-3':
 
-        openai.api_key = settings.OPENAI_API_KEY
-        if audience == 'Developer':
-            if platform == 'Python':
-                if type == 'Code':
-                    return 'import open'
 
 
 # def read_stop_words_from_file(file_names):
