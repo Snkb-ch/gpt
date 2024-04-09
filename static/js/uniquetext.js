@@ -69,6 +69,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
       //get id of textarea #rawtext
         var rawtext = document.getElementById('rawtext');
+        var audience = document.getElementById('audience');
+        var platform = document.getElementById('platform');
         if (rawtext.value === '') {
 
             rawtext.placeholder = 'Обязательное поле. Заполните описание вашего продукта или услуги';
@@ -95,6 +97,8 @@ document.addEventListener('DOMContentLoaded', function() {
         body: JSON.stringify({
     'rawtext': rawtext.value,
     'type': type,
+    'audience': audience.value,
+    'platform': platform.value
   }),
         headers: {
           'Content-Type': 'application/json',

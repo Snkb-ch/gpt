@@ -1,7 +1,12 @@
 
 {% extends "main.html" %}
 {% load static %}
-{% block title %}Главная{% endblock %}
+{% block title %}ChatGPT на русском — Нейросеть онлайн{% endblock %}
+{% block description %}
+<meta
+  name="description"
+  content="Нейросеть для написания текста, анализа фото и генерации картинок — всё одном месте. В боте есть GPT-4, GPT-3.5 и DALL-E. Подойдёт для тех, кому нужен текст для презентаций, постов в соцсетях, карточек товаров, контент плана или же для работ в научном стиле, решения задач и просто ответов на вопросы."
+>{% endblock %}
 {% block extra_css %}
 <link href="{% static 'css/homev5.css' %}" rel="stylesheet" xmlns="http://www.w3.org/1999/html"
       xmlns="http://www.w3.org/1999/html"/>
@@ -204,7 +209,7 @@
            <span class="task-hed">Анализ фото
 </span>
            <br>
-          <span>Больше не нужны сервисы по переводу фото в текст. Нейросеть поймет, что на картинке и даст быстрый ответ всего в два клика.
+          <span>Больше не нужны сервисы по переводу фото в текст. Нейросеть поймет, что на картинке и даст быстрый ответ всего в два клика
 </span>
         </div>
         <div class="homev4-container-task task2">

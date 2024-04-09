@@ -15,7 +15,7 @@ from django.views.decorators.csrf import csrf_exempt
 from openai_async import openai_async
 from urllib.parse import quote, urlencode
 from .prompts import *
-
+from .infotext import *
 from django.contrib import messages
 import urllib
 
@@ -52,24 +52,6 @@ def history(request):
 
 
 
-   
-@login_required(login_url='login')
-def audio(request):
-    transcript = "Здесь будет расшифровка"
-    if request.method == 'POST':
-        openai.api_key = settings.OPENAI_API_KEY
-        audio_file = request.FILES.get('audio_file')
-
-        transcript = openai.Audio.transcribe(
-            model="whisper-1",
-            file=audio_file,
-
-        )
-
-
-
-    return render(request, 'basegpt/audio.html', {'transcript': transcript})
-
 
 def error(request):
     return render(request, 'basegpt/error.html')
@@ -105,8 +87,7 @@ def refund(order):
 
 
 
-def cloud(request):
-    return render(request, 'basegpt/cloud.html')
+
 
 def home(request):
     # utm_source = request.GET.get('utm_source')
@@ -854,10 +835,11 @@ def uniquetext(request):
 
     return render(request, 'basegpt/uniquetext.html')
 @sync_to_async
-def generate_info_text(text, type):
+def generate_info_text(product, audience, platform, type):
 
-    time.sleep(15)
-    response_text = text + ' success'
+    start_generate(product, audience, platform, type)
+
+    response_text =  ' success'
     logging.info('start generating test text')
     return response_text
 
@@ -867,15 +849,20 @@ class infotext(APIView):
 
 
     async def post(self, request):
-        text = request.data.get('rawtext')
+        product = request.data.get('rawtext')
         type = request.data.get('type')
+        audience = request.data.get('audience')
+        platform = request.data.get('platform')
+
+
+
         user = request.user
 
         # t = threading.Thread(target=generate_info_text, args=(text, type), daemon=True)
         #
         # t.start()
 
-        response_text =  await generate_info_text(text, type)
+        response_text =  await generate_info_text(product, audience, platform, type)
 
 
         # return OK status

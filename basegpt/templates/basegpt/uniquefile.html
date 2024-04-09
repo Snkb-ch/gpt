@@ -1,8 +1,17 @@
 {% extends "main.html" %}
 {% load static %}
-{% block title %}Повышение оригинальности{% endblock %}
+{% block title %}Повышение оригинальности — Рерайт текста нейросетью{% endblock %}
+
+{% block description %}
+<meta
+  name="description"
+  content="Увеличим оригинальность с помощью ChatGPT. Не используем скрытые пробелы, абзацы и прочее технические хитрости. Нейросеть переформулирует текст за вас и сделает это в разы быстрее"
+>{% endblock %}
+
 {% block extra_css %}
 <link href="{% static 'css/uniquefilev2.css' %}" rel="stylesheet" xmlns="http://www.w3.org/1999/html"/>
+
+
 <script src = "{% static 'js/uniquefile.js' %}"></script>
 
 {% endblock %}

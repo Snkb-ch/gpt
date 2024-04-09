@@ -17,12 +17,12 @@ urlpatterns = [
 
     path('', views.home, name='home'),
     path('unique', views.unique, name='unique'),
-    path('cloud', views.cloud, name='cloud'),
+
 
 
     path('contact/', views.contact, name='contact'),
     path('error/', views.error, name='error'),
-    path('audio/', views.audio, name='audio'),
+
 
  path('login/', views.CustomLoginView.as_view(), name='login'),
 
