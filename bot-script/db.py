@@ -155,8 +155,8 @@ class Database:
             if model == 'gpt-3.5-turbo-0125' or model == 'gpt-3.5-turbo' or model == 'gpt-3.5-turbo-1106':
                 multimodel_3 = True
                 model = 'gpt-3.5-turbo'
-            elif model == 'gpt-4':
-                model = 'gpt-4-vision-preview'
+            elif model == 'gpt-4' or model == 'gpt-4-turbo-2024-04-09':
+                model = 'gpt-4-turbo-2024-04-09'
 
         else:
             model = Subscriptions.objects.get(sub_id=User.objects.get(user_id=user_id).sub_type.sub_id).model
