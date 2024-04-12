@@ -878,8 +878,15 @@ def get_price_text(text, code, request, type):
 
 def uniquetext(request):
 
+    # only for admin
 
-    return render(request, 'basegpt/uniquetext.html')
+    user  = request.user
+    if user.is_superuser:
+
+
+        return render(request, 'basegpt/uniquetext.html')
+
+    
 @sync_to_async
 def generate_info_text(product, audience, platform, type):
 
