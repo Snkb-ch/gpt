@@ -1,7 +1,74 @@
 *{
   font-family: open sans, sans-serif;
 
+.Btn {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 45px;
+  height: 45px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition-duration: .3s;
 
+
+}
+
+/* plus sign */
+.sign {
+  width: 100%;
+  transition-duration: .3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sign svg {
+  width: 17px;
+}
+
+.sign svg path {
+  fill: white;
+}
+/* text */
+.text {
+  position: absolute;
+  right: 0%;
+  width: 0%;
+  opacity: 0;
+  color: white;
+  font-size: 1.2em;
+  font-weight: 600;
+  transition-duration: .3s;
+  margin-left: 10px;
+}
+/* hover effect on button width */
+.Btn:hover {
+  width: 125px;
+  border-radius: 40px;
+  transition-duration: .3s;
+}
+
+.Btn:hover .sign {
+  width: 30%;
+  transition-duration: .3s;
+  padding-left: 20px;
+}
+/* hover effect button's text */
+.Btn:hover .text {
+  opacity: 1;
+  width: 70%;
+  transition-duration: .3s;
+  padding-right: 10px;
+  padding-left: 5px;
+}
+/* button click effect*/
+.Btn:active {
+  transform: translate(2px ,2px);
+}
 }
 .large-header {
   position: relative;
@@ -183,6 +250,17 @@ margin-top: -350px;
   padding-bottom: var(--dl-space-space-halfunit);
    color: white;
    margin-left: var(--dl-space-space-twounits);
+}.component-text-drop {
+  cursor: pointer;
+  transition: 0.3s;
+  font-family: Verdana;
+  padding-top: var(--dl-space-space-halfunit);
+  padding-left: var(--dl-space-space-unit);
+  border-radius: 16px;
+  padding-right: var(--dl-space-space-unit);
+  padding-bottom: var(--dl-space-space-halfunit);
+   color: white;
+
 }
 .component-text:hover {
   background-color: #98e4fd;
@@ -219,7 +297,34 @@ margin-top: -350px;
 .component-text2:hover {
   background-color: #98e4fd;
     color:black;
+
+
 }
+.component-balance {
+  cursor: pointer;
+  transition: 0.3s;
+  font-family: Verdana;
+
+  padding-top: var(--dl-space-space-halfunit);
+  padding-left: var(--dl-space-space-unit);
+  border-radius: 16px;
+  padding-right: var(--dl-space-space-unit);
+  padding-bottom: var(--dl-space-space-halfunit);
+   color: white;
+       display: flex;
+    flex-direction: row;
+    align-content: center;
+    align-items: center;
+}
+.
+.component-balance:hover {
+
+    color:white;
+}
+#balance{
+    color:white;
+}
+
 .component-text3 {
   cursor: pointer;
   transition: 0.3s;
@@ -565,3 +670,10 @@ display:none;
   visibility: hidden;
   }
 }
+
+
+
+
+
+
+

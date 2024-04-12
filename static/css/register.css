@@ -1,13 +1,31 @@
+
+
 .register-container {
   width: 100%;
   display: flex;
   overflow: auto;
   min-height: 100vh;
+
   align-items: center;
   flex-direction: column;
   justify-content: center;
+  font-family: 'Nano Sans', sans-serif;
+
 }
 
+
+
+.component-text1{
+display:none;
+}
+.component-text3{
+display:none;
+}
+
+.link {
+    color: #639;
+    text-decoration: underline;
+}
 .form {
   background-color: white;
   padding: 1em;
@@ -15,9 +33,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: 5px 5px 15px -1px rgba(0,0,0,0.75);
+
   width:auto;
   max-width:85%;
+    font-family: 'Nano Sans', sans-serif;
 }
 
 .signup {
@@ -29,22 +48,35 @@
   font-size: x-large;
   margin-bottom: 0.5em;
   margin-top: 0.5em;
+    font-family: 'Nano Sans', sans-serif;
+      margin-bottom: 30px;
 }
+#okayToEmail
+{
 
+width:20px;
+height:20px;
+
+
+
+}
 .form--input {
-  width: 100%;
+
+  width:300px;
+  max-width:90%;
+  padding:10px;
   margin-bottom: 1.25em;
   margin-top: 1.25em;
   height: 40px;
-  border-radius: 5px;
-  border: 1px solid gray;
+  border-radius: 16px;
+  border: 2px solid gray;
 
   font-family: 'Inter', sans-serif;
   outline: none;
 }
 
 .form--input:focus {
-  border: 1px solid #639;
+  border: 2px solid #639;
   outline: none;
 }
 
@@ -86,5 +118,5 @@
 }
 
 label{
-	font-family: Noto Sans;
+	  font-family: 'Nano Sans', sans-serif;
 }

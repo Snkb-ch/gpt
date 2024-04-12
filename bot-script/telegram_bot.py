@@ -775,12 +775,12 @@ class ChatGPTTelegramBot:
 
             current_model = await self.db.get_user_model(update.message.from_user.id)
             if current_model == 'gpt-3.5-turbo-1106' or current_model == 'gpt-3.5-turbo' or current_model == 'gpt-3.5-turbo-0125':
-                await self.db.set_user_model(user_id, 'gpt-4-vision-preview')
+                await self.db.set_user_model(user_id, 'gpt-4-turbo')
                 await update.message.reply_text(
                     message_thread_id=get_thread_id(update),
                     text='Модель изменена на GPT-4',
                 )
-            elif current_model == 'gpt-4-vision-preview' or current_model == 'gpt-4':
+            elif current_model == 'gpt-4-vision-preview' or current_model == 'gpt-4-turbo':
                 await self.db.set_user_model(user_id, 'gpt-3.5-turbo')
                 await update.message.reply_text(
                     message_thread_id=get_thread_id(update),

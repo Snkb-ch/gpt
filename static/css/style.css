@@ -221,7 +221,7 @@
  align-items: center;
  background-color: #FFFFFF;
  border: 1px solid rgba(0, 0, 0, 0.1);
- border-radius: .25rem;
+ border-radius:8px;
  box-shadow: rgba(0, 0, 0, 0.02) 0 1px 3px 0;
  box-sizing: border-box;
  color: rgba(0, 0, 0, 0.85);
@@ -232,15 +232,15 @@
  font-weight: 600;
  justify-content: center;
  line-height: 1.25;
- min-height: 3rem;
- padding: 2%;
+
+ padding: 15px;
  text-decoration: none;
  transition: all 250ms;
  user-select: none;
  -webkit-user-select: none;
  touch-action: manipulation;
  vertical-align: baseline;
- width: auto;
+ width:170px;
  
  height:auto;
 }

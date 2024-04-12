@@ -1,19 +1,23 @@
-<!DOCTYPE html>
+{% extends "main.html" %}
 {% load static %}
-{% block title %}Вход{% endblock %}
+
+
 {% load widget_tweaks %}
 
 
-  <head>
-    <title></title>
+
+      {% block extra_css %}
+    <title>Вход</title>
     <meta property="og:title" content="Trained All Capybara" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
     <meta property="twitter:card" content="summary_large_image" />
 <link href="{% static 'css/register.css' %}" rel="stylesheet" />
 <link href="{% static 'css/style.css' %}" rel="stylesheet" />
+{% endblock %}
 
-  </head>
+
+{% block content %}
 <body>
 
 
@@ -23,9 +27,11 @@
       <form class="form" method="POST">
               <span class="signup">Войти</span>
             {% csrf_token %}
-        {{form.username.label_tag}}
+
+
+ <span>Почта</span>
         {{form.username|add_class:"form--input"}}
-        {{form.password.label_tag}}
+ <span>Пароль</span>
         {{form.password|add_class:"form--input"}}
 
 
@@ -38,10 +44,10 @@
     <div class="form--marketing">
 
 
-        <span>Нет аккаунта?   <a href="{% url 'register' %}">  Зарегистрироваться</a> </span>
+        <span>Нет аккаунта?   <a class="link"  href="{% url 'register' %}">  Зарегистрироваться</a> </span>
 
     </div>
-    <button class="form--submit"  type="submit" value="Register">
+    <button class="btn-pay"  type="submit" value="Register">
         Войти
     </button>
 </form>
@@ -49,4 +55,4 @@
   </div>
 </div>
 
-</body>
+</body>{% endblock %}

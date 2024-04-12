@@ -1,19 +1,19 @@
-<!DOCTYPE html>
+{% extends "main.html" %}
 {% load static %}
-{% block title %}Регистрация{% endblock %}
+
 {% load widget_tweaks %}
 
-
-  <head>
-    <title></title>
+      {% block extra_css %}
+    <title>Регистрация</title>
     <meta property="og:title" content="Trained All Capybara" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
     <meta property="twitter:card" content="summary_large_image" />
 <link href="{% static 'css/register.css' %}" rel="stylesheet" />
 <link href="{% static 'css/style.css' %}" rel="stylesheet" />
+{% endblock %}
 
-  </head>
+{% block content %}
 <body>
 
 <div>
@@ -22,11 +22,13 @@
     <form class="form" method="POST">
               <span class="signup">Зарегистрироваться</span>
             {% csrf_token %}
-        {{form.email.label_tag}}
+
+        <span>Почта</span>
         {{form.email|add_class:"form--input"}}
-        {{form.password1.label_tag}}
+        <span>Пароль</span>
+
         {{form.password1|add_class:"form--input"}}
-        {{form.password2.label_tag}}
+          <span>Подтвердите пароль</span>
         {{form.password2|add_class:"form--input"}}
 <!--              {{ form.as_p }}-->
 
@@ -38,10 +40,10 @@
     <div class="form--marketing">
         <input id="okayToEmail" type="checkbox" required>
         <label for="okayToEmail" class="checkbox">
-            Я согласен с <a  href= "{% static 'policy/conditions.pdf' %}" target="_blank" >условиями</a> и с <a href= "{% static 'policy/policy.pdf' %}" target="_blank">политикой конфиденциальности</a>
+            Я согласен с <a class="link" href= "{% static 'policy/conditions.pdf' %}" target="_blank" >условиями</a> и с <a class="link"  href= "{% static 'policy/policy.pdf' %}" target="_blank">политикой конфиденциальности</a>
         </label>
     </div>
-    <button class="form--submit"  type="submit" value="Register">
+    <button class="btn-pay" type="submit" value="Register">
         Зарегистрироваться
     </button>
 </form></div>
@@ -54,3 +56,5 @@
 
 
 </body>
+
+{% endblock %}
