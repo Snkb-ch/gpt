@@ -2,6 +2,7 @@
 <html>
 {% load static %}
 {% load widget_tweaks %}
+{% csrf_token %}
 
   <head>
       <!-- Yandex.Metrika counter -->
@@ -19,6 +20,7 @@
         webvisor:true
    });
 </script>
+<script src = "{% static 'js/main.js' %}"></script>
 <noscript><div><img src="https://mc.yandex.ru/watch/94971306" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->
 
@@ -113,20 +115,24 @@
     <header data-role="Header" class="component-header">
 
       {% if user.is_authenticated %}
+<!--      <a class="component-balance" href="{% url 'balance' %}"><img src="{% static 'images/balance.png' %}"/><span id = "balance"></span></a>-->
         <div class="component-container1">
         <div>
-          <a class = 'css-buttonin-fully-rounded--green' href="{% url 'logout' %}">
-            Выход
-          </a>
+                          <a class="Btn" href="{% url 'logout' %}">
+
+  <div class="sign"><svg viewBox="0 0 512 512"><path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"></path></svg></div>
+
+  <div class="text"> Выход</div>
+</a>
         </div>
         </div>
         {% else %}
         <div class="component-container1">
-<!--        <div>-->
-<!--<a class = 'css-buttonin-fully-rounded&#45;&#45;green' href="{% url 'login' %}">-->
-<!--    Войти-->
-<!--</a>-->
-<!--        </div>-->
+        <div>
+<a class = 'css-buttonin-fully-rounded--green' href="{% url 'login' %}">
+    Войти
+</a>
+        </div>
       </div>
       <div class="component-container2">
         <div>
@@ -189,11 +195,26 @@
             data-role="Nav"
             class="component-nav1"
           >
-            <a class="component-text" href="{% url 'home' %}"><span>ChatGPT</span></a>
-            <a class="component-text" href="{% url 'uniquefile' %}"><span>Повышение оригинальности</span></a>
+            <a class="component-text chatgpt" href="{% url 'home' %}"><span>ChatGPT</span></a>
+<!--            <a class="component-text ad" href="{% url 'uniquetext' %}"><span>Написать рекламу</span></a>-->
+
+
+            <a class="component-text orig" href="{% url 'uniquefile' %}"><span>Повышение оригинальности</span></a>
             <a class="component-text1" href="{% url 'success' %}"><span>Работы в ожидании</span></a>
-            <a class="component-text2" href="{% url 'contact' %}"><span>Обратная связь</span></a>
-            <a class="component-text3" href="{% url 'history' %}"><span>История ответов</span></a>
+        <a class="component-text2" href="{% url 'contact' %}"><span>Обратная связь</span></a>
+            <a class="component-text3" href="{% url 'history' %}"><span>История</span></a>
+
+<!--                       <ul>-->
+<!--  <li><a href="#" class="component-text">Другие сервисы <i class="fa fa-chevron-down"></i></a>-->
+
+<!--    <ul class="drop-down ">-->
+<!--      <li><a class="component-text-drop " href="{% url 'contact' %}"><span>Обратная связь</span></a></li>-->
+<!--      <li><a class="component-text-drop " href="{% url 'history' %}"><span>История ответов</span></a></li>-->
+<!--      <li> <a class="component-text-drop " href="{% url 'success' %}"><span>Работы в ожидании</span></a></li>-->
+
+<!--    </ul>-->
+<!--  </li>-->
+<!--              </ul>-->
           </nav>
         </div>
         <div data-thq="thq-navbar-btn-group" class="component-btn-group"></div>
@@ -231,6 +252,12 @@ style="fill:#000000;">
               <a class="component-text6" href="{% url 'history' %}"><span>История ответов</span></a>
               {% if user.is_authenticated %}
                 <a class="component-text7" href="{% url 'logout' %}"><span>Выход</span></a>
+
+
+
+
+
+
                 {% else %}
                 <a class="component-text7" href="{% url 'login' %}"><span>Вход</span></a>
 
@@ -265,6 +292,7 @@ style="fill:#000000;">
         <span>© 2023 Все права защищены.</span>
 
       </span>
+
         <span class="component1-text">
 
 
@@ -281,4 +309,13 @@ style="fill:#000000;">
 <script
       data-section-id="header"
       src="https://unpkg.com/@teleporthq/teleport-custom-scripts"
+
+
+
+
+
+
+
+
+
     ></script>

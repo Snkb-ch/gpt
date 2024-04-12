@@ -18,6 +18,8 @@ class User(AbstractUser):
     username = None
     email = models.EmailField(_("email address"), unique=True)
 
+    balance = models.FloatField(default=0)
+
 
     email_verified = models.BooleanField(default=False)
 
@@ -46,6 +48,43 @@ class User(AbstractUser):
                 return code
 
     pass
+
+
+
+class OrderTokens(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    price = models.FloatField(null=True)
+    tokens = models.IntegerField(null=True)
+    transaction_id = models.CharField(max_length=100, null=True)
+    complete = models.BooleanField(default=False)
+    def __str__(self):
+        return str(self.id)
+
+
+class Result(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    result = models.TextField(null=True)
+    user_rating = models.IntegerField(null=True)
+    all_count = models.IntegerField(null=True)
+    raw_all_count = models.IntegerField(null=True)
+
+
+
+
+    procent = models.IntegerField(null=True)
+    rating = models.IntegerField(null=True)
+    raw_procent = models.IntegerField(null=True)
+    raw_rating = models.IntegerField(null=True)
+
+
+    loops = models.IntegerField(null=True)
+    textv1 = models.TextField(null=True)
+    textv2 = models.TextField(null=True)
+    favorite = models.BooleanField(default=False)
+
+
 
 
 

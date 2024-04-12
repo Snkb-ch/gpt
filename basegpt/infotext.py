@@ -7,33 +7,10 @@ import openai
 import re
 from django.conf import settings
 
+openai.api_key = settings.OPENAI_API_KEY
 
+from .prompts import *
 
-
-# def read_stop_words_from_file(file_names):
-#     stop_words = {}
-#     for category, file_name in file_names.items():
-#         with open(file_name, 'r', encoding='utf-8') as file:
-#             words = set(file.read().lower().splitlines())
-#             stop_words[category] = words
-#     return stop_words
-#
-# def search_stop_words(text):
-#     file_names = {
-#         "Неопределенность": "неопределенность.txt",
-#         "Оценки": "оценки.txt"
-#     }
-#     stop_words = read_stop_words_from_file(file_names)
-#     text_words = set(text.lower().split())
-#
-#     result = {}
-#     for category, words_set in stop_words.items():
-#         found_words = words_set.intersection(text_words)
-#         if found_words:
-#             result[category] = list(found_words)
-#
-#     print(result)
-#     return result
 
 
 def read_stop_words_from_file(file_names):
@@ -75,9 +52,112 @@ def search_stop_words(text):
 
     # to json
     result = json.dumps(result, ensure_ascii=False)
+    count_all = sum(category_count.values())
+    procent = 0
+    if count_all:
+        procent = count_all / len(text.split()) * 100
+    # count all as x1 but for оценка x2 and sum all
+    score = 0
+    for category, count in category_count.items():
+        if category == 'Оценки':
+            score += count * 2
+        else:
+            score += count
 
 
-    print(result, category_count)
-    return result
 
-search_stop_words('''Откройте мир идеального кофе с нашим идеального интернет-магазином. Здесь представлен широкий ассортимент кофе от ведущих мировых производителей. Каждый сорт кофе проходит тщательный отбор и проверку на соответствие стандартам качества. Покупателям доступны подробные описания и характеристики товаров, включая происхождение кофейных зерен, уровень обжарки и рекомендуемые способы заваривания. Мы предлагаем удобные способы доставки по всей стране. Наш интернет-магазин обеспечивает простоту и комфорт при выборе и покупке идеального кофе для дома или офиса.!''')
+
+
+
+    return {"result": result, "score": score, "procent": procent , "count_all": count_all}
+
+def get_info_text(context):
+    prompt = InfoPrompts()
+
+    textv1 = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages = prompt.get_generator(context),
+        max_tokens=4000,
+        temperature=0.0
+    ).choices[0].message['content']
+
+
+    print(textv1)
+    print('______________________')
+
+    raw_search  = search_stop_words(textv1)
+
+
+
+
+    stopwords = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages = prompt.get_word_search(raw_search['result'], textv1),
+        max_tokens=4000,
+        temperature=0.0
+    ).choices[0].message['content']
+
+    print(stopwords)
+    print('______________________')
+    fixwords = openai.ChatCompletion.create(
+model="gpt-3.5-turbo",
+        messages = prompt.redactor(textv1,stopwords,context),
+        max_tokens=4000,
+        temperature=0.0
+    ).choices[0].message['content']
+
+    print(fixwords)
+    print('______________________')
+
+    logging.info(fixwords)
+    textv2 = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages = prompt.generator2(textv1,fixwords),
+        max_tokens=4000,
+        temperature=0.0
+    ).choices[0].message['content']
+
+
+    print(textv2)
+    print('______________________')
+
+    # textv3 = openai.ChatCompletion.create(
+    #     model="gpt-3.5-turbo",
+    #     messages = prompt.controller(textv2,context),
+    #     max_tokens=4000,
+    #     temperature=0.0
+    # ).choices[0].message['content']
+
+    # print(textv3)
+
+    search  = search_stop_words(textv2)
+
+    finaltext = textv2
+
+    response = {
+        "textv1": textv1,
+        "textv2": textv2,
+        "result": search['result'],
+        "score": search['score'],
+        "procent": search['procent'],
+        "all_count": search['count_all'],
+        "final_text": finaltext,
+        "loops" : 0,
+        "raw_all_count": raw_search['count_all'],
+        "raw_procent": raw_search['procent'],
+        "raw_rating": raw_search['score'],
+
+
+    }
+
+
+
+
+
+    return response
+
+
+
+
+
+

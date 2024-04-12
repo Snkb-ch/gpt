@@ -14,9 +14,11 @@ urlpatterns = [
 
 
     path('logout/', views.logoutUser, name='logout'),
+    path('get_balance', views.get_balance.as_view(), name='get_balance'),
 
     path('', views.home, name='home'),
     path('unique', views.unique, name='unique'),
+    path('balance', views.balance, name='balance'),
 
 
 
@@ -34,6 +36,9 @@ path('register/', views.RegisterPage.as_view(), name='register'),
 path('exam_text_get_idea', views.exam_text_get_idea, name='exam_text_get_idea'),
     path('check_idea/<int:id>/', views.check_idea, name='check_idea'),
     path('session/', views.session, name='session'),
+    path('favorite/', views.Favorite.as_view(), name='favorite'),
+    path('user_rating/', views.UserRating.as_view(), name='user_rating'),
+
 
 
 

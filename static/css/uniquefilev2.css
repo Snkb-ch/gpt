@@ -6,6 +6,11 @@
   align-items: center;
   flex-direction: column;
       background-color:#EBF2FD;
+
+}
+
+.orig{
+display:none;
 }
 .filev2-container01 {
   width: 100%;

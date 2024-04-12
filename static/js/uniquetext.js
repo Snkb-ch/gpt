@@ -1,52 +1,50 @@
 document.addEventListener('DOMContentLoaded', function() {
-  function sendRequest() {
-
-
-    $.ajax({
-      url: "/infotext_result",
-      type: "GET",
-        data: {
-
-            'csrfmiddlewaretoken': document.getElementsByName('csrfmiddlewaretoken')[0].value
-
-        }
-        ,
-
-
-
-      success: function(data) {
-        if (data.status == "ok") {
-          // Нужный ответ получен, останавливаем отправку запросов
-          document.getElementById("overlay").style.display = "none";
-          loaderDiv.style.display = 'none';
-          // Выводим результат в textarea
-            var responseDiv = document.getElementById('rawtext');
-            //clear textarea
-            responseDiv.value = '';
-            responseDiv.value = data['result'];
-
-
-            console.log(data['result']);
-
-          console.log("Задача выполнена!");
-        } else {
-          if (data.status == "wait") {
-            // Нужный ответ не получен, отправляем запрос снова через 5 секунд
-            setTimeout(function() {
-                sendRequest(order);
-            }, 5000);
-
-          } else {
-            if (data.status == "error") {
-              responseDiv.textContent = data['error'];
-              console.log(data['error']);
-
-            }
-          }
-        }
-      }
-    });
-  }
+//  function sendRequest() {
+//
+//
+//    $.ajax({
+//      url: "/infotext_result",
+//      type: "GET",
+//        data: {
+//
+//            'csrfmiddlewaretoken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+//
+//        }
+//        ,
+//
+//
+//
+//      success: function(data) {
+//        if (data.status == "ok") {
+//          // Нужный ответ получен, останавливаем отправку запросов
+//          document.getElementById("overlay").style.display = "none";
+//          loaderDiv.style.display = 'none';
+//          var copybutton = document.getElementById('copy-button');
+//          copybutton.style.display = 'block';
+//          // Выводим результат в textarea
+//            var responseDiv = document.getElementById('rawtext');
+//            //clear textarea
+//            responseDiv.value = '';
+//            responseDiv.value = data['result'];
+//
+//
+//            console.log(data['result']);
+//
+//          console.log("Задача выполнена!");
+//        }  else {
+//            if (data.status == "error") {
+//                          var responseDiv = document.getElementById('rawtext');
+//            //clear textarea
+//            responseDiv.value = '';
+//            responseDiv.value = data['result'];
+//
+//            }
+//          }
+//        }
+//
+//
+//    });
+//  }
 
   // Запускаем отправку запросов
 
@@ -56,6 +54,8 @@ document.addEventListener('DOMContentLoaded', function() {
   const overlayDiv = document.getElementById('overlay');
 
   // Attach an event listener to the button with id 'submit-button'
+
+
     button.addEventListener('click', function(event) {
 
       // Prevent the default form submission behavior
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
             rawtext.focus();
 
             return;
-        }
+            }
 
       loaderDiv.style.display = 'block';
 
@@ -115,18 +115,128 @@ document.addEventListener('DOMContentLoaded', function() {
 //          sendRequest();
           document.getElementById("overlay").style.display = "none";
           loaderDiv.style.display = 'none';
+            var copybutton = document.getElementById('copy-button');
+            copybutton.style.display = 'block';
           // Выводим результат в textarea
-            var responseDiv = document.getElementById('rawtext');
+            var responsearea = document.getElementById('resultarea');
+            var responseDiv = document.getElementById('textarea-result');
+            var rating = document.getElementById('rating');
+            responsearea.style.display = 'block';
+            responseDiv.style.display = 'flex';
+            rating.style.display = 'block';
             //clear textarea
-            responseDiv.value = '';
-            responseDiv.value = data['result'];
+            responsearea.value = '';
+            responsearea.value = data['result'];
 
 
             console.log(data['result']);
 
           console.log("Задача выполнена!");
+
+        }
+        else {
+            if (data['status'] === 'error') {
+                console.log('error');
+                console.log(data['result']);
+                document.getElementById("overlay").style.display = "none";
+                loaderDiv.style.display = 'none';
+                 // Создаем элемент для сообщения
+    const alertBox = document.createElement('div');
+    alertBox.textContent = 'Произошла ошибка, попробуйте снова'; // Текст сообщения
+    alertBox.style.position = 'fixed'; // Фиксированное позиционирование
+    alertBox.style.top = '30%'; // Отступ сверху
+    alertBox.style.left = '50%'; // Отступ слева
+    alertBox.style.transform = 'translate(-50%, -50%)'; // Центрирование
+    alertBox.style.padding = '20px'; // Отступы внутри блока
+    alertBox.style.backgroundColor = '#ff5c5c'; // Красный фон
+    alertBox.style.color = 'white'; // Белый цвет текста
+    alertBox.style.fontSize = '16px'; // Размер шрифта
+    alertBox.style.borderRadius = '10px'; // Скругленные углы
+    alertBox.style.boxShadow = '0px 0px 10px rgba(0,0,0,0.5)'; // Тень
+    alertBox.style.zIndex = '1000'; // Z-индекс
+
+    document.body.appendChild(alertBox); // Добавляем элемент в тело документа
+
+    // Удаляем элемент через 5 секунд
+    setTimeout(() => {
+        document.body.removeChild(alertBox);
+    }, 5000);
+
+
+
+
+//                alert error
+
+            }
         }
       })
     })
+
+   var copyButton = document.getElementById('copy-button');
+
+    copyButton.addEventListener('click', function(event) {
+        copyText();
+    }
+    );
+    // onclick="copyText() copy from rawtext to clipboard
+   function copyText() {
+  // Получаем элемент textarea
+  var textArea = document.getElementById("resultarea");
+  // Выделяем фон на 2 секунды и плавно возвращаем обратно
+
+//    textArea.style.backgroundColor = 'lightgreen';
+//    setTimeout(function() {
+//      textArea.style.backgroundColor = 'white';
+//    }, 1000);
+    // внутри кнопки зеленая галочка
+//    var copyButton = document.getElementById('copy-button');
+//    copyButton.innerHTML = '✅ Скопировано';
+//    setTimeout(function() {
+//      copyButton.innerHTML = 'Копировать';
+//    }, 1000);
+
+
+
+  // Используем API буфера обмена для копирования текста
+  navigator.clipboard.writeText(textArea.value)
+    .then(() => {
+      // После успешного копирования, можно, например, отобразить уведомление
+      console.log("Текст успешно скопирован в буфер обмена");
+    })
+    .catch(err => {
+      // В случае ошибки копирования
+      console.error("Ошибка при копировании текста: ", err);
+    });
+
+  // Важно предотвратить стандартное поведение кнопки, чтобы избежать перезагрузки страницы
+  event.preventDefault();
+}
+
+// Получаем элементы по их идентификаторам
+var rawTextElement = document.getElementById('rawtext');
+var textareaProductElement = document.getElementById('textarea-product');
+
+// Проверяем, существуют ли эти элементы
+if (rawTextElement && textareaProductElement) {
+  // Добавляем обработчик события фокусировки на элемент rawtext
+  rawTextElement.addEventListener('focus', function() {
+    // Меняем стиль границы у элемента textarea-product при фокусе на rawtext
+    textareaProductElement.style.outline = '2px solid #7D32FF';
+    // scale textarea-product
+
   });
+
+  // Добавляем обработчик события потери фокуса на элемент rawtext
+  rawTextElement.addEventListener('blur', function() {
+    // Возвращаем стиль границы у элемента textarea-product к исходному состоянию
+    // или к любому другому необходимому состоянию
+    textareaProductElement.style.outline = 'none';
+    // scale textarea-product
+
+  });
+}
+
+
+  });
+
 

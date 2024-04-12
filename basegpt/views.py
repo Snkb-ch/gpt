@@ -43,9 +43,9 @@ def history(request):
 
     uniquetexts = UniqueText.objects.filter(user=request.user).order_by('-created_at')
 
-    examtexts = ExamText.objects.filter(user=request.user).order_by('-created_at')
+    infotexts =  Result.objects.filter(user=request.user).order_by('-created_at')
 
-    return render(request, 'basegpt/history.html', {'uniquetexts': uniquetexts, 'examtexts': examtexts})
+    return render(request, 'basegpt/history.html', {'uniquetexts': uniquetexts, 'infotexts': infotexts})
 
 
 
@@ -151,7 +151,53 @@ def home(request):
 
 
     return render(request, 'basegpt/homev5.html', context)
+def balance(request):
 
+    # create payment and redirect to payment page
+    if request.method == 'POST' and 'pay' in request.POST:
+        tokens = request.POST.get('input')
+        print(tokens)
+        price = int(tokens) * 0.5
+
+        Configuration.account_id = settings.YOOKASSA_SHOP_ID
+        Configuration.secret_key = settings.YOOKASSA_SECRET_KEY
+        payment = Payment.create({
+            "amount": {
+                "value": price,
+                "currency": "RUB"
+            },
+            "confirmation": {
+                "type": "redirect",
+                "return_url": "https://brainstormai.ru/"
+            },
+            "capture": True,
+            "description": "Покупка токенов",
+            "receipt": {
+                "customer": {
+                    "email": request.user.email,
+                },
+                "items": [
+                    {
+                        "description": "Покупка токенов",
+                        "quantity": tokens,
+                        "amount": {
+                            "value": price,
+                            "currency": "RUB"
+                        },
+                        "vat_code": 1
+                    }
+                ]
+            }
+        }, uuid.uuid4())
+
+        OrderTokens.objects.create(user=request.user, price=price, tokens=tokens, transaction_id=payment.id)
+        return HttpResponseRedirect(payment.confirmation.confirmation_url)
+
+
+
+
+
+    return render(request, 'basegpt/balance.html')
 def unique(request):
     return render(request, 'basegpt/home.html')
 
@@ -837,10 +883,19 @@ def uniquetext(request):
 @sync_to_async
 def generate_info_text(product, audience, platform, type):
 
-    start_generate(product, audience, platform, type)
+    if type == 'short':
+        type = 'короткий 50-100 слов'
+    elif type == 'long':
+        type = 'средний 100-200 слов'
 
-    response_text =  ' success'
+
+    context = f'''Описание продукта: {product}, Целевая аудитория: {audience}, Платформа: {platform}, Длина: {type}'''
+
+
+    response_text =  get_info_text(context)
     logging.info('start generating test text')
+
+
     return response_text
 
 class infotext(APIView):
@@ -861,12 +916,68 @@ class infotext(APIView):
         # t = threading.Thread(target=generate_info_text, args=(text, type), daemon=True)
         #
         # t.start()
+        try:
+            return JsonResponse({'status': 'ok', 'result': '''test'
+                                                           'de'
+                                                           'de'
+                                                           'ed'
+                                                           'ed'
+                                                           'ed'
+                                                           'ed'
+                                                           'ed'
+                                                           'de'''})
+            response =  await generate_info_text(product, audience, platform, type)
 
-        response_text =  await generate_info_text(product, audience, platform, type)
+            await success_infotext(request, response)
+
+            # return JsonResponse({'status': 'ok', 'result': response['final_text']})
+            return JsonResponse({'status': 'error', 'result': 'error'})
+
+        except Exception as e:
+            logging.error(e )
+            return JsonResponse({'status': 'error', 'result': 'error'})
+
+class get_balance(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        user = request.user
+        balance = user.balance
+        return JsonResponse({'balance': balance})
+@sync_to_async()
+def success_infotext(request, response):
+    user = request.user
+    Result.objects.create(user=user, result=response['final_text'], all_count=response['all_count'],
+                          procent=response['procent'], rating=response['score'], loops=response['loops'],
+                          textv1=response['textv1'], textv2=response['textv2'], raw_all_count=response['raw_all_count'],
+                            raw_procent=response['raw_procent'], raw_rating=response['raw_rating'])
+    # update balance of user
+    user = User.objects.get(id=user.id)
+    user.balance -= 500
+    user.save()
+
+class UserRating(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        user = request.user
+        rating = request.data['rating']
+        result_id = request.data['result_id']
+
+        result = Result.objects.get(pk=result_id)
+        result.user_rating = rating
+        result.save()
+        return JsonResponse({'status': 'ok', 'result': 'ok'})
+
+class Favorite(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        user = request.user
+        result_id = request.data['result_id']
+        result = Result.objects.get(pk=result_id)
+        result.favorite = True
+        result.save()
+        return JsonResponse({'status': 'ok', 'result': 'ok'})
 
 
-        # return OK status
-        return JsonResponse({'status': 'ok', 'result':  response_text})
 
 class infotext_result(APIView):
     permission_classes = [IsAuthenticated]
@@ -1003,39 +1114,57 @@ class notifications(APIView):
     def post(self, request):
         status = request.data['object']['status']
 
+        description = request.data['object']['description']
+
         payment_id = request.data['object']['id']
 
         if status == 'succeeded':
 
-            order = Order.objects.get(transaction_id=payment_id)
-            order.complete = True
-            order.save()
-            if order.promo_code:
-                if User.objects.filter(code=PromoCode.objects.get(code=order.promo_code)).exists():
-                    user = User.objects.get(code=PromoCode.objects.get(code=order.promo_code))
-                    user.friends += 1
-                    user.save()
+            if description == 'Покупка токенов':
+                order = OrderTokens.objects.get(transaction_id=payment_id)
+                order.complete = True
+                order.save()
+                user = User.objects.get(id=order.user.id)
+                user.balance += order.tokens
+                user.save()
+            else:
 
 
-                PromoCodeUsage.objects.create(user=order.user, promo_code=PromoCode.objects.get(code=order.promo_code))
 
-            if order.type == 'unique_text':
-                UniqueText.objects.get_or_create(user=order.user, rawtext=order.rawtext, order=order, type=order.type2)
-                delete_old_objects(UniqueText, 10, order.user)
-            if order.type == 'unique_file':
-                UniqueText.objects.get_or_create(user=order.user, rawfile=order.rawfile, order=order, type=order.type2)
-                delete_old_objects(UniqueText, 10, order.user)
-            if order.type == 'exam_text':
-                ExamText.objects.get_or_create(user=order.user, rawtext=order.rawtext, order=order)
-                delete_old_objects(ExamText, 10, order.user)
+
+                order = Order.objects.get(transaction_id=payment_id)
+                order.complete = True
+                order.save()
+                if order.promo_code:
+                    if User.objects.filter(code=PromoCode.objects.get(code=order.promo_code)).exists():
+                        user = User.objects.get(code=PromoCode.objects.get(code=order.promo_code))
+                        user.friends += 1
+                        user.save()
+
+
+                    PromoCodeUsage.objects.create(user=order.user, promo_code=PromoCode.objects.get(code=order.promo_code))
+
+                if order.type == 'unique_text':
+                    UniqueText.objects.get_or_create(user=order.user, rawtext=order.rawtext, order=order, type=order.type2)
+                    delete_old_objects(UniqueText, 10, order.user)
+                if order.type == 'unique_file':
+                    UniqueText.objects.get_or_create(user=order.user, rawfile=order.rawfile, order=order, type=order.type2)
+                    delete_old_objects(UniqueText, 10, order.user)
+                if order.type == 'exam_text':
+                    ExamText.objects.get_or_create(user=order.user, rawtext=order.rawtext, order=order)
+                    delete_old_objects(ExamText, 10, order.user)
 
         status = request.data['object']['status']
 
         if status == 'canceled':
 
             try:
-                order = Order.objects.get(transaction_id=payment_id)
-                order.delete()
+                if description == 'Покупка токенов':
+                    order = OrderTokens.objects.get(transaction_id=payment_id)
+                    order.delete()
+                else:
+                    order = Order.objects.get(transaction_id=payment_id)
+                    order.delete()
             except:
                 pass
             return Response(status=200)
