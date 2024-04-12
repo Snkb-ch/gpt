@@ -1,6 +1,12 @@
 {% extends "main.html" %}
 {% load static %}
 {% block title %}Реклама в информационном стиле{% endblock %}
+{% block description %}
+<meta
+  name="description"
+  content="Нейросеть напишет рекламу в инфостиле. Рекламный текст в информационном стиле."
+>{% endblock %}
+
 {% block extra_css %}
 <link href="{% static 'css/uniquetext.css' %}" rel="stylesheet" xmlns="http://www.w3.org/1999/html"/>
 <script src = "{% static 'js/uniquetext.js' %}"></script>
