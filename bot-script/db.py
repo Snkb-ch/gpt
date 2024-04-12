@@ -21,14 +21,24 @@ project_root = os.path.dirname(script_dir)
 sys.path.insert(0, project_root)
 
 # Теперь можно импортировать модели из bot.models
-
+import django
+from django.conf import settings
 # Установите переменную окружения DJANGO_SETTINGS_MODULE для указания файла настроек Django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gpt.settings")
+configured_apps = list(settings.INSTALLED_APPS)
 
-# Импортируем и настраиваем Django настройки
-import django
+# Убираем 'adrf' из списка
+if 'adrf' in configured_apps:
+    configured_apps.remove('adrf')
+
+# Переопределяем INSTALLED_APPS в settings
+settings.INSTALLED_APPS = tuple(configured_apps)
+
+
+# Теперь выполните настройку Django
 django.setup()
-from bot.models import User, Subscriptions,  Subscriptions_statistics, Statistics_by_day
+from bot.models import *
+
 
 
 

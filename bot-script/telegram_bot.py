@@ -66,15 +66,6 @@ sys.path.insert(0, project_root)
 
 # Теперь можно импортировать модели из bot.models
 
-# Установите переменную окружения DJANGO_SETTINGS_MODULE для указания файла настроек Django
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gpt.settings")
-
-# Импортируем и настраиваем Django настройки
-import django
-
-log = logging.getLogger("custom")
-django.setup()
-from bot.models import *
 
 
 class ChatGPTTelegramBot:
@@ -2151,7 +2142,7 @@ class ChatGPTTelegramBot:
 
 
     async def shutdown(self,tasks):
-        log.warning("Received SIGTERM, cancelling tasks...")
+        logging.log.warning("Received SIGTERM, cancelling tasks...")
         for task in tasks:
             task.cancel()
 

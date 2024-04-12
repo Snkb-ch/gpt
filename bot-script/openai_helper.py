@@ -25,8 +25,7 @@ sys.path.insert(0, project_root)
 
 # Установите переменную окружения DJANGO_SETTINGS_MODULE для указания файла настроек Django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gpt.settings")
-django.setup()
-from bot.models import *
+
 
 
 import tiktoken
