@@ -850,6 +850,7 @@ color: black;
   border-bottom-left-radius: 32px;
 
   border-bottom-right-radius: 32px;
+  line-height: 1.5;
 
 }
 
@@ -903,10 +904,11 @@ font-size:40px;
     overflow: hidden;
     position: relative;
   flex: 0 0 auto;
-  width: 230px;
-  height: 250px;
+  width: 350px;
+  height: 220px;
   display: flex;
    padding: 25px;
+   font-size:18px;
 
   flex-direction: column;
 
@@ -919,16 +921,25 @@ font-size:40px;
 }
 
 .task1{
-    background: linear-gradient(29deg, rgba(0,113,188,1) 0%, rgba(109,0,255,1) 100%);
+    background-color:#7D32FF;
 }
 .task2{
-   background: linear-gradient(38deg, rgba(101,123,172,1) 0%, rgba(46,49,146,1) 100%);
+   background-color: #FF5F23;
 }
 .task3{
+  background-color: #B98CFF;
+}
+.task12{
+    background: linear-gradient(29deg, rgba(0,113,188,1) 0%, rgba(109,0,255,1) 100%);
+}
+.task22{
+   background: linear-gradient(38deg, rgba(101,123,172,1) 0%, rgba(46,49,146,1) 100%);
+}
+.task32{
   background: linear-gradient(128deg, rgba(0,113,188,1) 49%, rgba(109,0,255,1) 100%);
 }
 .task-hed{
-font-size: 20px;
+font-size: 22px;
 font-weight: 600;
 
 }
@@ -1328,6 +1339,7 @@ margin-right:20px;
 }
 
 .homev4-container10{
+display:none;
 
 padding:10px;
 width: 300px;
@@ -1761,7 +1773,7 @@ padding-right:25px;
             padding: 84px 0px 144px 20px;
         }
     }
-    @media(max-width:800px){
+        @media(max-width:800px){
         #faq{
             padding: 84px 0px 144px 20px;
         }
@@ -1914,7 +1926,7 @@ input[type=radio] {
   height: 100%;
   left: 0;
   right: 0;
-  margin: auto;
+  margin-left: 23%;
   transition: transform .4s ease;
   cursor: pointer;
 }
@@ -2032,7 +2044,27 @@ input[type=radio] {
   transform: translateY(-80px);
 }
 
-@media (max-width: 800px) {
+@media (max-width: 1200px) {
+
+
+  .homev4-container-tasks{
+
+  flex-direction: column;
+  justify-content: center;
+  gap:20px;
+align-items: center;
+
+
+  }
+
+  .homev4-container-task{
+  width:550px;
+  max-width: 90%;
+
+  }
+}
+
+@media (max-width: 700px) {
   .container {
     display: flex;
 
@@ -2045,6 +2077,7 @@ input[type=radio] {
   justify-content: center;
   gap:20px;
   display:none;
+
 
   }
   .homev4-container-task{
