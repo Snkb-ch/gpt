@@ -2077,7 +2077,10 @@ align-items: center;
   justify-content: center;
   gap:20px;
   display:none;
-
+  font-weight:14px;
+.task-hed{
+ font-weight:18px;
+}
 
   }
   .homev4-container-task{
