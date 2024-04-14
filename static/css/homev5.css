@@ -1335,12 +1335,17 @@ margin-right:20px;
 @media(max-width: 660px) {
     .homev4-imagemain{
 
+
     display: none;
+}
+
+.task2{
+   background-color: #fe7744;
 }
 
 .homev4-container10{
 
-
+display:none;
 padding:10px;
 width: 300px;
 }
@@ -1438,6 +1443,8 @@ font-size: 25px;
   .homev4-container33 {
     width: 90%;
     flex-direction: column;
+    margin-top:0px;
+    padding:0px;
   }
   .homev4-text20 {
     font-size: 35px;
@@ -1448,7 +1455,7 @@ font-size: 25px;
     margin-bottom: var(--dl-space-space-unit);
   }
   .homev4-text21 {
-    font-size: 40px;
+    font-size: 30px;
     color: #1E2837;
     font-weight: 700;
 
