@@ -2077,15 +2077,18 @@ align-items: center;
   justify-content: center;
   gap:20px;
   display:none;
-  font-weight:14px;
-.task-hed{
- font-weight:18px;
-}
+
+
 
   }
+
+  .task-hed{
+ font-size:18px;
+}
   .homev4-container-task{
   width:100%;
   height:auto;
+    font-size:14px;
 
   }
   .homev4-text20{
