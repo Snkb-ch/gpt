@@ -44,6 +44,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
           } else {
             if (data.status == "error") {
+                // Ошибка на сервере
+           document.getElementById("overlay").style.display = "none";
+          loaderDiv.style.display = 'none';
+            responseDiv.style.display = 'block';
               responseDiv.textContent = data['error'];
               console.log(data['error']);
               var submitButton = document.getElementById(buttonValue);

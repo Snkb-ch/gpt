@@ -6,11 +6,27 @@
   align-items: center;
   flex-direction: column;
 }
+
+.chatgpt{
+
+display:none;
+}
+
+.contact{
+
+display:none;
+}
+.history{
+
+display:none;
+}
+
+
 .response-container1 {
-  width: 95%;
+  width: 75%;
   height: auto;
   display: flex;
-  align-self: flex-end;
+  align-self: center;
   margin-top: 5%;
   align-items: flex-start;
   margin-left: 2%;
@@ -40,7 +56,7 @@
   display: flex;
   align-self: center;
   margin-top: var(--dl-space-space-unit);
-  align-items: flex-start;
+  align-items: center;
   padding-top: var(--dl-space-space-oneandhalfunits);
   border-color: #9d9898;
   border-width: 1px;
@@ -99,6 +115,7 @@
 @media(max-width: 1600px) {
   .response-container1 {
     margin-top: 10%;
+    width: 90%;
   }
 }
 @media(max-width: 479px) {
