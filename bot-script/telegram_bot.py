@@ -1679,7 +1679,7 @@ class ChatGPTTelegramBot:
                 for base64_image in photo_list:
                     prompt.append({
                         "type": "image_url",
-                        "image_url": f"data:image/jpeg;base64,{base64_image}"
+                        "image_url": {"url":  f"data:image/jpeg;base64,{base64_image}"}
 
                     })
 
