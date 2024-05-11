@@ -386,7 +386,7 @@ class OpenAIHelper:
 
 
 
-
+                logging.error(traceback.format_exc())
 
                 return False, 0
 
