@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+from openai import AsyncOpenAI
 import logging
 import os
 import sys
@@ -342,13 +342,13 @@ class OpenAIHelper:
                 logging.info(f"Model: {model_config['model']}")
 
                 if model_config['model'] in LLAMA_MODELS:
-                    client = openai.AsyncOpenAI(
+                    client = AsyncOpenAI(
                         api_key=os.environ.get("TOGETHER_API_KEY"),
                         base_url="https://api.together.xyz/v1",
                         # api_key=os.environ.get("OPENAI_API_KEY"),
                     )
                 else:
-                    client = openai.AsyncOpenAI(
+                    client = AsyncOpenAI(
                         api_key=os.environ.get("OPENAI_API_KEY"),
                     )
 
