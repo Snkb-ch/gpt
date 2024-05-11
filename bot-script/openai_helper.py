@@ -252,7 +252,7 @@ class OpenAIHelper:
 
         else:
             logging.error(f"Error generating response: {response}")
-            yield 'Произошла ошибка при обработке запроса, приносим извенения', 0
+            yield 'Бот пока не работает — готовим обновление. Спасибо за терпение', 0
 
     # @retry(
     #     reraise=True,
