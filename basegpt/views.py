@@ -125,8 +125,8 @@ class photo_api(APIView):
                     temperature=1,
                     max_tokens=4000,
                 )
-            input_tokens = int(response.usage['prompt_tokens'])
-            output_tokens = int(response.usage['completion_tokens'])
+            input_tokens = 1500
+            output_tokens = 2000
             if response:
 
                     res_id = await save_result(response.choices[0].message.content, user, price, 'photo',output_tokens, input_tokens)
