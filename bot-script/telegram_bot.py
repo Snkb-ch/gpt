@@ -1700,8 +1700,9 @@ GPT-3.5     70%
                     await self.db_analytics_for_sessions.photo_send(user_id)
                 except:
                     pass
+                model_name = self.db.get_user_model(user_id)
+                if model_name != 'gpt-4':
 
-                if model_config['model'] != 'gpt-4-turbo-2024-04-09':
                     await update.message.reply_text(
                         message_thread_id=get_thread_id(update),
                         text='Анализировать фото может только gpt-4. Чтобы сменить модель — введите команду /model',
