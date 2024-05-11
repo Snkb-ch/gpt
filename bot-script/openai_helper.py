@@ -399,7 +399,8 @@ class OpenAIHelper:
             raise Exception(f"⚠️ _{localized_text('openai_invalid', bot_language)}._ ⚠️\n{str(e)}") from e
 
         except Exception as e:
-
+            logging.exception(e)
+            print(traceback.format_exc())
             raise Exception
 
 
