@@ -479,12 +479,12 @@ class ChatGPTTelegramBot:
                 arg = arg.split('_')
                 print(arg, user_id)
                 # если в списке нет 5 элементов, запонить его None
-                if len(arg) < 4:
-                    for i in range(4 - len(arg)):
+                if len(arg) < 3:
+                    for i in range(3 - len(arg)):
                         arg.append('')
 
 
-                await self.db.set_utm(user_id, arg[0], arg[1], arg[2], arg[3])
+                await self.db.set_utm(user_id, arg[0], arg[1], arg[2])
 
 
 

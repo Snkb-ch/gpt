@@ -210,7 +210,7 @@ def home(request):
             value = 'text'
 
     context = {
-        'utm_source': utm_source,
+        # 'utm_source': utm_source,
 
         'utm_campaign': utm_campaign,
         'gbid': gbid,
@@ -224,7 +224,7 @@ def home(request):
     print(context.values().__len__() )
     if context.values().__len__() > 58:
         context = {
-            'utm_source': utm_source,
+            # 'utm_source': utm_source,
 
             'utm_campaign': utm_campaign,
             'gbid': None,

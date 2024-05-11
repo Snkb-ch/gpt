@@ -191,7 +191,7 @@ class Database:
         model,  multi_k = self.get_model_name(model, multi_k)
 
         data_dict = {'model': model, 'custom_temp': custom_temp, 'multimodel_3': multimodel_3, 'multi_k': multi_k}
-        print(data_dict)
+
         return data_dict
     @sync_to_async
     def get_price(self, sub_id):
@@ -401,10 +401,10 @@ class Database:
 
 
     @sync_to_async
-    def  set_utm(self, user_id, utm_source, utm_campaign = None, group_id= None, client_id_metrika= None):
+    def  set_utm(self, user_id, utm_campaign = None, group_id= None, client_id_metrika= None):
 
         user = User.objects.get(user_id=user_id)
-        user.utm_source = utm_source if utm_source and utm_source!= 'None' else None
+
         user.utm_campaign = utm_campaign if utm_campaign and utm_campaign!= 'None' else None
 
         user.group_id = group_id if group_id and group_id!= 'None' else None
