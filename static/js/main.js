@@ -16,7 +16,7 @@ $.ajax({
                 // get id balcance
                 var balance = document.getElementById('balance');
                 // set balance
-                balance.innerHTML = data['balance'];
+                balance.innerHTML = data['balance'] + ' ₽'
 
         }
     });

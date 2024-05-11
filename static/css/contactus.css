@@ -8,6 +8,18 @@
   align-items: center;
   flex-direction: column;
 }
+
+.chatgpt{
+
+display:none;
+}
+.contact{
+
+display:none;
+}
+
+
+
 .conactus-container01 {
   width: 100%;
   height: auto;

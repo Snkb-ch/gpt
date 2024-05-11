@@ -6,6 +6,17 @@
   align-items: center;
   flex-direction: column;
 }
+.chatgpt{
+
+display:none;
+}
+.success{
+
+display:none;
+}
+
+
+
 .succes-container01 {
   width: 98%;
   height: auto;

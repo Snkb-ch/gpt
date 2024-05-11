@@ -2,32 +2,24 @@ import json
 import logging
 
 import openai
-from dotenv import load_dotenv
 
-from openai import OpenAI
+
 import re
 
 import tiktoken
 from django.conf import settings
 
-# openai.api_key = settings.OPENAI_API_KEY
+openai.api_key = settings.OPENAI_API_KEY
 
 from .prompts import *
 from .models import  *
 
-load_dotenv()
 
 model = "gpt-4-turbo-2024-04-09"
-# model = "meta-llama/Llama-3-70b-chat-hf"
-openai_api = os.environ.get("OPENAI_API_KEY_AD")
 # model = "gpt-3.5-turbo"
-# client = openai.OpenAI(
-#     api_key=os.environ.get("TOGETHER_API_KEY"),
-#     base_url="https://api.together.xyz/v1",
-#     )
 client = openai.OpenAI(
-    api_key=openai_api,
-
+    api_key=os.environ.get("TOGETHER_API_KEY"),
+    base_url="https://api.together.xyz/v1",
     )
 
 def count_tokens( messages) -> int:
@@ -132,12 +124,12 @@ def search_stop_words(text):
 def get_textv1(context):
     prompt = InfoPrompts()
 
-    textv1 = client.chat.completions.create(
+    textv1 = openai.ChatCompletion.create(
         model=model,
         messages=prompt.get_generator(context),
         max_tokens=4000,
         temperature=1
-    ).choices[0].message.content
+    ).choices[0].message['content']
 
     input_tokens = count_tokens(prompt.get_generator(context))
     output_tokens = count_tokens([{"role": "assistant", "content": textv1}])
@@ -148,35 +140,35 @@ def get_textv1(context):
 
 def get_stopwords(raw_search,textv1):
     prompt = InfoPrompts()
-    stopwords = client.chat.completions.create(
+    stopwords = openai.ChatCompletion.create(
         model=model,
         messages=prompt.get_word_search(raw_search['result'], textv1),
         max_tokens=4000,
         temperature=1
-    ).choices[0].message.content
+    ).choices[0].message['content']
     return stopwords
 
 
 def get_fixwords(textv1, stopwords, context):
     prompt = InfoPrompts()
-    fixwords = client.chat.completions.create(
+    fixwords = openai.ChatCompletion.create(
         model=model,
         messages=prompt.redactor(textv1, stopwords, context),
         max_tokens=4000,
         temperature=1
-    ).choices[0].message.content
+    ).choices[0].message['content']
 
     return fixwords
 
 
 def get_textv2(textv1, fixwords, context):
     prompt = InfoPrompts()
-    textv2 = client.chat.completions.create(
+    textv2 = openai.ChatCompletion.create(
         model=model,
         messages=prompt.generator2(textv1, fixwords),
         max_tokens=4000,
         temperature=1
-    ).choices[0].message.content
+    ).choices[0].message['content']
 
     input_tok = count_tokens(prompt.generator2(textv1, fixwords))
     output_tok = count_tokens([{"role": "assistant", "content": textv2}])
@@ -186,12 +178,12 @@ def get_textv2(textv1, fixwords, context):
 
 def get_textv3(context, textv2):
     prompt = InfoPrompts()
-    textv3 = client.chat.completions.create(
+    textv3 = openai.ChatCompletion.create(
         model=model,
         messages=prompt.controller(textv2, context),
         max_tokens=4000,
         temperature=0.0
-    ).choices[0].message.content
+    ).choices[0].message['content']
 
     input_tok = count_tokens(prompt.controller(textv2, context))
     output_tok = count_tokens([{"role": "assistant", "content": textv3}])
@@ -215,15 +207,15 @@ def get_info_text(context, user):
 
         if i == 1:
 
-            # raw_text = get_raw(context)
-            #
-            #
-            # raw_search  = search_stop_words(raw_text)
-            #
-            # iter.rawtext = raw_text
-            # iter.raw_all_count = raw_search['count_all']
-            # iter.raw_procent = raw_search['procent']
-            # iter.raw_rating = raw_search['score']
+            raw_text = get_raw(context)
+
+
+            raw_search  = search_stop_words(raw_text)
+
+            iter.rawtext = raw_text
+            iter.raw_all_count = raw_search['count_all']
+            iter.raw_procent = raw_search['procent']
+            iter.raw_rating = raw_search['score']
 
 
 
@@ -307,7 +299,7 @@ def get_info_text(context, user):
 
         }
 
-        if (v2_all_count <= v1_all_count and v2_procent <= v1_procent and v2_procent < 7 ) or (v1_all_count == 0):
+        if v2_all_count < v1_all_count and v2_procent < v1_procent and v2_rating < 5:
             break
 
 
@@ -323,13 +315,14 @@ def get_info_text(context, user):
 
 
 def get_raw(context):
-    raw_text = client.chat.completions.create(
+    raw_text = openai.ChatCompletion.create(
         model=model,
         messages=[
-            {"role": "user", "content": f' Отвечай на русском языке. Напиши рекламу в информационном стиле о {context}'},
+            {"role": "user", "content": f'напиши рекламу в информационном стиле о {context}'},
+
         ],
         max_tokens=4000,
         temperature=1
-    ).choices[0].message.content
+    ).choices[0].message['content']
 
     return raw_text

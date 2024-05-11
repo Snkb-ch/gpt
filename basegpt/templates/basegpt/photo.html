@@ -1,16 +1,16 @@
 {% extends "main.html" %}
 {% load static %}
-{% block title %}Реклама в информационном стиле{% endblock %}
+{% block title %}Решение задачи по фото{% endblock %}
 {% block description %}
 <meta
   name="description"
-  content="Нейросеть напишет рекламу в инфостиле. Рекламный текст в информационном стиле."
+  content="Решить задачу по фото с помощью нейросети. ChatGPT проанализирует фото и предложит решение. Подробное объяснение и решение задачи по фото."
 >{% endblock %}
 
 
 {% block extra_css %}
-<link href="{% static 'css/uniquetext.css' %}" rel="stylesheet" xmlns="http://www.w3.org/1999/html"/>
-<script src = "{% static 'js/uniquetext.js' %}"></script>
+<link href="{% static 'css/photo.css' %}" rel="stylesheet" xmlns="http://www.w3.org/1999/html"/>
+<script src = "{% static 'js/photo.js' %}"></script>
 
 {% endblock %}
 
@@ -66,7 +66,7 @@
       <div class="filev2-container02">
         <div class="filev2-container03">
           <div class="filev2-container04">
-            <h1 class="filev2-text">Написать рекламу </h1><h1 class = "  filev2-text01"><pre>    *Beta</pre></h1>
+            <h1 class="filev2-text">Решить задачу по фото</h1>
           </div>
 
           <div class="filev2-container05">
@@ -75,11 +75,19 @@
 
 
 <div class="filev2-container08">
-                <h1 class="filev2-text01">Что будем рекламировать?</h1>
+                <h1 class="filev2-text01">Прикрепите одно или несколько фото</h1>
               </div>
                               <div class="filev2-container07">
+
                 <div class="filev2-div">
 
+
+<div class='form'>
+
+
+<input type='file' required accept="image/png, image/gif, image/jpeg" id="rawfile" name="rawfile" multiple>
+
+</div>
 
 
 
@@ -179,68 +187,24 @@
 
 </div>
 
-        <label class='filev2-label' for='rawtext'>Описание продукта</label>
+        <label class='filev2-label' for='rawtext'>Задание</label>
 <div class='textarea-container'  id = 'textarea-product'>
 
 
-    <textarea class='filev2-textarea' id = 'rawtext' name='file' placeholder='Интернет магазин кофе. Продаем кофе из Центральной Америки. Скидки на кофе до 12 сентября.'></textarea>
+    <textarea class='filev2-textarea' id = 'rawtext' name='file' placeholder='Реши задачу с фото с подробным объяснением' maxlength='1000'></textarea>
 </div>
 
-<label class='filev2-label' for='audience'>Целевая аудитория</label>
-  <input class='filev2-textarea-input optional' id = 'audience' name='file' placeholder='Студенты, которые хотят выпить кофе после института'></input>
-    <label class='filev2-label' for='platform'>Платформа для рекламы</label>
-  <input class='filev2-textarea-input optional' id = 'platform' name='file' placeholder='Соцсети, сайты'></input>
+
 
 </div>
 
 
                 </div>
               </div>
-              <div class="filev2-container08">
-                <h1 class="filev2-text01">Выберите длину текста</h1>
-              </div>
-              <div class="filev2-container09">
-                <div class="filev2-container10">
-                  <div class="filev2-div1">
 
 
 
 
-
-
-<div class='checkbox-container'>
-  <label class='checkbox-label'>
-    <input type='radio' value="short" name='options' class='checkbox-input' id = 'opt1ch' checked>
-    <div class='checkbox-style' id = 'opt1'></div>
-  </label>
-  <label class='checkbox-label'>
-    <input type='radio' value="long" name='options' class='checkbox-input' id = 'opt2ch'>
-    <div class='checkbox-style' id = 'opt2'></div>
-  </label>
-
-</div>
-
-                  </div>
-                </div>
-              </div>
-
-              <div class="filev2-container11">
-                <ul class="filev2-ul list">
-                  <li class="filev2-li list-item">
-                    <span class="filev2-text02">
-                      <span class="filev2-text03"><b>50-100 слов</b></span>
-                    </span>
-                  </li>
-                  <li class="filev2-li1 list-item">
-                    <span class="filev2-text06">
-                      <span class="filev2-text07">
-                        <b>100-200 слов</b>
-                      </span>
-                    </span>
-                  </li>
-
-                </ul>
-              </div>
 
             </div>
 
@@ -295,7 +259,7 @@
       d="M6.5 4L6.303 4.5915C6.24777 4.75718 6.15472 4.90774 6.03123 5.03123C5.90774 5.15472 5.75718 5.24777 5.5915 5.303L5 5.5L5.5915 5.697C5.75718 5.75223 5.90774 5.84528 6.03123 5.96877C6.15472 6.09226 6.24777 6.24282 6.303 6.4085L6.5 7L6.697 6.4085C6.75223 6.24282 6.84528 6.09226 6.96877 5.96877C7.09226 5.84528 7.24282 5.75223 7.4085 5.697L8 5.5L7.4085 5.303C7.24282 5.24777 7.09226 5.15472 6.96877 5.03123C6.84528 4.90774 6.75223 4.75718 6.697 4.5915L6.5 4Z"
     ></path>
   </svg>
-  <span class="text_button">Сгенерировать 30 ₽</span>
+  <span class="text_button" id = "gen">Сгенерировать 30 ₽</span>
 </button>
 
                         {% else %}
@@ -303,40 +267,25 @@
                       {% endif %}
             </div>
           </div>
-          <div class="filev2-container16">
-            <h1 class="filev2-text16">Примеры</h1>
-          </div>
-          <div class="filev2-container17">
+<!--          <div class="filev2-container16">-->
+<!--            <h1 class="filev2-text16">Подсказки</h1>-->
+<!--          </div>-->
+<!--          <div class="filev2-container17">-->
 
-           <div class="container-red">
+<!--           <div class="container-red">-->
 
-               <h1 class="procent h-red1">Реклама курса — 9.1/10</h1>
-               <div class = "text-red red1"><p><b></b>Откройте доступ к миру программирования вместе с нашими курсами Прогер.</p>
-<br>
-                   <p>
-Мы предлагаем: курс по Python, который научит вас основам языка и автоматизации задач. Также есть курс по Django для создания надёжных веб-приложений. И фронтенд-курс, где вы изучите HTML, CSS и JavaScript для разработки взаимодействующих с пользователем сайтов.
-</p>
-                   <br><p>
-Курсы подходят: новичкам и тем, кто хочет углубить свои знания в сфокусированных на конкретных темах областях программирования.
-</p><br>
-                   <p>
-Запишитесь сегодня и начните учиться уже сейчас</p></div>
+<!--               <h1 class="procent h-red1">Что написать ?</h1>-->
+<!--               <div class = "text-red red1"><span><b></b>Опишите информацию, которую хотите увидеть в рекламе. Например, Мы продаем технику. Samsung S21 о скидкам до 12 сентября.</span></div>-->
 
 
-           </div>
-           <div class="container-red">
-               <h1 class="procent h-red2">Реклама телеграм-канала — 10/10</h1>
-               <div class = "text-red red2"><span><b></b>Подписывайтесь на наш телеграм-канал и получайте новости из мира науки каждый день.<br><br>
+<!--           </div>-->
+<!--           <div class="container-red">-->
+<!--               <h1 class="procent h-red2">Укажите целевую аудиторию</h1>-->
+<!--               <div class = "text-red red2"><span><b></b>Студенты, которые хотят стать програмистами</span></div>-->
 
-Мы освещаем свежие достижения в областях биотехнологий, космонавтики, физики и искусственного интеллекта. <br><br>
-
-Наши источники – научные журналы и интервью с экспертами. В дополнение к новостям, мы предоставляем аналитические статьи, которые помогут подробнее понять значение научных открытий.
-<br><br>
-Присоединяйтесь</span></div>
-
-           </div>
-          </div>
-            <div class="filev2-container172">
+<!--           </div>-->
+<!--          </div>-->
+<!--            <div class="filev2-container172">-->
 
 <!--           <div class="container-red">-->
 
@@ -344,9 +293,9 @@
 <!--               <div class = "text-red red3"><span><b></b></span></div>-->
 
 
-<!--           </div>-->            <div class = "multi-model"><span>Текст оценен через сервис glvrd.ru</span> </div>
+<!--           </div>-->
 
-          </div>
+<!--          </div>-->
             <div class="homev4-containerfaq">
                 <section id="faq">
 
@@ -364,39 +313,33 @@
 
 <div class="faq-box">
                     <div class="faq-box-question ">
-                            <h4>Что это такое?</h4>
-                            <span class="faq-box-icon"></span>
-                    </div>
-                    <div class="faq-box-answer">
-                        <p>Это Beta версия создателя рекламных текстов с помощью GPT-4.</p>
-                        <br>
-                        <p>Цель — автоматизировать создание рекламы, но без штампов и абстракций. Качество текста мы оценивали с помощью сайта glvrd.ru</p>
-                        <br>
-                        <p>У нас получилось разработать промты, которые делают тексты с средней оценкой 8.3 по Главреду.</p>
-                    </div>
-                </div>
-                <div class="faq-box">
-                    <div class="faq-box-question ">
                             <h4>Как это работает?</h4>
                             <span class="faq-box-icon"></span>
                     </div>
                     <div class="faq-box-answer">
-                        <p>Вы даёте информацию о продукте и целевой аудитории, а GPT-4 напишет рекламный текст на основе этих данных. </p>
-                        <br>
-                        <p>Мы сделали систему проверки: GPT проверяет текст несколько раз, чтобы он не был абстрактным и заштампованным.</p>
+                        <p>Вы отправляете фото — GPT-4 его анализирует. Нейросеть может сразу выполнить задание, которые вы ей дали в описании, или просто переписать текст с картинки. Зависит от того, что вы попросите её сделать.</p>
                     </div>
                 </div>
-                 <div class="faq-box">
+                <div class="faq-box">
                     <div class="faq-box-question ">
-                            <h4>Хорошо работает?</h4>
+                            <h4>Можно прикрепить несколько фото?</h4>
                             <span class="faq-box-icon"></span>
                     </div>
                     <div class="faq-box-answer">
-                        <p>По-разному: чем больше данных, тем лучше будет текст, и наоборот. Мы ещё разрабатываем конструктор, поэтому результат может быть нестабилен.</p>
-
-
-                        </div>
+                        <p>Можно, но нужно сразу прикреплять несколько — иначе одно заменяется другим.</p>
+                    </div>
                 </div>
+<!--                 <div class="faq-box">-->
+<!--                    <div class="faq-box-question ">-->
+<!--                            <h4>Стоит чистить текст перед отправкой?</h4>-->
+<!--                            <span class="faq-box-icon"></span>-->
+<!--                    </div>-->
+<!--                    <div class="faq-box-answer">-->
+<!--                        <p>Да, советуем убирать названия глав и заголовки, также сноски и источники</p>-->
+
+
+<!--                        </div>-->
+<!--                </div>-->
 
 <!--                <div class="faq-box">-->
 <!--                    <div class="faq-box-question ">-->

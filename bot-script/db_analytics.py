@@ -29,7 +29,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gpt.settings")
 # Импортируем и настраиваем Django настройки
 import django
 django.setup()
-from bot.models import User, Subscriptions,  Subscriptions_statistics, Statistics_by_day, AdminStats
+from bot.models import User, Subscriptions,  Subscriptions_statistics, Statistics_by_day, AdminStats, Subscriptions_statistics_model
 
 
 
@@ -37,6 +37,25 @@ from bot.models import User, Subscriptions,  Subscriptions_statistics, Statistic
 
 
 class DBanalytics_for_sub_stat():
+
+    @sync_to_async
+    def add_sub_st_model(self, user_id, model, input_tokens, output_tokens, messages):
+        obj, created = Subscriptions_statistics_model.objects.get_or_create(
+            sub_stat=Subscriptions_statistics.objects.get(user_id=user_id, active=True),
+            model=model,
+            defaults={'input_tokens': input_tokens,
+                      'output_tokens': output_tokens,
+                      'messages': messages
+                      }
+        )
+
+        if not created:
+            obj.input_tokens += input_tokens
+            obj.output_tokens += output_tokens
+            obj.messages += messages
+            obj.save()
+
+
 
     @sync_to_async
     def exists(self, user_id):

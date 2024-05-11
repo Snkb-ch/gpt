@@ -66,23 +66,47 @@ class Result(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     result = models.TextField(null=True)
+    type = models.CharField(max_length=100, null=True, blank=True, default='adtext')
     user_rating = models.IntegerField(null=True)
     all_count = models.IntegerField(null=True)
     raw_all_count = models.IntegerField(null=True)
-
-
-
-
     procent = models.IntegerField(null=True)
     rating = models.IntegerField(null=True)
     raw_procent = models.IntegerField(null=True)
     raw_rating = models.IntegerField(null=True)
-
-
     loops = models.IntegerField(null=True)
-    textv1 = models.TextField(null=True)
-    textv2 = models.TextField(null=True)
     favorite = models.BooleanField(default=False)
+    input_tokens = models.IntegerField(null=True)
+    output_tokens = models.IntegerField(null=True)
+
+class InfoTextIterations(models.Model):
+    result = models.ForeignKey(Result, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    rawtext = models.TextField(null=True)
+    raw_all_count = models.IntegerField(null=True)
+    raw_procent = models.IntegerField(null=True)
+    raw_rating = models.IntegerField(null=True)
+
+    textv1 = models.TextField(null=True)
+    v1_all_count = models.IntegerField(null=True)
+    v1_procent = models.IntegerField(null=True)
+    v1_rating = models.IntegerField(null=True)
+
+    textv2 = models.TextField(null=True)
+    v2_all_count = models.IntegerField(null=True)
+    v2_procent = models.IntegerField(null=True)
+    v2_rating = models.IntegerField(null=True)
+
+    textv3 = models.TextField(null=True)
+    v3_all_count = models.IntegerField(null=True)
+    v3_procent = models.IntegerField(null=True)
+    v3_rating = models.IntegerField(null=True)
+    loops = models.IntegerField(null=True)
+
+
+
+
 
 
 
@@ -129,6 +153,7 @@ class Order(models.Model):
     rawfile = models.FileField(upload_to='rawfiles/', null=True, blank=True)
     refund = models.BooleanField(default=False)
     result = models.BooleanField(default=False)
+    pay_type = models.CharField(max_length=100, null=True, blank=True)
     def __str__(self):
         return str(self.id)
 class UniqueText(models.Model):

@@ -1,3 +1,4 @@
+import base64
 import json
 import logging
 import time
@@ -14,6 +15,9 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from openai_async import openai_async
 from urllib.parse import quote, urlencode
+
+from rest_framework import status
+
 from .prompts import *
 from .infotext import *
 from django.contrib import messages
@@ -38,6 +42,13 @@ from .models import *
 from django.shortcuts import render, redirect
 
 
+load_dotenv()
+
+client = openai.OpenAI(
+    api_key=os.environ.get("OPENAI_API_KEY_ORIG"),
+)
+
+
 @login_required(login_url='login')
 def history(request):
 
@@ -45,12 +56,92 @@ def history(request):
 
     infotexts =  Result.objects.filter(user=request.user).order_by('-created_at')
 
+
     return render(request, 'basegpt/history.html', {'uniquetexts': uniquetexts, 'infotexts': infotexts})
 
+@sync_to_async()
+def save_result(text, user, price,type, output_tokens, input_tokens):
+    result = Result.objects.create(user=user)
+    result.result = text
+    result.type = type
+    result.output_tokens = output_tokens
+    result.input_tokens = input_tokens
+
+    result.save()
+    user.balance -= price
+    user.save()
+    return result.id
+class photo_api(APIView):
+    permission_classes = [IsAuthenticated]
+    async def post(self, request):
+        try:
+            user = request.user
+
+            text = request.POST.get('text')
+            images = request.FILES.getlist('images')  # Получение списка всех файлов
+
+            count_images = len(images)
+
+            price = 28 + count_images * 2
+            if user.balance < price:
+                return JsonResponse({'status': 'error', 'result': 'Недостаточно средств на балансе'})
 
 
 
 
+
+            imgs = []
+            for image in images:
+                if image and image.name.split('.')[-1] in ['png', 'jpeg', 'jpg']:
+                    image_base64 = base64.b64encode(image.read()).decode('utf-8')
+                    imgs.append({"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{image_base64}"}})
+                else:
+                    return JsonResponse({'status': 'error', 'result': 'Неверный формат файла, прикрепите изображение в формате png, jpeg, jpg'}, status=400)
+
+
+            # check png, jpeg, jpg
+
+            content = []
+            content.append(text)
+            for img in imgs:
+                content.append(img)
+            print(content)
+
+
+            client = openai.OpenAI(
+                    api_key=os.environ.get("OPENAI_API_KEY_PHOTO"),
+                )
+
+            response =  client.chat.completions.create(
+                    model='gpt-4-turbo-2024-04-09',
+                    messages=[
+
+                        {
+                            "role": "user",
+                            "content": content
+                        },
+
+                    ],
+                    temperature=1,
+                    max_tokens=4000,
+                )
+            input_tokens = response.usage['prompt_tokens']
+            output_tokens = response.usage['completion_tokens']
+            if response:
+
+                    res_id = await save_result(response.choices[0].message.content, user, price, 'photo',output_tokens, input_tokens)
+                # Теперь image_base64 содержит изображение в формате base64, которое можно передать в JSON или сохранить
+                    return Response(data={'status': 'ok', 'result': response.choices[0].message.content, 'id': res_id},
+                                    status=status.HTTP_200_OK)
+        except Exception as e:
+            logging.error(e)
+            return JsonResponse({'status': 'error', 'result': 'Произошла ошибка, попробуйте позже'}, status=400)
+
+
+
+
+def photo(request):
+    return render(request, 'basegpt/photo.html')
 
 
 def error(request):
@@ -157,7 +248,10 @@ def balance(request):
     if request.method == 'POST' and 'pay' in request.POST:
         tokens = request.POST.get('input')
         print(tokens)
-        price = int(tokens) * 0.5
+        try:
+            price = int(tokens)
+        except:
+            return render(request, 'basegpt/balance.html')
 
         Configuration.account_id = settings.YOOKASSA_SHOP_ID
         Configuration.secret_key = settings.YOOKASSA_SECRET_KEY
@@ -225,9 +319,9 @@ def red1_for_unique_text(text):
         print(parts[i])
 
 
-        openai.api_key = settings.OPENAI_API_KEY
 
-        ans = openai.ChatCompletion.create(
+
+        ans = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
                 {
@@ -254,9 +348,9 @@ def red2_for_unique_text(text):
     for i in range(len(parts)):
 
 
-        openai.api_key = settings.OPENAI_API_KEY
 
-        ans =  openai.ChatCompletion.create(
+
+        ans =  client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
                 {
@@ -284,7 +378,7 @@ def red3_for_unique_text(text):
 
         openai.api_key  = settings.OPENAI_API_KEY
 
-        ans = openai.ChatCompletion.create(
+        ans = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
                 {
@@ -311,7 +405,7 @@ def exam_text_result(text, idea):
     openai.api_key = settings.OPENAI_API_KEY
     answer = idea + '\n'
 
-    red2 =  openai.ChatCompletion.create(
+    red2 =  client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {
@@ -327,7 +421,7 @@ def exam_text_result(text, idea):
 
     red2 = red2.choices[0]['message']['content']
 
-    # red3 = openai.ChatCompletion.create(
+    # red3 = client.chat.completions.create(
     #     model="gpt-3.5-turbo",
     #     messages=[
     #         {
@@ -346,7 +440,7 @@ def exam_text_result(text, idea):
 
     answer += (red2 + '\n')
 
-    red4 =  openai.ChatCompletion.create(
+    red4 =  client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {
@@ -363,7 +457,7 @@ def exam_text_result(text, idea):
 
     red4 = red4.choices[0]['message']['content']
 
-    red5 =  openai.ChatCompletion.create(
+    red5 =  client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {
@@ -382,7 +476,7 @@ def exam_text_result(text, idea):
 
     answer += (red5 + '\n')
 
-    red6 =  openai.ChatCompletion.create(
+    red6 =  client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {
@@ -401,7 +495,7 @@ def exam_text_result(text, idea):
 
     answer += (red6 + '\n')
 
-    red7 =  openai.ChatCompletion.create(
+    red7 =  client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {
@@ -421,7 +515,7 @@ def exam_text_result(text, idea):
 
     answer += (red7 + '\n')
 
-    # additional = openai.ChatCompletion.create(
+    # additional = client.chat.completions.create(
     #     model="gpt-3.5-turbo",
     #     messages=[
     #         {
@@ -485,6 +579,8 @@ def success_unique_text(request, order):
     if response_text == 'error' and obj.complete == False:
 
         refund(order)
+
+
         response = ({'type': 'error', 'error': 'К сожалению произошла ошибка, попробуйте позже. Платеж будет возвращен. Приносим свои извинения'})
 
 
@@ -539,15 +635,31 @@ def create_file(order, response_file_text):
     return response
 
 def success_unique_file(request, order):
-    print('success_unique_file')
+
     file_content =  get_file_contetnt(request, order)
 
     response_file_text =  getresultfromtext(file_content, order.type2, order)
 
-    if  response_file_text == 'error' and  check_complete(order) == False:
 
-        refund(order)
-        response = ({'type': 'error', 'error': 'К сожалению произошла ошибка, попробуйте позже. Платеж будет возвращен. Приносим свои извинения'})
+    if  response_file_text == 'error'  and  check_complete(order) == False:
+
+
+        if order.pay_type != 'balance':
+            refund(order)
+            response = ({'type': 'error', 'error': 'К сожалению произошла ошибка, попробуйте позже. Платеж будет возвращен. Приносим свои извинения'})
+
+        else:
+
+            user = User.objects.get(id=order.user.id)
+            user.balance += order.price
+            user.save()
+
+            order.refund = True
+            order.save()
+
+
+            response = ({'type': 'error', 'error': 'К сожалению произошла ошибка, попробуйте позже. Приносим свои извинения'})
+
 
         return response
 
@@ -556,6 +668,7 @@ def success_unique_file(request, order):
         try:
             # UniqueText.objects.get_or_create(user=order.user, rawfile=order.rawfile, order=order)
             response =  create_file(order, response_file_text)
+
             return response
         except Exception as e:
             response = ({'type': 'error', 'error': e})
@@ -625,8 +738,12 @@ def success_result(request):
                 response = ({'type': 'text', 'response_text': response_text, 'status': 'ok'})
                 return JsonResponse(response)
         elif order.refund == True:
-            response = ({'type': 'error', 'error': 'К сожалению произошла ошибка во время обработки заказа, попробуйте позже. Платеж будет возвращен. Приносим свои извинения', 'status': 'error'})
-            return JsonResponse(response)
+            if order.pay_type != 'balance':
+                response = ({'type': 'error', 'error': 'К сожалению произошла ошибка во время обработки заказа, попробуйте позже. Платеж будет возвращен. Приносим свои извинения', 'status': 'error'})
+                return JsonResponse(response)
+            else:
+                response = ({'type': 'error', 'error': 'К сожалению произошла ошибка во время обработки заказа, попробуйте позже. Приносим свои извинения', 'status': 'error'})
+                return JsonResponse(response)
         elif order.result == False and order.refund == False:
             response = ({'type': 'wait', 'status': 'wait'})
             return JsonResponse(response)
@@ -700,7 +817,7 @@ def generate_idea(text, id):
     openai.api_key = settings.OPENAI_API_KEY
     try:
 
-        idea = openai.ChatCompletion.create(
+        idea = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
                 {
@@ -880,30 +997,53 @@ def uniquetext(request):
 
     # only for admin
 
-    user  = request.user
-    if user.is_superuser:
+
 
 
         return render(request, 'basegpt/uniquetext.html')
 
-    
 @sync_to_async
-def generate_info_text(product, audience, platform, type):
-
+def generate_info_text(product, audience, platform, type, request):
+    user = request.user
     if type == 'short':
         type = 'короткий 50-100 слов'
     elif type == 'long':
         type = 'средний 100-200 слов'
 
+    audience = 'Целевая аудитория: ' + audience if audience else ''
 
-    context = f'''Описание продукта: {product}, Целевая аудитория: {audience}, Платформа: {platform}, Длина: {type}'''
+    platform = 'Платформа: ' + platform if platform else ''
+
+    context = 'Описание продукта: ' + product + '. ' + audience + '. ' + platform + '. ' + type
 
 
-    response_text =  get_info_text(context)
+
+    response, result =  get_info_text(context, user)
+    result.result = response['final_text']
+    result.all_count = response['all_count']
+    result.procent = response['procent']
+    result.rating = response['score']
+    result.loops = response['loops']
+
+    result.raw_all_count = response['raw_all_count']
+    result.raw_procent = response['raw_procent']
+    result.raw_rating = response['raw_rating']
+    result.input_tokens = response['input_tokens']
+    result.output_tokens = response['output_tokens']
+
+
+    result.save()
+
+    # update balance of user
+    user = User.objects.get(id=user.id)
+    user.balance -= 30
+    user.save()
     logging.info('start generating test text')
 
 
-    return response_text
+    return response , result.id
+
+
 
 class infotext(APIView):
 
@@ -911,38 +1051,43 @@ class infotext(APIView):
 
 
     async def post(self, request):
+
+
+        balance = request.user.balance
+        if balance < 30:
+            return JsonResponse({'status': 'error', 'result': 'Недостаточно средств на балансе'})
+
+
+
+
+
         product = request.data.get('rawtext')
         type = request.data.get('type')
         audience = request.data.get('audience')
+
         platform = request.data.get('platform')
 
 
 
+
         user = request.user
-
-        # t = threading.Thread(target=generate_info_text, args=(text, type), daemon=True)
-        #
-        # t.start()
         try:
-            return JsonResponse({'status': 'ok', 'result': '''test'
-                                                           'de'
-                                                           'de'
-                                                           'ed'
-                                                           'ed'
-                                                           'ed'
-                                                           'ed'
-                                                           'ed'
-                                                           'de'''})
-            response =  await generate_info_text(product, audience, platform, type)
 
-            await success_infotext(request, response)
 
-            # return JsonResponse({'status': 'ok', 'result': response['final_text']})
-            return JsonResponse({'status': 'error', 'result': 'error'})
+            response, res_id =  await generate_info_text(product, audience, platform, type, request)
+
+
+
+
+
+            return Response(data={'status': 'ok', 'result': response['final_text'] , 'id': res_id},status=status.HTTP_200_OK)
+
+
 
         except Exception as e:
             logging.error(e )
-            return JsonResponse({'status': 'error', 'result': 'error'})
+            print(traceback.format_exc())
+            return JsonResponse({'status': 'error', 'result': 'Произошла ошибка, попробуйте позже'})
 
 class get_balance(APIView):
     permission_classes = [IsAuthenticated]
@@ -950,26 +1095,20 @@ class get_balance(APIView):
         user = request.user
         balance = user.balance
         return JsonResponse({'balance': balance})
-@sync_to_async()
-def success_infotext(request, response):
-    user = request.user
-    Result.objects.create(user=user, result=response['final_text'], all_count=response['all_count'],
-                          procent=response['procent'], rating=response['score'], loops=response['loops'],
-                          textv1=response['textv1'], textv2=response['textv2'], raw_all_count=response['raw_all_count'],
-                            raw_procent=response['raw_procent'], raw_rating=response['raw_rating'])
-    # update balance of user
-    user = User.objects.get(id=user.id)
-    user.balance -= 500
-    user.save()
+
 
 class UserRating(APIView):
     permission_classes = [IsAuthenticated]
+
+
+
     def post(self, request):
         user = request.user
-        rating = request.data['rating']
-        result_id = request.data['result_id']
 
-        result = Result.objects.get(pk=result_id)
+        rating = request.data['rating']
+        result_id = request.data['id']
+
+        result = Result.objects.get(pk=result_id, user=user)
         result.user_rating = rating
         result.save()
         return JsonResponse({'status': 'ok', 'result': 'ok'})
@@ -978,9 +1117,9 @@ class Favorite(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request):
         user = request.user
-        result_id = request.data['result_id']
-        result = Result.objects.get(pk=result_id)
-        result.favorite = True
+        result_id = request.data['id']
+        result = Result.objects.get(pk=result_id, user=user)
+        result.favorite = True if result.favorite == False else False
         result.save()
         return JsonResponse({'status': 'ok', 'result': 'ok'})
 
@@ -1015,20 +1154,18 @@ def uniquefile(request):
             text = get_text_from_file(obj)
 
 
-            if moderation(text) == True:
-                return JsonResponse({'type': 'error', 'error': 'Текст не прошел модерацию'})
-            else:
 
-                type = request.POST.get('type')
+
+            type = request.POST.get('type')
 
 
 
-                price = str(get_price_text(text, code, request, type))
+            price = str(get_price_text(text, code, request, type))
 
 
 
 
-                return JsonResponse({'price': price})
+            return JsonResponse({'price': price})
 
     if request.method == 'POST' and 'pay' in request.POST:
         obj = request.FILES['rawfile']
@@ -1068,6 +1205,34 @@ def uniquefile(request):
                 else:
 
                     price = str(get_price_text(text, code, request, type))
+                    user = User.objects.get(id=request.user.id)
+                    if user.balance >= int(price):
+                        order = Order.objects.create(user=request.user, price=price, rawfile=obj, type='unique_file',
+                                             type2=type, complete = True, pay_type='balance')
+
+
+
+                        UniqueText.objects.get_or_create(user=order.user, rawfile=order.rawfile, order=order,
+                                                         type=order.type2)
+                        delete_old_objects(UniqueText, 10, request.user)
+                        print(price)
+                        user.balance -= int(price)
+
+
+                        user.save()
+
+
+                        return redirect('success')
+
+
+
+
+
+
+
+
+
+
 
                     Configuration.account_id = settings.YOOKASSA_SHOP_ID
                     Configuration.secret_key = settings.YOOKASSA_SECRET_KEY
@@ -1134,6 +1299,9 @@ class notifications(APIView):
                 user = User.objects.get(id=order.user.id)
                 user.balance += order.tokens
                 user.save()
+
+
+
             else:
 
 
@@ -1219,16 +1387,20 @@ def logoutUser(request):
     return redirect('home')
 
 
-@login_required(login_url='login')
-def contact(request):
-    if request.method == 'POST':
-        form = ContactForm(request.POST)
-        if form.is_valid():
-            contact = form.save(commit=False)
-            contact.user = request.user
-            contact.save()
 
-            return redirect('home')
+def contact(request):
+    if request.method == 'POST' :
+        if request.user.is_authenticated:
+            form = ContactForm(request.POST)
+            if form.is_valid():
+                contact = form.save(commit=False)
+                contact.user = request.user
+                contact.save()
+
+                return redirect('home')
+        else:
+            return redirect('login' )
+
     else:
         form = ContactForm()
     return render(request, 'basegpt/contact.html', {'form': form})
@@ -1239,7 +1411,7 @@ def answer(new_text, model, role, temp, max_tokens):
     for i in new_text:
         print('text')
         print(i)
-        res = openai.ChatCompletion.create(
+        res = client.chat.completions.create(
             model=model,
             messages=[
                 {
@@ -1268,12 +1440,12 @@ def session(request):
         temp = float(request.POST['input3'])
         # split texzt by $
         new_text = text.split('$')
-        if model == 'gpt-3.5-turbo-1106':
+        if model == 'gpt-3.5-turbo':
             max_tokens = 4096
         elif model == 'gpt-4-vision-preview':
             max_tokens = 128000
 
-        openai.api_key = settings.OPENAI_API_KEY
+
         # thread
         t = threading.Thread(target=answer, args=(new_text, model, role, temp, max_tokens), daemon=True)
         t.start()

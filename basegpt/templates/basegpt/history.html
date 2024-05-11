@@ -9,11 +9,13 @@
 
 <div class="response-container">
     <div class="response-container1">
+
       <div class="response-container2">
         <h1 class="response-text">История</h1>
+        <button class="filter" id = 'filter' >Показать избранное</button>
       </div>
         {% for item in uniquetexts %}
-      <div class="response-container3">
+      <div class="response-container3" id = {{item.id}}  data-favorite='False'>
         <div class="response-container4">
           <h1 class="response-text01">{{item.order}}</h1>
         </div>
@@ -31,7 +33,7 @@
               {% endif %}
                {% if item.responsetext %}
               <span>
-                <pre>
+                <pre name = {{item.id}}>
                   {{item.responsetext}}
 
                 </pre></span>
@@ -42,6 +44,7 @@
         <div class="response-container7">
 {% if item.responsetext %}
 <button class='bottone5'>Скопировать</button>
+
 {% endif %}
 
         </div>
@@ -52,7 +55,7 @@
 
         {% for item in infotexts %}
 
-        <div class="response-container3">
+        <div class="response-container3" id = {{item.id}} data-favorite={{item.favorite}}>
         <div class="response-container4">
           <h1 class="response-text01">{{item.id}}</h1>
         </div>
@@ -62,7 +65,7 @@
             <span class="response-text02" >
 
 
-                <pre  name = {{item.id}}>{{item.result}}</pre>
+                <pre  name = {{item.id}} >{{item.result}}</pre>
             </span>
 
           </div>
@@ -84,6 +87,23 @@
     </svg>
   </span>
 </button>
+                     <div id="main-content">
+  <div>
+
+      <label class="ui-bookmark">
+    <input type="checkbox" id="bookmark" data-value={{item.id}} onclick="sendRequestToAPI({{item.id}})">
+    <div class="bookmark">
+      <svg viewBox="0 0 32 32">
+        <g>
+          <path d="M27 4v27a1 1 0 0 1-1.625.781L16 24.281l-9.375 7.5A1 1 0 0 1 5 31V4a4 4 0 0 1 4-4h14a4 4 0 0 1 4 4z"></path>
+        </g>
+      </svg>
+    </div>
+  </label>
+
+
+  </div>
+</div>
 
 
         </div>

@@ -503,11 +503,11 @@ class ChatGPTTelegramBot:
 
 ⏬ Вам доступно ⏬
 
-✅ Дней: 5
+✅ Дней: 3
 
 ✅ Модель: GPT-3.5
 
-✅ Токенов: 5000 в день
+✅ Токенов: 3000 в день
 
 <b>Важно</b>🔻
 
@@ -521,12 +521,7 @@ class ChatGPTTelegramBot:
 ''',
             )
 
-            await update.effective_message.reply_text(
-                message_thread_id=get_thread_id(update),
 
-                parse_mode='HTML',
-                text='Подпишись на канал <a href="https://t.me/+lvsQbyECDwE0MDdi">@echokosmosa</a> и получи скидку 10%',
-            )
 
             return
         else:
@@ -752,6 +747,28 @@ class ChatGPTTelegramBot:
             text='История чата сброшена',
         )
 
+    def change_model_of_sub(self, sub_name,curent_model):
+
+        print(sub_name, curent_model)
+
+        if sub_name in ['Multi Light', 'Multi PRO', 'Multi Standard']:
+            if curent_model in ['gpt-3.5']:
+                return 'llama-3-70'
+            elif curent_model in ['gpt-4']:
+                return 'gpt-3.5'
+            elif curent_model in ['llama-3-70']:
+                return 'gpt-4'
+        elif sub_name in ['Multi Mini']:
+            if curent_model in ['gpt-3.5']:
+                return 'llama-3-70'
+            elif curent_model in ['llama-3-70']:
+                return 'gpt-3.5'
+
+
+
+
+
+
     async def model(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_id = update.message.from_user.id
         self.status[user_id] = 'prompt'
@@ -762,21 +779,21 @@ class ChatGPTTelegramBot:
             )
             return
         sub_id = await self.db.get_sub_type(update.message.from_user.id)
+
         if await self.db.get_sub_multimodel(sub_id):
 
-            current_model = await self.db.get_user_model(update.message.from_user.id)
-            if current_model == 'gpt-3.5-turbo-1106' or current_model == 'gpt-3.5-turbo' or current_model == 'gpt-3.5-turbo-0125':
-                await self.db.set_user_model(user_id, 'gpt-4-turbo-2024-04-09')
+            model = await self.db.get_user_model(user_id)
+
+            new_model = self.change_model_of_sub(await self.db.get_sub_name_from_user(user_id), model)
+
+
+            if new_model:
+                await self.db.set_user_model(update.message.from_user.id, new_model)
                 await update.message.reply_text(
                     message_thread_id=get_thread_id(update),
-                    text='Модель изменена на GPT-4',
+                    text='Модель изменена на ' + new_model,
                 )
-            elif current_model == 'gpt-4-vision-preview' or current_model == 'gpt-4-turbo' or current_model == 'gpt-4-turbo-2024-04-09':
-                await self.db.set_user_model(user_id, 'gpt-3.5-turbo')
-                await update.message.reply_text(
-                    message_thread_id=get_thread_id(update),
-                    text='Модель изменена на GPT-3.5',
-                )
+
         else:
             await update.message.reply_text(
                 message_thread_id=get_thread_id(update),
@@ -1019,22 +1036,22 @@ class ChatGPTTelegramBot:
         prices = [80, 150, 260, 580]
         prices_new = prices
         prices_old = ['' for i in prices]
-        try:
-            if await self.db.get_promo_used(user_id) == 0:
-
-                user_channel_status = await self.bot.get_chat_member(chat_id='@echokosmosa', user_id=user_id)
-                logging.info(f'User {update.message.from_user.name} (id: {user_id}) status in channel: {user_channel_status.status}')
-                if user_channel_status.status != 'left':
-                    discount = True
-                    prices_old = prices
-                    prices_new = [int(i * 0.9) for i in prices]
-
-                else:
-                    pass
-
-
-        except:
-            pass
+        # try:
+        #     if await self.db.get_promo_used(user_id) == 0:
+        #
+        #         user_channel_status = await self.bot.get_chat_member(chat_id='@echokosmosa', user_id=user_id)
+        #         logging.info(f'User {update.message.from_user.name} (id: {user_id}) status in channel: {user_channel_status.status}')
+        #         if user_channel_status.status != 'left':
+        #             discount = True
+        #             prices_old = prices
+        #             prices_new = [int(i * 0.9) for i in prices]
+        #
+        #         else:
+        #             pass
+        #
+        #
+        # except:
+        #     pass
         subs = await  self.db.get_subs_for_sale()
 
         reply_markup_buttons = []
@@ -1055,29 +1072,38 @@ class ChatGPTTelegramBot:
         # Создаем разметку с кнопками из списка reply_markup_buttons
         reply_markup = InlineKeyboardMarkup(reply_markup_buttons)
 
-
-
         text = f'''
 🗒Описание подписок:
 
-<b>🔸GPT-3.5🔸</b>
+<b>🔸Multi Mini🔸</b>
 <blockquote>
 💰 <s><i>{prices_old[0]}</i></s> <b>{prices_new[0]} руб / 30 дней</b>
 
-⚙️ GPT-3.5
-🔹 300 000 токенов
+⚙️ GPT-3.5, LLAMA-3
+🔹 Доступно токенов при использовании:
 
+    <b>LLAMA-3</b>: 150 тыс.
+    <i>или</i>
+    <b>GPT-3.5  </b>: 300 тыс. - <i>расход снижается в 2 раза</i>
+    
+    
 </blockquote>
 
 <b>🔸Multi Light🔸</b>
 <blockquote>
 💰 <s><i>{prices_old[1]}</i></s> <b>{prices_new[1]} руб / 30 дней</b>
 
-⚙️ <b>GPT-4</b>, GPT-3.5, DALLE-3
-🔹 Доступно <b>40 000 токенов в GPT-4</b> или <b>400 000 токенов в GPT-3.5</b>
+⚙️ <b>GPT-4</b>, GPT-3.5, DALLE-3, LLAMA-3
+🔹 Доступно токенов при использовании: 
+
+    <b>GPT-4      </b>: 40 тыс.
+    <i>или</i>
+    <b>LLAMA-3</b>: 200 тыс.
+    <i>или</i>
+    <b>GPT-3.5  </b>: 400 тыс.
+
 🔹 Анализ фото
 🔹 Генерация до 20 изображений
-📢  <i><b>Расход токенов при переключении на GPT-3.5 уменьшается в 10 раз</b></i>
 
 </blockquote> 
 
@@ -1085,11 +1111,17 @@ class ChatGPTTelegramBot:
 <blockquote>
 💰 <s><i>{prices_old[2]}</i></s> <b>{prices_new[2]} руб / 30 дней</b>
 
-⚙️ <b>GPT-4</b>, GPT-3.5, DALLE-3
-🔹 Доступно <b>80 000 токенов в GPT-4</b> или <b>800 000 токенов в GPT-3.5</b>
+⚙️ <b>GPT-4</b>, GPT-3.5, DALLE-3,LLAMA-3
+🔹 Доступно токенов при использовании:
+
+    <b>GPT-4      </b>: 80 тыс.
+    <i>или</i>
+    <b>LLAMA-3</b>: 400 тыс.
+    <i>или</i>
+    <b>GPT-3.5  </b>: 800 тыс.
+
 🔹 Анализ фото
 🔹 Генерация до 40 изображений
-📢  <i><b>Расход токенов при переключении на GPT-3.5 уменьшается в 10 раз</b></i>
 
 </blockquote> 
 
@@ -1097,23 +1129,42 @@ class ChatGPTTelegramBot:
 <blockquote>
 💰 <s><i>{prices_old[3]}</i></s> <b>{prices_new[3]} руб / 60 дней</b>
 
-⚙️ <b>GPT-4</b>, GPT-3.5, DALLE-3
-🔹 Доступно <b>200 000 токенов в GPT-4</b> или <b>2 миллиона токенов в GPT-3.5</b>
+⚙️ <b>GPT-4</b>, GPT-3.5, DALLE-3, LLAMA-3
+🔹 Доступно токенов при использовании: 
+
+    <b>GPT-4      </b>: 200 тыс.
+    <i>или</i>
+    <b>LLAMA-3</b>: 1 млн.
+    <i>или</i>
+    <b>GPT-3.5  </b>: 2 млн.
+
 🔹 Анализ фото
 🔹 Генерация до 100 изображений
-📢  <i><b>Расход токенов при переключении на GPT-3.5 уменьшается в 10 раз</b></i>
 
 </blockquote>
 
 ⚙️ Менять модель командой /model
 
-—————
-<b>Важно🔻</b>
+📢  Переключив модель с GPT-4 на GPT-3.5 расход токенов снизится в 10 раз, а для LLAMA в 5 раз
+
+<b>✨ Сравнение моделей:</b>
 <blockquote>
-❗ Приблизительно 1000 токенов – 300 слов или 2300 или 1.5 стр. А4.
+GPT-4         86%
+LLAMA-3    82% 
+GPT-3.5     70%
+
+% — доля правильных ответов
+
+</blockquote>
+
+—————
+<b>🔻Важно</b>
+<blockquote>
+
+❗️ Приблизительно 1000 токенов – 300 слов или 2300 символов или 1.5 стр. А4.
 
 🔹 1 фото для анализа весит 1500 токенов
-🔹 Генерация 1 изображения с стоит от 2000 токенов
+🔹 Генерация 1 изображения стоит от 2000 токенов
 
 </blockquote>
 
@@ -1121,7 +1172,6 @@ class ChatGPTTelegramBot:
 
 Выберите подписку или введите /cancel для отмены
 '''
-
 
 
         await update.effective_message.reply_text(
@@ -1132,23 +1182,23 @@ class ChatGPTTelegramBot:
             reply_markup=reply_markup
         )
 
-        try:
-            if await self.db.get_promo_used(user_id) == 0:
-                if not discount:
-
-                    await update.effective_message.reply_text(
-                        message_thread_id=get_thread_id(update),
-                        parse_mode='HTML',
-                        text='Подпишись на канал <a href="https://t.me/+lvsQbyECDwE0MDdi">@echokosmosa</a> и получи скидку 10%',
-                    )
-                else:
-                    await update.effective_message.reply_text(
-                        message_thread_id=get_thread_id(update),
-                        parse_mode='HTML',
-                        text='Скидка применена',
-                    )
-        except:
-            pass
+        # try:
+        #     if await self.db.get_promo_used(user_id) == 0:
+        #         if not discount:
+        #
+        #             await update.effective_message.reply_text(
+        #                 message_thread_id=get_thread_id(update),
+        #                 parse_mode='HTML',
+        #                 text='Подпишись на канал <a href="https://t.me/+lvsQbyECDwE0MDdi">@echokosmosa</a> и получи скидку 10%',
+        #             )
+        #         else:
+        #             await update.effective_message.reply_text(
+        #                 message_thread_id=get_thread_id(update),
+        #                 parse_mode='HTML',
+        #                 text='Скидка применена',
+        #             )
+        # except:
+        #     pass
     async def send_end_of_subscription_message(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
             message_thread_id=get_thread_id(update),
@@ -1223,7 +1273,7 @@ class ChatGPTTelegramBot:
 
     async def set_temperature(self, update: Update, context: ContextTypes.DEFAULT_TYPE, temperature):
         try:
-            if float(temperature) <= 1.25 or float(temperature) >= 0.0:
+            if float(temperature) <= 1.25 and float(temperature) >= 0.0:
 
                 await update.message.reply_text(
                     message_thread_id=get_thread_id(update),
@@ -1320,19 +1370,19 @@ class ChatGPTTelegramBot:
         Configuration.account_id = self.config['shop_id']
         Configuration.secret_key = self.config['yookassa_key']
         discount = False
-        try:
-            if await self.db.get_promo_used(user_id) == 0:
-
-
-                user_channel_status = await self.bot.get_chat_member(chat_id='@echokosmosa', user_id=user_id)
-                print(user_channel_status.status)
-                if user_channel_status.status != 'left':
-                    discount = True
-                else:
-                    pass
-        except Exception as e:
-
-            pass
+        # try:
+        #     if await self.db.get_promo_used(user_id) == 0:
+        #
+        #
+        #         user_channel_status = await self.bot.get_chat_member(chat_id='@echokosmosa', user_id=user_id)
+        #         print(user_channel_status.status)
+        #         if user_channel_status.status != 'left':
+        #             discount = True
+        #         else:
+        #             pass
+        # except Exception as e:
+        #
+        #     pass
 
 
         price = await self.db.get_price(query.data)
@@ -1396,11 +1446,13 @@ class ChatGPTTelegramBot:
             order_id = payment_details['id']
             try:
                 await self.activate_sub(user_id, query.data, order_id)
+
             except Exception as e:
                 logging.error(f'Error in activate sub: {e}')
                 await self.send_to_admin( 'error in activate sub' + '\n' + str(e))
                 pass
             try:
+
 
                 await self.send_to_admin('Платеж прошел' + '\n' + 'Пользователь: ' + str(user_id) + '\n' + 'Подписка: ' + sub_name + '\n' + 'Цена: ' + str(price) + '\n' + 'Email: ' + email)
             except Exception as e:
@@ -1408,7 +1460,7 @@ class ChatGPTTelegramBot:
                 pass
             try:
                 if await self.db.get_sub_multimodel(sub_id):
-                    await self.db.set_user_model(user_id, 'gpt-3.5-turbo')
+                    await self.db.set_user_model(user_id, 'gpt-3.5')
                     await update.effective_message.reply_text(
                         message_thread_id=get_thread_id(update),
                         text='Сейчас вы используете модель GPT-3.5, расход токенов уменьшен в 20 раз, для смены модели на GPT-4 введите /model',
@@ -1419,6 +1471,8 @@ class ChatGPTTelegramBot:
                 pass
 
             try:
+                income = price
+                await self.db_analytics_for_sessions.new_sub_stats(user_id, sub_id, order_id, income)
                 order_id = await self.db_analytics_for_sessions.get_sub_stats_id(user_id)
                 order_info = await self.db.get_sub_info(sub_id)
                 cost = order_info['cost']
@@ -1466,7 +1520,7 @@ class ChatGPTTelegramBot:
 
             income = await self.db.get_price(sub_id)
             cost = 0
-            await self.db_analytics_for_sessions.new_sub_stats(user_id, sub_id, order_id_payment, income)
+            # await self.db_analytics_for_sessions.new_sub_stats(user_id, sub_id, order_id_payment, income)
 
 
 
@@ -1639,10 +1693,10 @@ class ChatGPTTelegramBot:
                 except:
                     pass
 
-                if model_config['model'] == 'gpt-3.5-turbo-1106' or model_config['model'] == 'gpt-3.5-turbo' or model_config['model'] == 'gpt-3.5-turbo-0125':
+                if model_config['model'] != 'gpt-4':
                     await update.message.reply_text(
                         message_thread_id=get_thread_id(update),
-                        text='Модель GPT-3.5 не поддерживает распознавание фото. Чтобы сменить модель, введите команду /model',
+                        text='Анализировать фото может только gpt-4. Чтобы сменить модель — введите команду /model',
                     )
                     try:
                         self.prompts[chat_id] -= 1
@@ -1850,6 +1904,8 @@ class ChatGPTTelegramBot:
 
 
                     model_config = await self.db.get_model_config(update.effective_chat.id)
+
+
                     tokens_in_message = self.openai.count_tokens(([{"role": "user", "content": prompt}]), model_config['model'])
                     tokens_input = tokens_in_message + self.openai.get_conversation_stats(chat_id=chat_id, model=model_config['model'])[1]
 
@@ -2109,9 +2165,9 @@ class ChatGPTTelegramBot:
             # do other async stuff, just sleeping here
             # await self.send_notif()
             await self.send_notif()
-            log.info(f"Other {name} started")
+            logging.info(f"Other {name} stopped")
         except asyncio.CancelledError:
-            log.info(f"Other {name} got cancelled")
+            logging.info(f"Other {name} stopped")
             # clean up here
 
     async def main(self):

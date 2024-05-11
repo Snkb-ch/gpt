@@ -673,9 +673,13 @@ justify-content:space-evenly;
   width: 60%;
   margin-right: 30%;
   background-color: #999999;
+  border-radius: 16px;
 
 
 }
+.contact{
+display:none;}
+
 .component-header{
 background-color:#1D2A49;
 }

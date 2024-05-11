@@ -49,7 +49,7 @@ class User(models.Model):
     reminder_date = models.DateField(null=True, blank=True)
     last_message = models.DateField(null=True, blank=True)
 
-    model = models.CharField(max_length=50, default='gpt-3.5-turbo-1106', null=True)
+    model = models.CharField(max_length=50, default='gpt-3.5', null=True)
     admin = models.BooleanField(default=False, null=True)
     blocked = models.BooleanField(default=False, null=True)
 
@@ -95,12 +95,29 @@ class Subscriptions_statistics(models.Model):
     order_id_payment = models.CharField(max_length=100, null=True)
 
 
+
     income = models.FloatField(null=True, default=0)
     objects = BotTGUserManager()
 
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['id'], name='subscriptions_statistics_pkey'),
+        ]
+
+class Subscriptions_statistics_model(models.Model):
+
+    id = models.AutoField(primary_key=True)
+    sub_stat = models.ForeignKey(Subscriptions_statistics, on_delete=models.SET_NULL ,  null=True)
+    model = models.CharField(max_length=50)
+    input_tokens = models.IntegerField(null=True, default=0)
+    output_tokens = models.IntegerField(null=True, default=0)
+    messages = models.IntegerField(null=True, default=0)
+
+    objects = BotTGUserManager()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['id'], name='subscriptions_statistics_model_pkey'),
         ]
 
 class Statistics_by_day(models.Model):

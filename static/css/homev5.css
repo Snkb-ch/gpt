@@ -905,7 +905,7 @@ font-size:40px;
     position: relative;
   flex: 0 0 auto;
   width: 350px;
-  height: 220px;
+  height: 245px;
   display: flex;
    padding: 25px;
    font-size:18px;
@@ -924,10 +924,10 @@ font-size:40px;
     background-color:#7D32FF;
 }
 .task2{
-   background-color: #FF5F23;
+   background-color: #7D32FF;
 }
 .task3{
-  background-color: #B98CFF;
+  background-color: #7D32FF;
 }
 .task12{
     background: linear-gradient(29deg, rgba(0,113,188,1) 0%, rgba(109,0,255,1) 100%);
@@ -1937,9 +1937,13 @@ input[type=radio] {
   transition: transform .4s ease;
   cursor: pointer;
 }
+.faq-box-answer pre{
 
+width:auto;
+
+}
 .container {
-  width: 100%;
+  width: 96%;
   max-width: 800px;
   max-height: 600px;
   height: 100%;

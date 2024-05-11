@@ -3,7 +3,7 @@ from django.urls import path
 
 urlpatterns = [
     path('exam-text', views.exam_text, name='exam_text'),
-    path('uniquetext', views.uniquetext, name='uniquetext'),
+    path('adtext', views.uniquetext, name='uniquetext'),
     path('uniquefile', views.uniquefile, name='uniquefile'),
     path('success', views.success, name='success'),
     path('notifications', views.notifications.as_view(), name='notifications'),
@@ -31,13 +31,16 @@ urlpatterns = [
 path('register/', views.RegisterPage.as_view(), name='register'),
     path('success_api', views.success_api, name='success_api'),
     path('infotext', views.infotext.as_view(), name='infotext'),
+    path('photo_api', views.photo_api.as_view(), name='photo_api'),
+
+    path('photo', views.photo, name='photo'),
     path('infotext_result', views.infotext_result.as_view(), name='infotext_result'),
     path('success_result', views.success_result, name='success_result'),
 path('exam_text_get_idea', views.exam_text_get_idea, name='exam_text_get_idea'),
     path('check_idea/<int:id>/', views.check_idea, name='check_idea'),
     path('session/', views.session, name='session'),
-    path('favorite/', views.Favorite.as_view(), name='favorite'),
-    path('user_rating/', views.UserRating.as_view(), name='user_rating'),
+    path('favorite', views.Favorite.as_view(), name='favorite'),
+    path('user_rating', views.UserRating.as_view(), name='user_rating'),
 
 
 

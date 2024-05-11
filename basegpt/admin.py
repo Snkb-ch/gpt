@@ -12,6 +12,7 @@ admin.site.register(Contact_us)
 admin.site.register(PromoCode)
 admin.site.register(PromoCodeUsage)
 admin.site.register(Crawl)
+admin.site.register(Result)
 
 
 from django.contrib import admin

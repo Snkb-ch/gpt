@@ -60,6 +60,7 @@ class Database:
         User.objects.filter(user_id=user_id).update(model=model)
     @sync_to_async
     def get_sub_multimodel(self, sub_id):
+
         return Subscriptions.objects.get(sub_id=sub_id).multimodel
 
     @sync_to_async
@@ -155,23 +156,35 @@ class Database:
         data_dict = model_to_dict(user_instance)
 
         return data_dict
+
+
+    def get_model_name(self, model, multi_k):
+        if model == 'gpt-4':
+            return 'gpt-4-turbo-2024-04-09', multi_k
+        elif model == 'gpt-3.5':
+            return 'gpt-3.5-turbo', multi_k
+        elif model == 'llama-3-70':
+            return 'meta-llama/Llama-3-70b-chat-hf', multi_k // 2
+
     @sync_to_async
     def get_model_config(self, user_id):
         multimodel_3 = False
         multimodel = Subscriptions.objects.get(sub_id=User.objects.get(user_id=user_id).sub_type.sub_id).multimodel
         multi_k = Subscriptions.objects.get(sub_id=User.objects.get(user_id=user_id).sub_type.sub_id).multi_k
+        model = User.objects.get(user_id=user_id).model
         if multimodel:
-            model = User.objects.get(user_id=user_id).model
-            if model == 'gpt-3.5-turbo-0125' or model == 'gpt-3.5-turbo' or model == 'gpt-3.5-turbo-1106':
-                multimodel_3 = True
-                model = 'gpt-3.5-turbo'
-            elif model == 'gpt-4' or model == 'gpt-4-turbo-2024-04-09':
-                model = 'gpt-4-turbo-2024-04-09'
 
-        else:
-            model = Subscriptions.objects.get(sub_id=User.objects.get(user_id=user_id).sub_type.sub_id).model
+            if model == 'gpt-3.5' or model == 'llama-3-70':
+                multimodel_3 = True
+
+
+
         custom_temp = User.objects.get(user_id=user_id).custom_temp
+        print(model)
+        model,  multi_k = self.get_model_name(model, multi_k)
+        print(model)
         data_dict = {'model': model, 'custom_temp': custom_temp, 'multimodel_3': multimodel_3, 'multi_k': multi_k}
+        print(data_dict)
         return data_dict
     @sync_to_async
     def get_price(self, sub_id):

@@ -1,4 +1,42 @@
+
+
 document.addEventListener('DOMContentLoaded', function() {
+document.getElementById('rawfile').addEventListener('change', function() {
+    var numberOfFiles = this.files.length; // Get the number of files selected
+    var priceElement = document.getElementById('gen'); // Get the price element
+    if (this.files.length > 10) {
+
+    // clear input
+    this.value = '';
+
+     const alertBox = document.createElement('div');
+    alertBox.textContent = 'Максимальное количество файлов 10'; // Текст сообщения
+
+    alertBox.style.position = 'fixed'; // Фиксированное позиционирование
+    alertBox.style.top = '30%'; // Отступ сверху
+    alertBox.style.left = '50%'; // Отступ слева
+    alertBox.style.transform = 'translate(-50%, -50%)'; // Центрирование
+    alertBox.style.padding = '20px'; // Отступы внутри блока
+    alertBox.style.backgroundColor = '#ff5c5c'; // Красный фон
+    alertBox.style.color = 'white'; // Белый цвет текста
+    alertBox.style.fontSize = '16px'; // Размер шрифта
+    alertBox.style.borderRadius = '10px'; // Скругленные углы
+    alertBox.style.boxShadow = '0px 0px 10px rgba(0,0,0,0.5)'; // Тень
+    alertBox.style.zIndex = '1000'; // Z-индекс
+
+    document.body.appendChild(alertBox); // Добавляем элемент в тело документа
+
+    // Удаляем элемент через 5 секунд
+    setTimeout(() => {
+        document.body.removeChild(alertBox);
+    }, 5000);
+
+    }
+    else {
+
+    priceElement.textContent = 'Сгенерировать ' + (28 + 2 * numberOfFiles) + ' ₽'; }
+     // Calculate and display the price
+});
 //  function sendRequest() {
 //
 //
@@ -69,8 +107,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
       //get id of textarea #rawtext
         var rawtext = document.getElementById('rawtext');
-        var audience = document.getElementById('audience');
-        var platform = document.getElementById('platform');
+        // file from input with rawfile id
+
+
         if (rawtext.value === '') {
 
             rawtext.placeholder = 'Обязательное поле. Заполните описание вашего продукта или услуги';
@@ -82,35 +121,38 @@ document.addEventListener('DOMContentLoaded', function() {
       loaderDiv.style.display = 'block';
 
       overlayDiv.style.display = 'block';
-        // get type 'type', $('input[name=options]:checked').val()
-        var type = document.querySelector('input[name=options]:checked').value;
-        //log type and rawtext
-        console.log('type');
-        console.log(type);
 
-        console.log(rawtext.value);
+
+
 
         // send
 
-      fetch('/infotext', {
-        method: 'POST',
-        body: JSON.stringify({
-    'rawtext': rawtext.value,
-    'type': type,
-    'audience': audience.value,
-    'platform': platform.value
-  }),
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
-        },
-      })
+        var fileInput = document.getElementById('rawfile');
+        var files = fileInput.files; // Получаем массив файлов
+
+        const formData = new FormData(); // Создание объекта FormData
+        formData.append('text', rawtext.value); // Добавление текстовых данных
+
+        // Цикл для добавления каждого файла в formData
+        for (let i = 0; i < files.length; i++) {
+          formData.append('images', files[i]); // Обратите внимание на 'images' во множественном числе
+        }
+
+
+  fetch('/photo_api', {
+    method: 'POST',
+    body: formData, // Использование FormData в теле запроса
+    headers: {
+      'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+    },
+  })
       .then(response => {
         return response.json(); // This converts the response to JSON
       })
       .then(data => {
         if (data['status'] === 'ok') {
-
+            console.log('ok');
+            console.log(data['result']);
 //          sendRequest();
           document.getElementById("overlay").style.display = "none";
           loaderDiv.style.display = 'none';
@@ -120,18 +162,6 @@ document.addEventListener('DOMContentLoaded', function() {
             var responsearea = document.getElementById('resultarea');
             var responseDiv = document.getElementById('textarea-result');
             var rating = document.getElementById('rating');
-
-//            rating input to 0
-            var ratingRadios = document.querySelectorAll('input[name="rate"]');
-            ratingRadios.forEach(radio => {
-                radio.checked = false;
-
-            }
-            );
-            //bookmark to false
-            var bookmarkCheckbox = document.getElementById('bookmark');
-            bookmarkCheckbox.checked = false;
-
 
             responsearea.style.display = 'block';
             responseDiv.style.display = 'flex';

@@ -5,6 +5,9 @@ import os
 import sys
 import traceback
 from datetime import datetime, timedelta
+
+from dotenv import load_dotenv
+
 from db import Database
 import django
 from db_analytics import *
@@ -40,15 +43,22 @@ from calendar import monthrange
 from tenacity import retry, stop_after_attempt, wait_fixed, retry_if_exception_type
 
 # Models can be found here: https://platform.openai.com/docs/models/overview
-GPT_3_MODELS = ('gpt-3.5-turbo-1106', "gpt-3.5-turbo", "gpt-3.5-turbo-0613","gpt-3.5-turbo-1106" , "gpt-3.5-turbo-0125")
+GPT_3_MODELS = ('gpt-3.5-turbo-1106', "gpt-3.5-turbo", "gpt-3.5-turbo-0613","gpt-3.5-turbo-1106" , "gpt-3.5-turbo-0125","meta-llama/Llama-3-70b-chat-hf")
 GPT_3_16K_MODELS = ("gpt-3.5-turbo-16k", "gpt-3.5-turbo-16k-0613" , "gpt-3.5-turbo-0125", "gpt-3.5-turbo")
 GPT_4_MODELS = ("gpt-4", "gpt-4-0314", "gpt-4-0613", "gpt-4-1106-preview", "gpt-4-vision-preview", "gpt-4-turbo","gpt-4-turbo-2024-04-09")
 GPT_4_32K_MODELS = ("gpt-4-32k", "gpt-4-32k-0314", "gpt-4-32k-0613")
+LLAMA_MODELS= ("meta-llama/Llama-3-70b-chat-hf")
 GPT_ALL_MODELS = GPT_3_MODELS + GPT_3_16K_MODELS + GPT_4_MODELS + GPT_4_32K_MODELS
 
 def get_price(sub_name):
     price = {}
-    if sub_name in GPT_3_MODELS:
+
+    if sub_name in LLAMA_MODELS:
+        price['input']= 0.0000009
+        price['output'] = 0.0000009
+
+
+    elif sub_name in GPT_3_MODELS:
         price['input']= 0.000001
         price['output'] = 0.000002
     elif sub_name in GPT_4_MODELS:
@@ -66,15 +76,20 @@ def default_max_tokens(model: str) -> int:
     :param model: The model name
     :return: The default number of max tokens
     """
-    base = 1200
-    if model in GPT_3_MODELS:
+    base = 1000
+    if model in LLAMA_MODELS:
+        return base
+    elif model in GPT_3_MODELS:
         return base
     elif model in GPT_4_MODELS:
-        return base * 2
+        return base
     elif model in GPT_3_16K_MODELS:
-        return base * 4
+        return base
     elif model in GPT_4_32K_MODELS:
-        return base * 8
+
+
+        return base
+
 
 
 # Load translations
@@ -154,7 +169,7 @@ class OpenAIHelper:
 
             image_url = response.data[0].url
         except Exception as e:
-            print(traceback.format_exc())
+            logging.error(f"Error generating image: {e}")
             image_url = False
 
 
@@ -182,12 +197,12 @@ class OpenAIHelper:
             answer = ''
             async for item in response:
 
-                if 'choices' not in item or len(item.choices) == 0:
-                    continue
-                delta = item.choices[0].delta
-                if 'content' in delta:
-                    answer += delta.content
-                    yield answer, 'not_finished'
+
+
+                answer += item.choices[0].delta.content or ""
+                yield answer, 'not_finished'
+
+
             answer = answer.strip()
 
             tokens_in_answer = self.count_tokens([{"role": "assistant", "content": answer}], model_config['model'])
@@ -211,8 +226,12 @@ class OpenAIHelper:
 
 
                     await self.db_statistic_by_day.add(chat_id, input_tokens, tokens_in_answer, price)
+
+                    user_model = await self.db.get_user_model(chat_id)
+                    await  self.db_analytics_for_sessions.add_sub_st_model(chat_id, user_model, input_tokens, tokens_in_answer, 1)
+
             except Exception as e:
-                print(traceback.format_exc())
+                print(e)
                 pass
 
             self.add_to_history(chat_id, role="assistant", content=answer)
@@ -232,15 +251,15 @@ class OpenAIHelper:
             yield answer, tokens_used
 
         else:
-            print('ошибка при обработке запроса')
+            logging.error(f"Error generating response: {response}")
             yield 'Произошла ошибка при обработке запроса, приносим извенения', 0
 
-    @retry(
-        reraise=True,
-        retry=retry_if_exception_type(openai.error.RateLimitError),
-        wait=wait_fixed(20),
-        stop=stop_after_attempt(3)
-    )
+    # @retry(
+    #     reraise=True,
+    #     retry=retry_if_exception_type(openai.error.RateLimitError),
+    #     wait=wait_fixed(20),
+    #     stop=stop_after_attempt(3)
+    # )
     async def __common_get_chat_response(self, chat_id: int, query,model_config:dict, stream=False):
         """
         Request a response from the GPT model.
@@ -292,7 +311,7 @@ class OpenAIHelper:
 
 
             except Exception as e:
-                print(traceback.format_exc())
+                logging.error(f"Error summarising chat history: {e}")
                 pass
 
 
@@ -319,17 +338,39 @@ class OpenAIHelper:
 
 
             try:
-                print(model_config['model'])
-                result =await openai.ChatCompletion.acreate(
+                load_dotenv()
+                logging.info(f"Model: {model_config['model']}")
+
+                if model_config['model'] in LLAMA_MODELS:
+                    client = openai.AsyncOpenAI(
+                        api_key=os.environ.get("TOGETHER_API_KEY"),
+                        base_url="https://api.together.xyz/v1",
+                        # api_key=os.environ.get("OPENAI_API_KEY"),
+                    )
+                else:
+                    client = openai.AsyncOpenAI(
+                        api_key=os.environ.get("OPENAI_API_KEY"),
+                    )
+
+
+
+
+
+
+                result =await client.chat.completions.create(
                     model=model_config['model'],
                     messages=self.conversations[chat_id],
                     temperature=model_config['custom_temp'],
                     n=self.config['n_choices'],
                     max_tokens=int(max_tokens),
-                    presence_penalty=self.config['presence_penalty'],
-                    frequency_penalty=self.config['frequency_penalty'],
-                    stream=stream
+
+                    stream=True,
+
                 )
+
+
+
+
 
                 if model_config['multimodel_3'] == True:
                     await self.db.update_used_tokens(chat_id, int(input_tokens/model_config['multi_k']))
@@ -343,6 +384,8 @@ class OpenAIHelper:
 
 
 
+
+
                 return False, 0
 
 
@@ -350,11 +393,11 @@ class OpenAIHelper:
             raise e
 
         except openai.error.InvalidRequestError as e:
-            print(e)
+
             raise Exception(f"⚠️ _{localized_text('openai_invalid', bot_language)}._ ⚠️\n{str(e)}") from e
 
         except Exception as e:
-            print(traceback.format_exc())
+
             raise Exception
 
 
@@ -434,6 +477,8 @@ class OpenAIHelper:
 
     def __max_model_tokens(self, model):
         base = 16000
+        if model in LLAMA_MODELS:
+            return 8000
         if model in GPT_3_MODELS:
             return base
         if model in GPT_3_16K_MODELS:
@@ -442,6 +487,8 @@ class OpenAIHelper:
             return 128000
         if model in GPT_4_32K_MODELS:
             return base * 8
+
+
         raise NotImplementedError(
             f"Max tokens for model {self.config['model']} is not implemented yet."
         )
@@ -461,7 +508,7 @@ class OpenAIHelper:
 
         except KeyError as e:
 
-            encoding = tiktoken.get_encoding("gpt-3.5-turbo")
+            encoding = tiktoken.encoding_for_model('gpt-3.5-turbo')
 
         if model in GPT_3_MODELS + GPT_3_16K_MODELS:
             tokens_per_message = 4  # every message follows <|start|>{role/name}\n{content}<|end|>\n
@@ -485,7 +532,7 @@ class OpenAIHelper:
 
                 except Exception as e:
 
-                    print(e)
+                    logging.error(f"Error encoding message: {e}")
                 if key == "name":
                     num_tokens += tokens_per_name
         num_tokens += 3  # every reply is primed with <|start|>assistant<|message|>
