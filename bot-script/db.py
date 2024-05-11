@@ -185,11 +185,11 @@ class Database:
 
 
         custom_temp = User.objects.get(user_id=user_id).custom_temp
-
-        model,  multi_k = self.get_model_name(model, multi_k)
         sub_name = User.objects.get(user_id=user_id).sub_type.sub_name
         if sub_name == 'trial':
             model = 'gpt-3.5'
+        model,  multi_k = self.get_model_name(model, multi_k)
+
         data_dict = {'model': model, 'custom_temp': custom_temp, 'multimodel_3': multimodel_3, 'multi_k': multi_k}
         print(data_dict)
         return data_dict
