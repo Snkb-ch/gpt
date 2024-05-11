@@ -227,6 +227,18 @@ class Database:
         # list of users_id
 
         return list(User.objects.filter(blocked = False).values_list('user_id', flat=True))
+    @sync_to_async
+    def get_act_users(self):
+        # list of users_id with sub_name != 'free' and 'trial'
+        sub_id = Subscriptions.objects.filter(~Q(sub_name='free') & ~Q(sub_name='trial')).values_list('sub_id', flat=True)
+        list = []
+        for i in sub_id:
+            list.append(User.objects.filter(sub_type=i, blocked = False).values_list('user_id', flat=True   ))
+
+        list = [item for sublist in list for item in sublist]
+        return list
+
+
 
     @sync_to_async
     def get_sub_ending_users(self):

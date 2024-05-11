@@ -820,6 +820,14 @@ class ChatGPTTelegramBot:
             message_thread_id=get_thread_id(update),
             text='Введите сообщение',
         )
+    async def send_to_act(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        if not await  self.db.is_admin(update.message.from_user.id):
+            return
+        self.status[update.message.from_user.id] = 'admin_message_to_act'
+        await update.message.reply_text(
+            message_thread_id=get_thread_id(update),
+            text='Введите сообщение',
+        )
 
     async def send_reminder(self):
 
@@ -1846,6 +1854,26 @@ GPT-3.5     70%
                     await self.send_to_admin('send message to all users' + '\n' + str(k) + 'error: ' + str(err))
                     return
 
+                elif self.status[user_id] == 'admin_message_to_act':
+
+                    self.status[user_id] = 'prompt'
+                    users = await self.db.get_act_users()
+                    k = 0
+                    err =0
+                    for user in users:
+                        try:
+                            await self.bot.send_message(chat_id=user, text=update.message.text,parse_mode = 'HTML')
+                            k+=1
+                        except Exception as e:
+                            err+=1
+                            await self.db.set_blocked_user(user)
+
+                            pass
+
+                    print(k)
+                    await self.send_to_admin('send message to all users' + '\n' + str(k) + 'error: ' + str(err))
+                    return
+
                 elif not await self.is_active(update, context, user_id):
                     await self.send_end_of_subscription_message(update, context)
                     return
@@ -2119,6 +2147,7 @@ GPT-3.5     70%
         application.add_handler(CommandHandler('cancel', self.cancel))
         application.add_handler(CommandHandler('role', self.role))
         application.add_handler(CommandHandler('send_to_all', self.send_to_all))
+        application.add_handler(CommandHandler('send_to_act', self.send_to_act))
 
         application.add_handler(CommandHandler('admin', self.admin))
         application.add_handler(CommandHandler('save', self.save))
