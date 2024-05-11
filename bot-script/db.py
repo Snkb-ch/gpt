@@ -168,6 +168,11 @@ class Database:
 
     @sync_to_async
     def get_model_config(self, user_id):
+
+
+
+
+
         multimodel_3 = False
         multimodel = Subscriptions.objects.get(sub_id=User.objects.get(user_id=user_id).sub_type.sub_id).multimodel
         multi_k = Subscriptions.objects.get(sub_id=User.objects.get(user_id=user_id).sub_type.sub_id).multi_k
@@ -180,9 +185,11 @@ class Database:
 
 
         custom_temp = User.objects.get(user_id=user_id).custom_temp
-        print(model)
+
         model,  multi_k = self.get_model_name(model, multi_k)
-        print(model)
+        sub_name = User.objects.get(user_id=user_id).sub_type.sub_name
+        if sub_name == 'trial':
+            model = 'gpt-3.5'
         data_dict = {'model': model, 'custom_temp': custom_temp, 'multimodel_3': multimodel_3, 'multi_k': multi_k}
         print(data_dict)
         return data_dict
