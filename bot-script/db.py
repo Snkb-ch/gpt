@@ -164,7 +164,7 @@ class Database:
         elif model == 'gpt-3.5':
             return 'gpt-3.5-turbo', multi_k
         elif model == 'llama-3-70':
-            return 'meta-llama/Llama-3-70b-chat-hf', multi_k // 2
+            return 'meta-llama/Llama-3-70b-chat-hf', 5
 
     @sync_to_async
     def get_model_config(self, user_id):
