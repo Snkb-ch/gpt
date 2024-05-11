@@ -355,18 +355,20 @@ class OpenAIHelper:
 
 
 
+                try:
 
+                    result =await client.chat.completions.create(
+                        model=model_config['model'],
+                        messages=self.conversations[chat_id],
+                        temperature=model_config['custom_temp'],
+                        n=self.config['n_choices'],
+                        max_tokens=int(max_tokens),
 
-                result =await client.chat.completions.create(
-                    model=model_config['model'],
-                    messages=self.conversations[chat_id],
-                    temperature=model_config['custom_temp'],
-                    n=self.config['n_choices'],
-                    max_tokens=int(max_tokens),
+                        stream=True,
 
-                    stream=True,
-
-                )
+                    )
+                except Exception as e:
+                    logging.exception(e)
 
 
 
