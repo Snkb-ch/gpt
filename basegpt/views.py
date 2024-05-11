@@ -133,8 +133,13 @@ class photo_api(APIView):
                 # Теперь image_base64 содержит изображение в формате base64, которое можно передать в JSON или сохранить
                     return Response(data={'status': 'ok', 'result': response.choices[0].message.content, 'id': res_id},
                                     status=status.HTTP_200_OK)
+
+            else:
+                return JsonResponse({'status': 'error', 'result': 'Произошла ошибка, попробуйте позже'}, status=400)
+
         except Exception as e:
             logging.error(e)
+
             return JsonResponse({'status': 'error', 'result': 'Произошла ошибка, попробуйте позже'}, status=400)
 
 
