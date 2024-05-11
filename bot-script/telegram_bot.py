@@ -749,7 +749,7 @@ class ChatGPTTelegramBot:
 
     def change_model_of_sub(self, sub_name,curent_model):
 
-        print(sub_name, curent_model)
+
 
         if sub_name in ['Multi Light', 'Multi PRO', 'Multi Standart', 'ultimate admin']:
             if curent_model in ['gpt-3.5']:
