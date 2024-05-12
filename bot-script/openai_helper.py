@@ -154,7 +154,13 @@ class OpenAIHelper:
 
     async def generate_image(self, quality, size,  prompt):
         try:
-            response =await openai.Image.acreate(
+
+            client = AsyncOpenAI(
+                api_key=os.environ.get("OPENAI_API_KEY"),
+            )
+
+
+            response =await client.images.generate(
 
                     model="dall-e-3",
                     prompt=prompt,

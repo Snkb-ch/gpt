@@ -1780,6 +1780,9 @@ GPT-3.5     70%
                     price = res['price']
                     tokens = res['tokens']
 
+
+
+
                     url = await self.openai.generate_image( quality, size, prompt)
                     if url == False:
                         await update.message.reply_text(
@@ -1794,6 +1797,8 @@ GPT-3.5     70%
                             photo=url,
                             message_thread_id=get_thread_id(update),
                             )
+
+
 
                             await self.db.update_used_tokens(user_id, tokens)
                         except Exception as e:
