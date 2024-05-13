@@ -160,7 +160,7 @@ class Database:
 
     def get_model_name(self, model, multi_k):
         if model == 'gpt-4':
-            return 'gpt-4-turbo-2024-04-09', multi_k
+            return 'gpt-4o', multi_k
         elif model == 'gpt-3.5':
             return 'gpt-3.5-turbo', multi_k
         elif model == 'llama-3-70':
