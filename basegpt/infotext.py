@@ -17,7 +17,7 @@ from .models import  *
 
 load_dotenv()
 
-model = "gpt-4-turbo-2024-04-09"
+model = "gpt-4o"
 # model = "meta-llama/Llama-3-70b-chat-hf"
 openai_api = os.environ.get("OPENAI_API_KEY_AD")
 # model = "gpt-3.5-turbo"
