@@ -353,6 +353,7 @@ class OpenAIHelper:
                         base_url="https://api.together.xyz/v1",
                         # api_key=os.environ.get("OPENAI_API_KEY"),
                     )
+                    model_config['custom_temp'] = 0.3
                 else:
                     client = AsyncOpenAI(
                         api_key=os.environ.get("OPENAI_API_KEY"),
@@ -362,6 +363,7 @@ class OpenAIHelper:
 
 
                 try:
+
 
                     result =await client.chat.completions.create(
                         model=model_config['model'],
