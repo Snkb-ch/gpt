@@ -76,7 +76,7 @@ def default_max_tokens(model: str) -> int:
     :param model: The model name
     :return: The default number of max tokens
     """
-    base = 1000
+    base = 800
     if model in LLAMA_MODELS:
         return base
     elif model in GPT_3_MODELS:
