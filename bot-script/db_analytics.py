@@ -67,6 +67,9 @@ class DBanalytics_for_sub_stat():
 
     @sync_to_async
     def new_sub_stats(self, user_id, sub_type, order_id_payment = None, income = 0):
+
+
+
         Subscriptions_statistics.objects.create(
             user_id = user_id,
             sub_type = Subscriptions.objects.get(sub_id=sub_type),
@@ -74,6 +77,7 @@ class DBanalytics_for_sub_stat():
             order_id_payment = order_id_payment,
             income = income
         )
+
 
     @sync_to_async
     def get_sub_stats_id(self, user_id):

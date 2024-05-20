@@ -164,7 +164,7 @@ class Database:
         elif model == 'gpt-3.5':
             return 'gpt-3.5-turbo', multi_k
         elif model == 'llama-3-70':
-            return 'meta-llama/Llama-3-70b-chat-hf', 5
+            return 'meta-llama/Llama-3-70b-chat-hf', 3
 
     @sync_to_async
     def get_model_config(self, user_id):
@@ -172,14 +172,18 @@ class Database:
 
 
 
-
+        sub_name = User.objects.get(user_id=user_id).sub_type.sub_name
         multimodel_3 = False
         multimodel = Subscriptions.objects.get(sub_id=User.objects.get(user_id=user_id).sub_type.sub_id).multimodel
         multi_k = Subscriptions.objects.get(sub_id=User.objects.get(user_id=user_id).sub_type.sub_id).multi_k
         model = User.objects.get(user_id=user_id).model
         if multimodel:
 
-            if model == 'gpt-3.5' or model == 'llama-3-70':
+            if sub_name == 'Multi Mini' and model == 'gpt-3.5':
+                multimodel_3 = True
+
+
+            elif model == 'gpt-3.5' or model == 'llama-3-70':
                 multimodel_3 = True
 
 
@@ -188,7 +192,13 @@ class Database:
         sub_name = User.objects.get(user_id=user_id).sub_type.sub_name
         if sub_name == 'trial':
             model = 'gpt-3.5'
+
+
+
         model,  multi_k = self.get_model_name(model, multi_k)
+        if sub_name == 'Multi Mini':
+            if model == 'gpt-3.5-turbo':
+                multi_k = 1.6
 
         data_dict = {'model': model, 'custom_temp': custom_temp, 'multimodel_3': multimodel_3, 'multi_k': multi_k}
 
