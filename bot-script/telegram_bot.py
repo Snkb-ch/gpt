@@ -621,10 +621,10 @@ class ChatGPTTelegramBot:
             message_thread_id=get_thread_id(update),
             text='Выберите качество',
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton('Standard 1024x1024 - 2000 токенов', callback_data='st-1')],
+                [InlineKeyboardButton('Standard 1024x1024 - 3000 токенов', callback_data='st-1')],
                 # [InlineKeyboardButton('Standard 1024x1792 - 1000 токенов', callback_data='st-2')],
                 # [InlineKeyboardButton('Standard 1792x1024 - 1000 токенов', callback_data='st-3')],
-                [InlineKeyboardButton('HD 1024x1024 - 4000 токенов', callback_data='hd-1')],
+                [InlineKeyboardButton('HD 1024x1024 - 6000 токенов', callback_data='hd-1')],
                 # [InlineKeyboardButton('HD 1024x1792 - 1000 токенов', callback_data='hd-2')],
                 # [InlineKeyboardButton('HD 1792x1024 - 1000 токенов', callback_data='hd-3')],
             ])
