@@ -340,7 +340,7 @@ def red1_for_unique_text(text):
             temperature=1,
             max_tokens=2048,
         )
-        parts[i] = ans.choices[0]['message']['content']
+        parts[i] = ans.choices[0].message.content
         print(ans)
 
     response_text = ''.join(parts)
@@ -369,7 +369,7 @@ def red2_for_unique_text(text):
             temperature=1,
             max_tokens=2048,
         )
-        parts[i] = ans.choices[0]['message']['content']
+        parts[i] = ans.choices[0].message.content
 
     response_text = ''.join(parts)
 
@@ -397,7 +397,7 @@ def red3_for_unique_text(text):
             temperature=1,
             max_tokens=2048,
         )
-        parts[i] = ans.choices[0]['message']['content']
+        parts[i] = ans.choices[0].message.content
 
     response_text = ''.join(parts)
 
