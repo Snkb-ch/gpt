@@ -191,11 +191,11 @@ class Database:
         user_model = User.objects.get(user_id=user_id).model
         models_list = Subscriptions_models.objects.filter(sub_id=sub_id).values_list('model', flat=True)
         models_list = list(models_list)
-        print(models_list)
+
 
         models_list = Models.objects.filter(id__in=models_list).values_list('model_name_user', flat=True)
         models_list = list(models_list)
-        print(models_list)
+
 
         if user_model in models_list:
             index = models_list.index(user_model)
