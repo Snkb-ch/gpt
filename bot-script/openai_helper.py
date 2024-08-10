@@ -43,27 +43,33 @@ from calendar import monthrange
 from tenacity import retry, stop_after_attempt, wait_fixed, retry_if_exception_type
 
 # Models can be found here: https://platform.openai.com/docs/models/overview
-GPT_3_MODELS = ('gpt-3.5-turbo-1106', "gpt-3.5-turbo", "gpt-3.5-turbo-0613","gpt-3.5-turbo-1106" , "gpt-3.5-turbo-0125","meta-llama/Llama-3-70b-chat-hf")
+GPT_3_MODELS = ('gpt-3.5-turbo-1106', "gpt-3.5-turbo", "gpt-3.5-turbo-0613","gpt-3.5-turbo-1106" , "gpt-3.5-turbo-0125")
 GPT_3_16K_MODELS = ("gpt-3.5-turbo-16k", "gpt-3.5-turbo-16k-0613" , "gpt-3.5-turbo-0125", "gpt-3.5-turbo")
-GPT_4_MODELS = ("gpt-4", "gpt-4-0314", "gpt-4-0613", "gpt-4-1106-preview", "gpt-4-vision-preview", "gpt-4-turbo","gpt-4-turbo-2024-04-09", "gpt-4o")
+GPT_4_MODELS = ("gpt-4", "gpt-4-0314", "gpt-4-0613", "gpt-4-1106-preview", "gpt-4-vision-preview", "gpt-4-turbo","gpt-4-turbo-2024-04-09", "gpt-4o", "gpt-4o-mini")
 GPT_4_32K_MODELS = ("gpt-4-32k", "gpt-4-32k-0314", "gpt-4-32k-0613")
-LLAMA_MODELS= ("meta-llama/Llama-3-70b-chat-hf")
+LLAMA_MODELS_70= ("meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo", )
+LLAMA_MODELS_400= ("meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo", )
+
 GPT_ALL_MODELS = GPT_3_MODELS + GPT_3_16K_MODELS + GPT_4_MODELS + GPT_4_32K_MODELS
 
 def get_price(sub_name):
     price = {}
 
-    if sub_name in LLAMA_MODELS:
-        price['input']= 0.0000009
-        price['output'] = 0.0000009
+    if sub_name in LLAMA_MODELS_70:
+        price['input']= 0.00000088
+        price['output'] = 0.00000088
+
+    if sub_name in LLAMA_MODELS_400:
+        price['input']= 0.00005
+        price['output'] = 0.00005
 
 
     elif sub_name in GPT_3_MODELS:
         price['input']= 0.000001
         price['output'] = 0.000002
     elif sub_name in GPT_4_MODELS:
-        price['input']= 0.00001
-        price['output'] = 0.00003
+        price['input']= 0.000005
+        price['output'] = 0.000015
 
 
 
@@ -77,7 +83,7 @@ def default_max_tokens(model: str) -> int:
     :return: The default number of max tokens
     """
     base = 800
-    if model in LLAMA_MODELS:
+    if model in LLAMA_MODELS_70 + LLAMA_MODELS_400:
         return base
     elif model in GPT_3_MODELS:
         return base
@@ -213,12 +219,8 @@ class OpenAIHelper:
 
             tokens_in_answer = self.count_tokens([{"role": "assistant", "content": answer}], model_config['model'])
             sub_name = await self.db.get_sub_name_from_user(chat_id)
-            if model_config['multimodel_3'] == True:
-                await self.db.update_used_tokens(chat_id, int(tokens_in_answer/model_config['multi_k']))
-            else:
-                await self.db.update_used_tokens(chat_id, tokens_in_answer)
 
-
+            await self.db.update_used_tokens(chat_id, int(tokens_in_answer/model_config['multi_k']))
 
             sub_id = await self.db.get_sub_type(chat_id)
             sub_name = await self.db.get_sub_name_from_user(chat_id)
@@ -247,8 +249,8 @@ class OpenAIHelper:
 
             if self.config['show_usage']:
 
-                if model_config['multimodel_3'] == True:
-                    tokens_in_history = int(tokens_in_history/model_config['multi_k'])
+
+                tokens_in_history = int(tokens_in_history/model_config['multi_k'])
 
                 remaining_tokens = await self.db.get_max_tokens(chat_id) - await self.db.get_used_tokens(chat_id)
 
@@ -321,12 +323,10 @@ class OpenAIHelper:
                 pass
 
 
-            if model_config['multimodel_3'] == True:
 
-                available_tokens = await self.db.get_max_tokens(chat_id)*model_config['multi_k'] - await self.db.get_used_tokens(chat_id)*model_config['multi_k']
 
-            else:
-                available_tokens = await self.db.get_max_tokens(chat_id) - await self.db.get_used_tokens(chat_id)
+            available_tokens = await self.db.get_max_tokens(chat_id)*model_config['multi_k'] - await self.db.get_used_tokens(chat_id)*model_config['multi_k']
+
             if available_tokens < default_max_tokens(model=model_config['model']) and available_tokens > 10:
                 max_tokens = available_tokens
 
@@ -347,20 +347,17 @@ class OpenAIHelper:
                 load_dotenv()
                 logging.info(f"Model: {model_config['model']}")
 
-                if model_config['model'] in LLAMA_MODELS:
+                if model_config['model'] in LLAMA_MODELS_70 + LLAMA_MODELS_400:
                     client = AsyncOpenAI(
                         api_key=os.environ.get("TOGETHER_API_KEY"),
                         base_url="https://api.together.xyz/v1",
                         # api_key=os.environ.get("OPENAI_API_KEY"),
                     )
-                    model_config['custom_temp'] = 0.3
+                    model_config['custom_temp'] = 0.7
                 else:
                     client = AsyncOpenAI(
                         api_key=os.environ.get("OPENAI_API_KEY"),
                     )
-
-
-
 
                 try:
 
@@ -382,10 +379,9 @@ class OpenAIHelper:
 
 
 
-                if model_config['multimodel_3'] == True:
-                    await self.db.update_used_tokens(chat_id, int(input_tokens/model_config['multi_k']))
-                else:
-                    await self.db.update_used_tokens(chat_id, input_tokens)
+
+                await self.db.update_used_tokens(chat_id, int(input_tokens/model_config['multi_k']))
+
 
 
 
@@ -488,8 +484,10 @@ class OpenAIHelper:
 
     def __max_model_tokens(self, model):
         base = 16000
-        if model in LLAMA_MODELS:
-            return 8000
+        if model in LLAMA_MODELS_70:
+            return 128000
+        if model in LLAMA_MODELS_400:
+            return 4096
         if model in GPT_3_MODELS:
             return base
         if model in GPT_3_16K_MODELS:
@@ -521,7 +519,7 @@ class OpenAIHelper:
 
             encoding = tiktoken.encoding_for_model('gpt-3.5-turbo')
 
-        if model in GPT_3_MODELS + GPT_3_16K_MODELS:
+        if model in GPT_3_MODELS + GPT_3_16K_MODELS + LLAMA_MODELS_70 + LLAMA_MODELS_400:
             tokens_per_message = 4  # every message follows <|start|>{role/name}\n{content}<|end|>\n
             tokens_per_name = -1  # if there's a name, the role is omitted
         elif model in GPT_4_MODELS + GPT_4_32K_MODELS:

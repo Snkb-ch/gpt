@@ -505,7 +505,7 @@ class ChatGPTTelegramBot:
 
 ✅ Дней: 3
 
-✅ Модель: GPT-3.5
+✅ Модель: GPT-4o-mini
 
 ✅ Токенов: 3000 в день
 
@@ -784,21 +784,21 @@ class ChatGPTTelegramBot:
 
             model = await self.db.get_user_model(user_id)
 
-            new_model = self.change_model_of_sub(await self.db.get_sub_name_from_user(user_id), model)
+            new_model = await self.db.set_next_model(sub_id, user_id)
 
-
-            if new_model:
-                await self.db.set_user_model(update.message.from_user.id, new_model)
-                await update.message.reply_text(
-                    message_thread_id=get_thread_id(update),
-                    text='Модель изменена на ' + new_model,
-                )
+            await update.message.reply_text(
+                message_thread_id=get_thread_id(update),
+                text='Модель изменена на ' + new_model,
+            )
 
         else:
             await update.message.reply_text(
                 message_thread_id=get_thread_id(update),
                 text='Ваша подписка не позволяет менять модель',
             )
+
+
+
 
     async def send_to_admin(self, text):
         try:
@@ -1087,12 +1087,12 @@ class ChatGPTTelegramBot:
 <blockquote>
 💰 <s><i>{prices_old[0]}</i></s> <b>{prices_new[0]} руб / 30 дней</b>
 
-⚙️ GPT-3.5, LLAMA-3
+⚙️ GPT-4-mini, LLAMA-3
 🔹 Доступно токенов при использовании:
 
-    <b>LLAMA-3</b>: 180 тыс.
+    <b>LLAMA-3</b>: 60 тыс.
     <i>или</i>
-    <b>GPT-3.5  </b>: 300 тыс. - <i>расход снижается ~ 1.5 раза</i>
+    <b>GPT-4-mini </b>: 300 тыс.
     
     
 </blockquote>
@@ -1106,9 +1106,9 @@ class ChatGPTTelegramBot:
 
     <b>GPT-4      </b>: 60 тыс.
     <i>или</i>
-    <b>LLAMA-3</b>: 180 тыс.
+    <b>LLAMA-3</b>: 60 тыс.
     <i>или</i>
-    <b>GPT-3.5  </b>: 300 тыс.
+    <b>GPT-4-mini  </b>: 300 тыс.
 
 🔹 Анализ фото
 🔹 Генерация до 20 изображений
@@ -1119,14 +1119,14 @@ class ChatGPTTelegramBot:
 <blockquote>
 💰 <s><i>{prices_old[2]}</i></s> <b>{prices_new[2]} руб / 30 дней</b>
 
-⚙️ <b>GPT-4</b>, GPT-3.5, DALLE-3,LLAMA-3
+⚙️ <b>GPT-4</b>, GPT-4-mini, DALLE-3,LLAMA-3
 🔹 Доступно токенов при использовании:
 
     <b>GPT-4      </b>: 120 тыс.
     <i>или</i>
-    <b>LLAMA-3</b>: 360 тыс.
+    <b>LLAMA-3</b>: 120 тыс.
     <i>или</i>
-    <b>GPT-3.5  </b>: 600 тыс.
+    <b>GPT-4-mini  </b>: 600 тыс.
 
 🔹 Анализ фото
 🔹 Генерация до 40 изображений
@@ -1137,14 +1137,14 @@ class ChatGPTTelegramBot:
 <blockquote>
 💰 <s><i>{prices_old[3]}</i></s> <b>{prices_new[3]} руб / 60 дней</b>
 
-⚙️ <b>GPT-4</b>, GPT-3.5, DALLE-3, LLAMA-3
+⚙️ <b>GPT-4</b>, GPT-4-mini, DALLE-3, LLAMA-3
 🔹 Доступно токенов при использовании: 
 
     <b>GPT-4      </b>: 300 тыс.
     <i>или</i>
-    <b>LLAMA-3</b>: 900 тыс.
+    <b>LLAMA-3</b>: 300 тыс.
     <i>или</i>
-    <b>GPT-3.5  </b>: 1,5 млн.
+    <b>GPT-4-mini  </b>: 1,5 млн.
 
 🔹 Анализ фото
 🔹 Генерация до 100 изображений
@@ -1153,13 +1153,13 @@ class ChatGPTTelegramBot:
 
 ⚙️ Менять модель командой /model
 
-📢  Переключив модель с GPT-4 на GPT-3.5 расход токенов снизится в 5 раз, а для LLAMA в 3 раза
+📢  Переключив модель с GPT-4 на GPT-4-mini расход токенов снизится в 5 раз, а для LLAMA останется без изменений
 
 <b>✨ Сравнение моделей:</b>
 <blockquote>
-GPT-4         86%
-LLAMA-3    82% 
-GPT-3.5     70%
+GPT-4         89%
+LLAMA-3    89% 
+GPT-4-mini     82%
 
 % — доля правильных ответов
 
@@ -1602,7 +1602,7 @@ GPT-3.5     70%
 
         if model_config is None:
             model_config = {'multimodel_3': False, 'multi_k': 1}
-        multimodel_3 = model_config['multimodel_3']
+        multimodel_3 = True
         multi_k = model_config['multi_k']
 
         if await self.db.get_sub_type(user_id) == 2:
@@ -1702,7 +1702,7 @@ GPT-3.5     70%
                     pass
                 model_name = await self.db.get_user_model(user_id)
 
-                if model_name != 'gpt-4':
+                if  model_name != 'gpt-4':
 
                     await update.message.reply_text(
                         message_thread_id=get_thread_id(update),
@@ -1939,6 +1939,7 @@ GPT-3.5     70%
 
 
                     model_config = await self.db.get_model_config(update.effective_chat.id)
+                    logging.info(model_config)
 
 
                     tokens_in_message = self.openai.count_tokens(([{"role": "user", "content": prompt}]), model_config['model'])

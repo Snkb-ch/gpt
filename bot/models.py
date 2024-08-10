@@ -34,7 +34,36 @@ class Subscriptions(models.Model):
         ]
 
     def __str__(self):
-        return str(self.sub_name)
+        return str(self.sub_name) + ' ' + str('For sale' if self.for_sale else 'Archive')
+
+
+class Models(models.Model):
+    model_name_user = models.CharField(max_length=100, null=True)
+    model_name  = models.CharField(max_length=100, null=True)
+    max_tokens =  models.IntegerField(default=4096, null=True)
+    model_k =  models.IntegerField(default=1, null=True)
+
+    objects = BotTGUserManager()
+
+    def __str__(self):
+        return str(self.model_name_user)
+
+class Subscriptions_models(models.Model):
+    sub = models.ForeignKey(Subscriptions, on_delete=models.CASCADE)
+    model = models.ForeignKey(Models, on_delete=models.CASCADE)
+    objects = BotTGUserManager()
+
+    def __str__(self):
+        return str(self.sub) + ' ' + str(self.model)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['sub', 'model'], name='subscriptions_models_pkey'),
+        ]
+
+
+
+    
 
 class User(models.Model):
     user_id = models.BigAutoField(primary_key=True)
@@ -49,7 +78,7 @@ class User(models.Model):
     reminder_date = models.DateField(null=True, blank=True)
     last_message = models.DateField(null=True, blank=True)
 
-    model = models.CharField(max_length=50, default='gpt-3.5', null=True)
+    model = models.CharField(max_length=50, default='gpt-4mini', null=True)
     admin = models.BooleanField(default=False, null=True)
     blocked = models.BooleanField(default=False, null=True)
 

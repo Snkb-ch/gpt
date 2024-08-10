@@ -54,6 +54,10 @@ admin.site.register(Subscriptions_statistics, BotAdmin)
 
 admin.site.register(AdminStats, BotAdmin)
 
+admin.site.register(Models, BotAdmin)
+
+admin.site.register(Subscriptions_models, BotAdmin)
+
 class CustomSearchFields(admin.SimpleListFilter):
     title = 'Для Поиска по полям'
     parameter_name = 'search_field'

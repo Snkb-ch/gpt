@@ -280,9 +280,7 @@ def get_info_text(context, user):
         #
         # search = search_stop_words(textv3)
         # iter.textv3 = textv3
-        # iter.v3_all_count = search['count_all']
-        # iter.v3_procent = search['procent']
-        # iter.v3_rating = search['score']
+
         iter.loops = i
         iter.save()
 

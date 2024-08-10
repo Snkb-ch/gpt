@@ -91,6 +91,17 @@ class Database:
     @sync_to_async
     def get_sub_name_from_user(self, user_id):
         return User.objects.get(user_id=user_id).sub_type.sub_name
+
+    @sync_to_async
+    def get_sub_name_from_user_mode(self, user_id):
+        model =  User.objects.get(user_id=user_id).model
+
+        if model == 'gpt-4':
+            return 'gpt-4o'
+        elif model == 'gpt-3.5':
+            return 'gpt-4o-mini'
+        elif model == 'llama-3-70':
+            return 'Llama-3'
     @sync_to_async
     def get_sub_name(self, sub_id):
         return Subscriptions.objects.get(sub_id=sub_id).sub_name
@@ -162,9 +173,44 @@ class Database:
         if model == 'gpt-4':
             return 'gpt-4o', multi_k
         elif model == 'gpt-3.5':
-            return 'gpt-3.5-turbo', multi_k
+            return 'gpt-4o-mini', multi_k
+
         elif model == 'llama-3-70':
-            return 'meta-llama/Llama-3-70b-chat-hf', 3
+            return 'meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo',  multi_k
+        elif model == 'llama-3-400':
+            return 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo',  multi_k
+
+
+    # @sync_to_async
+    # def get_sub_models(self, sub_id):
+    #     models_names_list = Subscriptions_models.objects.filter(sub_id=sub_id).values_
+    #     return list(models_list)
+
+    @sync_to_async
+    def set_next_model(self, sub_id, user_id):
+        user_model = User.objects.get(user_id=user_id).model
+        models_list = Subscriptions_models.objects.filter(sub_id=sub_id).values_list('model', flat=True)
+        models_list = list(models_list)
+        print(models_list)
+
+        models_list = Models.objects.filter(id__in=models_list).values_list('model_name_user', flat=True)
+        models_list = list(models_list)
+        print(models_list)
+
+        if user_model in models_list:
+            index = models_list.index(user_model)
+            if index == len(models_list) - 1:
+                model = models_list[0]
+            else:
+                model = models_list[index + 1]
+        else:
+            model = models_list[0]
+        User.objects.filter(user_id=user_id).update(model=model)
+
+        return model
+
+
+
 
     @sync_to_async
     def get_model_config(self, user_id):
@@ -173,36 +219,37 @@ class Database:
 
 
         sub_name = User.objects.get(user_id=user_id).sub_type.sub_name
-        multimodel_3 = False
-        multimodel = Subscriptions.objects.get(sub_id=User.objects.get(user_id=user_id).sub_type.sub_id).multimodel
-        multi_k = Subscriptions.objects.get(sub_id=User.objects.get(user_id=user_id).sub_type.sub_id).multi_k
+        user_sub_id = User.objects.get(user_id=user_id).sub_type.sub_id
         model = User.objects.get(user_id=user_id).model
-        if multimodel:
+        models_in_sub = Subscriptions_models.objects.filter(sub_id=user_sub_id).values_list('model', flat=True)
+        models_in_sub = list(models_in_sub)
+        models_in_sub_names = Models.objects.filter(id__in=models_in_sub).values_list('model_name_user', flat=True)
+        models_in_sub_names = list(models_in_sub_names)
 
-            if sub_name == 'Multi Mini' and model == 'gpt-3.5':
-                multimodel_3 = True
+        # model that in models_in_sub_names
 
+        if model in models_in_sub_names:
+            model_name = model
 
-            elif model == 'gpt-3.5' or model == 'llama-3-70':
-                multimodel_3 = True
+        else:
+            model_name = models_in_sub_names[0]
+            User.objects.filter(user_id=user_id).update(model=model_name)
+        # fins model  that model id in models_in_sub and in models_in_sub_names
+        model = Models.objects.get(model_name_user=model_name, id__in=models_in_sub)
 
 
 
         custom_temp = User.objects.get(user_id=user_id).custom_temp
-        sub_name = User.objects.get(user_id=user_id).sub_type.sub_name
-        if sub_name == 'trial':
-            model = 'gpt-3.5'
+        conf = {
+            'model': model.model_name,
+            'max_tokens': model.max_tokens,
+            'multi_k': model.model_k,
+            'custom_temp': custom_temp,
 
 
+        }
 
-        model,  multi_k = self.get_model_name(model, multi_k)
-        if sub_name == 'Multi Mini':
-            if model == 'gpt-3.5-turbo':
-                multi_k = 1.6
-
-        data_dict = {'model': model, 'custom_temp': custom_temp, 'multimodel_3': multimodel_3, 'multi_k': multi_k}
-
-        return data_dict
+        return conf
     @sync_to_async
     def get_price(self, sub_id):
         return Subscriptions.objects.get(sub_id=sub_id).price
