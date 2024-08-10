@@ -46,7 +46,7 @@ class Models(models.Model):
     objects = BotTGUserManager()
 
     def __str__(self):
-        return str(self.model_name_user)
+        return str(self.model_name_user) + str(self.model_k)
 
 class Subscriptions_models(models.Model):
     sub = models.ForeignKey(Subscriptions, on_delete=models.CASCADE)
