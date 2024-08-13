@@ -1101,7 +1101,7 @@ class ChatGPTTelegramBot:
 <blockquote>
 💰 <s><i>{prices_old[1]}</i></s> <b>{prices_new[1]} руб / 30 дней</b>
 
-⚙️ <b>GPT-4</b>, GPT-3.5, DALLE-3, LLAMA-3
+⚙️ <b>GPT-4</b>, GPT 4 mini, DALLE-3, LLAMA-3
 🔹 Доступно токенов при использовании: 
 
     <b>GPT-4      </b>: 60 тыс.
@@ -1471,7 +1471,7 @@ GPT-4-mini     82%
                     await self.db.set_user_model(user_id, 'gpt-3.5')
                     await update.effective_message.reply_text(
                         message_thread_id=get_thread_id(update),
-                        text='Сейчас вы используете модель GPT-3.5, расход токенов уменьшен в 20 раз, для смены модели на GPT-4 введите /model',
+                        text='Сейчас вы используете модель GPT 4 mini, расход токенов уменьшен в 5 раз, для смены модели на GPT-4 введите /model',
                     )
                 await update.effective_message.reply_text("Платеж прошел")
             except Exception as e:
