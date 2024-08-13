@@ -403,7 +403,7 @@ class ChatGPTTelegramBot:
 </blockquote>
 <b>⚙️ Команда model</b>
 
-<blockquote><b>В подписках с GPT-4 включена и GPT-3.5.</b> С помощью команды /model можно переключаться между моделями. <b>Но расход токенов при «тройке» уменьшается в 5 раз.</b> Получается, что 40 000 токенов «четвёрки» фактически 200 000 в GPT-3.5
+<blockquote><b>В подписках с GPT-4 включена и GPT-4 mini.</b> С помощью команды /model можно переключаться между моделями. <b>Но расход токенов при «GPT-4-mini» уменьшается в 5 раз.</b> Получается, что 40 000 токенов «GPT-4» фактически 200 000 в GPT-4-mini</p>
 </blockquote>
 <b>🎭 Команда role</b>
 
@@ -526,7 +526,7 @@ class ChatGPTTelegramBot:
             return
         else:
             await self.db.set_unblocked_user(user_id)
-            
+
 
 
     async def save(self, update:Update, context: ContextTypes.DEFAULT_TYPE):
@@ -1313,7 +1313,7 @@ GPT-4-mini     82%
 
     async def button(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_id = update.callback_query.from_user.id
- 
+
         if update.callback_query.data == 'st-1':
             self.quality_list[user_id] = 'st-1'
             await update.effective_message.reply_text(
