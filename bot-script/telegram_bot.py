@@ -1468,7 +1468,7 @@ GPT-4-mini     82%
                 pass
             try:
                 if await self.db.get_sub_multimodel(sub_id):
-                    await self.db.set_user_model(user_id, 'gpt-3.5')
+                    await self.db.set_user_model(user_id, 'gpt-4o-mini')
                     await update.effective_message.reply_text(
                         message_thread_id=get_thread_id(update),
                         text='Сейчас вы используете модель GPT 4 mini, расход токенов уменьшен в 5 раз, для смены модели на GPT-4 введите /model',
