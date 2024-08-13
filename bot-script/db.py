@@ -224,8 +224,12 @@ class Database:
         sub_name = User.objects.get(user_id=user_id).sub_type.sub_name
         user_sub_id = User.objects.get(user_id=user_id).sub_type.sub_id
         model = User.objects.get(user_id=user_id).model
-        if model == 'free':
+
+        if sub_name == 'free':
+
             return None
+
+
 
         models_in_sub = Subscriptions_models.objects.filter(sub_id=user_sub_id).values_list('model', flat=True)
         models_in_sub = list(models_in_sub)
