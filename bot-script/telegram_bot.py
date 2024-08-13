@@ -1692,6 +1692,10 @@ GPT-4-mini     82%
                     pass
 
             model_config = await self.db.get_model_config(user_id)
+
+
+
+
             photo_list = []
 
             # get photos from message and send to ai
@@ -1939,6 +1943,14 @@ GPT-4-mini     82%
 
 
                     model_config = await self.db.get_model_config(update.effective_chat.id)
+
+                    if model_config is None:
+                        await update.effective_message.reply_text(
+                            message_thread_id=get_thread_id(update),
+                            text='Ваша подписка закончилась, купите подписку',
+                        )
+                        return
+
                     logging.info(model_config)
 
 

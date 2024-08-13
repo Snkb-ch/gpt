@@ -189,6 +189,9 @@ class Database:
     @sync_to_async
     def set_next_model(self, sub_id, user_id):
         user_model = User.objects.get(user_id=user_id).model
+
+
+
         models_list = Subscriptions_models.objects.filter(sub_id=sub_id).values_list('model', flat=True)
         models_list = list(models_list)
 
@@ -221,6 +224,9 @@ class Database:
         sub_name = User.objects.get(user_id=user_id).sub_type.sub_name
         user_sub_id = User.objects.get(user_id=user_id).sub_type.sub_id
         model = User.objects.get(user_id=user_id).model
+        if model == 'free':
+            return None
+
         models_in_sub = Subscriptions_models.objects.filter(sub_id=user_sub_id).values_list('model', flat=True)
         models_in_sub = list(models_in_sub)
         models_in_sub_names = Models.objects.filter(id__in=models_in_sub).values_list('model_name_user', flat=True)
