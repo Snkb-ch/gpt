@@ -630,6 +630,25 @@ class ChatGPTTelegramBot:
             ])
         )
 
+    async def fluxpro(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        user_id = update.message.from_user.id
+
+        self.status[user_id] = 'fluxpro'
+        await update.message.reply_text(
+            message_thread_id=get_thread_id(update),
+            text=self.status[user_id],
+        )
+        return
+
+    async def fluxdev(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        user_id = update.message.from_user.id
+
+        self.status[user_id] = 'fluxdev'
+        await update.message.reply_text(
+            message_thread_id=get_thread_id(update),
+            text=self.status[user_id],
+        )
+        return
     async def imagine(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         if await self.is_active(update, context, update.message.from_user.id) == False:
             await update.message.reply_text(
@@ -1773,6 +1792,70 @@ GPT-4-mini     82%
 
                     await self.buy(update, context)
                     return
+
+                elif self.status[user_id] == 'fluxdev':
+                    import asyncio
+                    import fal_client
+                    prompt = update.message.text
+                    fal_client.FAL_KEY = os.environ.get("FAL_KEY")
+
+                    handler = await fal_client.submit_async(
+
+                        "fal-ai/flux/dev",
+                        arguments={
+                            "prompt": prompt,
+                        },
+                    )
+
+                    log_index = 0
+                    async for event in handler.iter_events(with_logs=True):
+                        if isinstance(event, fal_client.InProgress):
+                            new_logs = event.logs[log_index:]
+
+
+                            log_index = len(event.logs)
+
+                    result = await handler.get()
+
+                    url = result['images'][0]['url']
+                    await update.message.reply_photo(
+                        photo=url,
+                        message_thread_id=get_thread_id(update),
+                    )
+                elif self.status[user_id] == 'fluxpro':
+                    import asyncio
+                    import fal_client
+                    prompt = update.message.text
+                    fal_client.FAL_KEY = os.environ.get("FAL_KEY")
+
+                    handler = await fal_client.submit_async(
+
+                        "fal-ai/flux/pro",
+                        arguments={
+                            "prompt": prompt,
+                        },
+                    )
+
+                    log_index = 0
+                    async for event in handler.iter_events(with_logs=True):
+                        if isinstance(event, fal_client.InProgress):
+                            new_logs = event.logs[log_index:]
+
+
+                            log_index = len(event.logs)
+
+                    result = await handler.get()
+
+                    url = result['images'][0]['url']
+                    await update.message.reply_photo(
+                        photo=url,
+                        message_thread_id=get_thread_id(update),
+                    )
+
+
+
+                elif self.status[user_id] == 'fluxpro':
+                    pass
                 elif self.status[user_id] == 'image':
 
                     self.status[user_id] = 'prompt'
@@ -2174,6 +2257,8 @@ GPT-4-mini     82%
         application.add_handler((CommandHandler('delete', self.delete)))
         application.add_handler(CommandHandler('model', self.model))
         application.add_handler(CommandHandler('imagine', self.imagine))
+        application.add_handler(CommandHandler('flux', self.fluxdev))
+        application.add_handler(CommandHandler('flux', self.fluxpro))
         application.add_handler(CommandHandler('quality', self.quality))
 
         application.add_handler(CommandHandler('orders', self.orders))
