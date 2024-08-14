@@ -1830,7 +1830,7 @@ GPT-4-mini     82%
 
                     handler = await fal_client.submit_async(
 
-                        "fal-ai/flux/pro",
+                        "fal-ai/flux-pro",
                         arguments={
                             "prompt": prompt,
                         },
