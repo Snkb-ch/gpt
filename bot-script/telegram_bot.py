@@ -2164,7 +2164,7 @@ GPT-4-mini     82%
                                             backoff += 5
                                             continue
 
-                                        await asyncio.sleep(0.01)
+
 
                                     i += 1
                                     if tokens != 'not_finished':
