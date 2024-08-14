@@ -2257,8 +2257,8 @@ GPT-4-mini     82%
         application.add_handler((CommandHandler('delete', self.delete)))
         application.add_handler(CommandHandler('model', self.model))
         application.add_handler(CommandHandler('imagine', self.imagine))
-        application.add_handler(CommandHandler('flux', self.fluxdev))
-        application.add_handler(CommandHandler('flux', self.fluxpro))
+        application.add_handler(CommandHandler('fluxdev', self.fluxdev))
+        application.add_handler(CommandHandler('fluxpro', self.fluxpro))
         application.add_handler(CommandHandler('quality', self.quality))
 
         application.add_handler(CommandHandler('orders', self.orders))
