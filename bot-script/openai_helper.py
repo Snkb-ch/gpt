@@ -83,18 +83,9 @@ def default_max_tokens(model: str) -> int:
     :return: The default number of max tokens
     """
     base = 800
-    if model in LLAMA_MODELS_70 + LLAMA_MODELS_400:
-        return base
-    elif model in GPT_3_MODELS:
-        return base
-    elif model in GPT_4_MODELS:
-        return base
-    elif model in GPT_3_16K_MODELS:
-        return base
-    elif model in GPT_4_32K_MODELS:
 
 
-        return base
+    return base
 
 
 
@@ -517,16 +508,15 @@ class OpenAIHelper:
 
         except KeyError as e:
 
-            encoding = tiktoken.encoding_for_model('gpt-3.5-turbo')
+            encoding = tiktoken.encoding_for_model('gpt-4')
 
         if model in GPT_3_MODELS + GPT_3_16K_MODELS + LLAMA_MODELS_70 + LLAMA_MODELS_400:
             tokens_per_message = 4  # every message follows <|start|>{role/name}\n{content}<|end|>\n
             tokens_per_name = -1  # if there's a name, the role is omitted
-        elif model in GPT_4_MODELS + GPT_4_32K_MODELS:
+        else :
             tokens_per_message = 3
             tokens_per_name = 1
-        else:
-            raise NotImplementedError(f"""num_tokens_from_messages() is not implemented for model {model}.""")
+
         num_tokens = 0
         for message in messages:
             num_tokens += tokens_per_message

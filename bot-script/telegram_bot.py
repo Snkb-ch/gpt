@@ -1793,69 +1793,68 @@ GPT-4-mini     82%
                     await self.buy(update, context)
                     return
 
-                elif self.status[user_id] == 'fluxdev':
-                    import asyncio
-                    import fal_client
-                    prompt = update.message.text
-                    fal_client.FAL_KEY = os.environ.get("FAL_KEY")
+                # elif self.status[user_id] == 'fluxdev':
+                #     import asyncio
+                #     import fal_client
+                #     prompt = update.message.text
+                #     fal_client.FAL_KEY = os.environ.get("FAL_KEY")
+                #
+                #     handler = await fal_client.submit_async(
+                #
+                #         "fal-ai/flux/dev",
+                #         arguments={
+                #             "prompt": prompt,
+                #         },
+                #     )
+                #
+                #     log_index = 0
+                #     async for event in handler.iter_events(with_logs=True):
+                #         if isinstance(event, fal_client.InProgress):
+                #             new_logs = event.logs[log_index:]
+                #
+                #
+                #             log_index = len(event.logs)
+                #
+                #     result = await handler.get()
+                #
+                #     url = result['images'][0]['url']
+                #     await update.message.reply_photo(
+                #         photo=url,
+                #         message_thread_id=get_thread_id(update),
+                #     )
+                # elif self.status[user_id] == 'fluxpro':
+                #     import asyncio
+                #     import fal_client
+                #     prompt = update.message.text
+                #     fal_client.FAL_KEY = os.environ.get("FAL_KEY")
+                #
+                #     handler = await fal_client.submit_async(
+                #
+                #         "fal-ai/flux-pro",
+                #         arguments={
+                #             "prompt": prompt,
+                #         },
+                #     )
+                #
+                #     log_index = 0
+                #     async for event in handler.iter_events(with_logs=True):
+                #         if isinstance(event, fal_client.InProgress):
+                #             new_logs = event.logs[log_index:]
+                #
+                #
+                #             log_index = len(event.logs)
+                #
+                #     result = await handler.get()
+                #
+                #     url = result['images'][0]['url']
+                #     await update.message.reply_photo(
+                #         photo=url,
+                #         message_thread_id=get_thread_id(update),
+                #     )
 
-                    handler = await fal_client.submit_async(
-
-                        "fal-ai/flux/dev",
-                        arguments={
-                            "prompt": prompt,
-                        },
-                    )
-
-                    log_index = 0
-                    async for event in handler.iter_events(with_logs=True):
-                        if isinstance(event, fal_client.InProgress):
-                            new_logs = event.logs[log_index:]
-
-
-                            log_index = len(event.logs)
-
-                    result = await handler.get()
-
-                    url = result['images'][0]['url']
-                    await update.message.reply_photo(
-                        photo=url,
-                        message_thread_id=get_thread_id(update),
-                    )
-                elif self.status[user_id] == 'fluxpro':
-                    import asyncio
-                    import fal_client
-                    prompt = update.message.text
-                    fal_client.FAL_KEY = os.environ.get("FAL_KEY")
-
-                    handler = await fal_client.submit_async(
-
-                        "fal-ai/flux-pro",
-                        arguments={
-                            "prompt": prompt,
-                        },
-                    )
-
-                    log_index = 0
-                    async for event in handler.iter_events(with_logs=True):
-                        if isinstance(event, fal_client.InProgress):
-                            new_logs = event.logs[log_index:]
-
-
-                            log_index = len(event.logs)
-
-                    result = await handler.get()
-
-                    url = result['images'][0]['url']
-                    await update.message.reply_photo(
-                        photo=url,
-                        message_thread_id=get_thread_id(update),
-                    )
 
 
 
-                elif self.status[user_id] == 'fluxpro':
-                    pass
                 elif self.status[user_id] == 'image':
 
                     self.status[user_id] = 'prompt'
@@ -2152,7 +2151,22 @@ GPT-4-mini     82%
 
                                         except RetryAfter as e:
                                             backoff += 5
+                                            try:
+                                                # error Flood control exceeded. Retry in 130 seconds. we need to find string with seconds after words 'Retry in' and convert it to int
+                                                wait_time = int(re.search(r'\d+', e.message).group())
+
+
+
+                                                await update.effective_message.reply_text(
+                                                    message_thread_id=get_thread_id(update),
+                                                    text=f'''Бот достиг лимита, который установлен Telegram и не мог отправлять сообщения. Бот вынужден был ждать {wait_time} секунд. Если бот не отвечает, часто это связано с ограничением, не отправляйте много новых запросов, просто подождите некоторое время и бот попробует завершить ответ, а вы сможете писать новые запросы'''
+                                                )
+                                            except:
+                                                pass
+
+
                                             await asyncio.sleep(e.retry_after)
+
                                             continue
 
                                         except TimedOut:
@@ -2162,7 +2176,9 @@ GPT-4-mini     82%
 
                                         except Exception:
                                             backoff += 5
+
                                             continue
+                                        await asyncio.sleep(0.01)
 
 
 
