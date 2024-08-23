@@ -1106,10 +1106,10 @@ class ChatGPTTelegramBot:
 <blockquote>
 💰 <s><i>{prices_old[0]}</i></s> <b>{prices_new[0]} руб / 30 дней</b>
 
-⚙️ GPT-4-mini
-🔹 Доступно токенов при использовании:
+⚙️     <b>GPT-4-mini </b>: 300 тыс.
 
-    <b>GPT-4-mini </b>: 300 тыс.
+
+
     
     
 </blockquote>
