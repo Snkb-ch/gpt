@@ -94,6 +94,8 @@ class User(models.Model):
 
 
 
+
+
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['user_id'], name='users_user_id_key'),
@@ -106,6 +108,23 @@ class User(models.Model):
 
 
 
+class Offline_conversions(models.Model):
+    id = models.AutoField(primary_key=True)
+    user_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    target = models.CharField(max_length=50)
+    date = models.DateTimeField(auto_now_add=True)
+
+    objects = BotTGUserManager()
+
+
+class Offline_conversions_settings(models.Model):
+    id = models.AutoField(primary_key=True)
+    target = models.CharField(max_length=50)
+
+    day_max = models.IntegerField(default=0)
+    day_count = models.IntegerField(default=0)
+    day_last_reset = models.DateField(null=True)
+    objects = BotTGUserManager()
 
 
 class Subscriptions_statistics(models.Model):

@@ -7,7 +7,6 @@ import  threading
 from adrf.views import APIView
 import asyncio
 from asgiref.sync import sync_to_async
-from asgiref.sync import sync_to_async
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
@@ -36,11 +35,19 @@ from django.http import JsonResponse
 
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
-# from rest_framework.views import APIView
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.http import StreamingHttpResponse
+import openai
+import asyncio
 from .models import *
 
 from django.shortcuts import render, redirect
 
+# from basegpt.ai_utils import generate_ai_response
 
 load_dotenv()
 
@@ -144,7 +151,6 @@ class photo_api(APIView):
 
 
 
-
 def photo(request):
     return render(request, 'basegpt/photo.html')
 
@@ -182,6 +188,28 @@ def refund(order):
     # return JsonResponse({'type': 'error', 'error': 'error payment canceled'})
 
 
+# logger = logging.getLogger(__name__)
+
+# class ChatGPTView(APIView):
+#     @method_decorator(login_required)
+#     def post(self, request):
+#         logger.info("Received request to ChatGPTView")
+#         try:
+#             user_message = request.data.get('message')
+#             logger.info(f"Received message: {user_message}")
+            
+#             if not user_message:
+#                 logger.error("No message received in the request")
+#                 return Response({"error": "No message received"}, status=status.HTTP_400_BAD_REQUEST)
+
+#             def event_stream():
+#                 for response in generate_ai_response(user_message):
+#                     yield f"data: {response}\n\n"
+            
+#             return StreamingHttpResponse(event_stream(), content_type='text/event-stream')
+#         except Exception as e:
+#             logger.error(f"Error in ChatGPTView: {str(e)}")
+#             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 
@@ -327,7 +355,7 @@ def red1_for_unique_text(text):
 
 
         ans = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini",
             messages=[
                 {
                     "role": "system",
@@ -356,7 +384,7 @@ def red2_for_unique_text(text):
 
 
         ans =  client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini",
             messages=[
                 {
                     "role": "system",
@@ -384,7 +412,7 @@ def red3_for_unique_text(text):
         openai.api_key  = settings.OPENAI_API_KEY
 
         ans = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini",
             messages=[
                 {
                     "role": "system",
@@ -404,138 +432,6 @@ def red3_for_unique_text(text):
     return response_text
 
 
-def exam_text_result(text, idea):
-
-
-    openai.api_key = settings.OPENAI_API_KEY
-    answer = idea + '\n'
-
-    red2 =  client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {
-                "role": "system",
-                "content": 'Идея текста:' + idea + Prompts.red2_for_exam_text },
-
-            {"role": "user",
-             "content": text},
-        ],
-        temperature=0.45,
-        max_tokens=1000,
-    )
-
-    red2 = red2.choices[0]['message']['content']
-
-    # red3 = client.chat.completions.create(
-    #     model="gpt-3.5-turbo",
-    #     messages=[
-    #         {
-    #             "role": "system",
-    #             "content": 'Перепиши текст.Не используй слова которые были использованы в предыдущем предложении'
-    #         },
-    #
-    #         {"role": "user",
-    #          "content": red2},
-    #     ],
-    #     temperature=0.4,
-    #     max_tokens=2048,
-    # )
-
-    # red3 = red3.choices[0]['message']['content']
-
-    answer += (red2 + '\n')
-
-    red4 =  client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {
-                "role": "system",
-                "content": 'Идея текста:' + idea + Prompts.red4_for_exam_text
-            },
-
-            {"role": "user",
-             "content": text},
-        ],
-        temperature=0.3,
-        max_tokens=738,
-    )
-
-    red4 = red4.choices[0]['message']['content']
-
-    red5 =  client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {
-                "role": "system",
-                "content": Prompts.red5_for_exam_text
-            },
-
-            {"role": "user",
-             "content": red4},
-        ],
-        temperature=0.4,
-        max_tokens=2048,
-    )
-
-    red5 = red5.choices[0]['message']['content']
-
-    answer += (red5 + '\n')
-
-    red6 =  client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {
-                "role": "system",
-                "content": 'Идея текста:' + idea + Prompts.red6_for_exam_text
-            },
-
-            {"role": "user",
-             "content": text},
-        ],
-        temperature=0.4,
-        max_tokens=1020,
-    )
-
-    red6 = red6.choices[0]['message']['content']
-
-    answer += (red6 + '\n')
-
-    red7 =  client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {
-                "role": "system",
-                "content": 'Идея текста:' + idea + Prompts.red7_for_exam_text
-            },
-
-            {"role": "user",
-             "content": red6},
-        ],
-        temperature=0.4,
-        max_tokens=2048,
-    )
-
-    red7 = red7.choices[0]['message']['content']
-
-
-    answer += (red7 + '\n')
-
-    # additional = client.chat.completions.create(
-    #     model="gpt-3.5-turbo",
-    #     messages=[
-    #         {
-    #             "role": "system",
-    #             "content": 'Наполни текст синонимами. Сохрани суть, а главное структуру текста по абзацам!'
-    #         },
-    #
-    #         {"role": "user",
-    #          "content": answer},
-    #     ],
-    #     temperature=0.4,
-    #     max_tokens=2048,
-    # ).choices[0]['message']['content']
-
-    return answer
 
 
 def getresultfromtext(text, type, order):
@@ -549,14 +445,10 @@ def getresultfromtext(text, type, order):
             response_text =  red2_for_unique_text(text)
         elif type == 'red3':
             response_text =  red3_for_unique_text(text)
-        elif type == 'exam_text':
-            response_text =   exam_text_result(text, order.idea)
 
-        if  moderation(response_text) == True:
-            raise Exception('moderation error')
-        else:
 
-            return response_text
+
+        return response_text
 
 
 
@@ -683,33 +575,6 @@ def success_unique_file(request, order):
 
 
 
-def success_exam_text(request, order):
-    result_obj = ExamText.objects.get(user=order.user, rawtext=order.rawtext, order=order)
-    result_obj.complete = True
-    result_obj.save()
-    response_text =  getresultfromtext(order.rawtext, order.type, order)
-    obj = ExamText.objects.get(user=order.user, order=order)
-    if response_text == 'error' and obj.complete == False:
-
-        refund(order)
-        response = ({'type': 'error', 'error': 'К сожалению произошла ошибка, попробуйте позже. Платеж будет возвращен. Приносим свои извинения'})
-
-
-
-
-    elif response_text != 'error':
-
-        result_obj.responsetext = response_text
-
-        result_obj.save()
-        order.result = True
-        order.save()
-
-        response = ({'type': 'text', 'response_text': response_text})
-
-    return response
-
-
 def get_order(button_value, request):
     order = Order.objects.get(id=button_value, user=request.user)
     return order
@@ -808,150 +673,7 @@ def delete_old_objects(model, limit, user):
 
 
 
-def moderation(text):
-    # openai.api_key = settings.OPENAI_API_KEY
-    #
-    # moderation =  openai.Moderation.create(
-    #     input=text,
-    # )
-    # output = moderation["results"][0]["flagged"]
 
-
-    return False
-def generate_idea(text, id):
-    openai.api_key = settings.OPENAI_API_KEY
-    try:
-
-        idea = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {
-                    "role": "system",
-                    "content": Prompts.idea_for_exam_text
-                },
-
-                {"role": "user",
-                 "content": text},
-            ],
-            temperature=1,
-            max_tokens=1000,
-        )
-
-        idea = idea.choices[0]['message']['content']
-        task = Crawl.objects.get(pk=id)
-
-
-        task.result = idea
-
-        task.status = 'done'
-        task.save()
-    except:
-        task = Crawl.objects.get(pk=id)
-        task.status = 'error'
-        task.save()
-
-def check_idea(request, id):
-    task = Crawl.objects.get(pk=id)
-    if task.status == 'done':
-        idea = task.result
-        task.delete()
-
-        return JsonResponse({'status': 'done', 'idea': idea})
-    elif task.status == 'error':
-
-        task.delete()
-        return JsonResponse({'status': 'error'})
-
-    else:
-        return JsonResponse({'status': 'wait'})
-
-
-
-
-
-def exam_text_get_idea(request):
-    if request.method == 'POST':
-
-        text = request.POST.get('rawtext')
-        if moderation(text) == True:
-
-            return JsonResponse({'type': 'error', 'error': 'Текст не прошел модерацию'})
-
-
-        else:
-
-            task = Crawl()
-            task.save()
-
-
-
-            t = threading.Thread(target=generate_idea, args=(text,task.id), daemon=True)
-            t.start()
-            return JsonResponse({'id': task.id, 'type': 'ok'})
-
-@login_required(login_url='login')
-def exam_text(request):
-
-    if request.method == 'POST' and 'pay' in request.POST:
-        idea = request.POST.get('idea')
-        obj = request.POST.get('rawtext')
-        code = request.POST.get('code')
-        type = 'exam_text'
-
-        if moderation(obj) == True:
-            return render(request, 'basegpt/exam_text.html', {'error': 'Текст не прошел модерацию'})
-        else:
-            if code and is_valid_promo_code(code, request):
-                promo = PromoCode.objects.get(code=code)
-                discount = promo.discount
-                price = 15 - (15 * discount / 100)
-            else:
-                price = 15
-
-            Configuration.account_id = settings.YOOKASSA_SHOP_ID
-            Configuration.secret_key = settings.YOOKASSA_SECRET_KEY
-            payment = Payment.create({
-                "amount": {
-                    "value": price,
-                    "currency": "RUB"
-                },
-                "confirmation": {
-                    "type": "redirect",
-                    "return_url": "https://brainstormai.ru/success"
-                },
-                "capture": True,
-                "description": "сочинение егэ по русскому ",
-                "receipt": {
-                    "customer": {
-
-                        "email": request.user.email,
-                    },
-                    "items": [
-                        {
-                            "description": "Cочинение егэ по русскому",
-                            "quantity": "1",
-                            "amount": {
-                                "value": price,
-                                "currency": "RUB"
-                            },
-                            "vat_code": 1
-
-                        }
-                    ]
-                }
-            }, uuid.uuid4())
-
-            if code and is_valid_promo_code(code, request):
-                Order.objects.create(user=request.user, price=price, rawtext=obj, type=type,
-                                     transaction_id=payment.id, promo_code=PromoCode.objects.get(code=code), idea=idea)
-            else:
-                Order.objects.create(user=request.user, price=price, rawtext=obj, type=type,
-                                     transaction_id=payment.id, idea=idea)
-            return HttpResponseRedirect(payment.confirmation.confirmation_url)
-
-            # create payment and redirect to payment page
-
-    return render(request, 'basegpt/exam_text.html', {'error': ''})
 
 
 
@@ -1194,9 +916,6 @@ def uniquefile(request):
                     # price  =0
                     # order = Order.objects.create(user=request.user, price=price, rawfile=obj, type='unique_file',
                     #                      type2=type, complete = True)
-                    #
-                    #
-                    #
                     #
                     #
                     #
@@ -1445,9 +1164,9 @@ def session(request):
         temp = float(request.POST['input3'])
         # split texzt by $
         new_text = text.split('$')
-        if model == 'gpt-3.5-turbo':
-            max_tokens = 4096
-        elif model == 'gpt-4-vision-preview':
+        if model == 'gpt-4o-mini':
+            max_tokens = 128000
+        elif model == 'gpt-4':
             max_tokens = 128000
 
 

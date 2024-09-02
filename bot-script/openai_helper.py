@@ -444,13 +444,20 @@ class OpenAIHelper:
         return last_updated < now - timedelta(minutes=max_age_minutes)
 
     def add_to_history(self, chat_id, role, content):
+
+        
         """
         Adds a message to the conversation history.
         :param chat_id: The chat ID
         :param role: The role of the message sender
         :param content: The message content
         """
-        self.conversations[chat_id].append({"role": role, "content": content})
+
+        if self.conversations.get(chat_id):
+            self.conversations[chat_id].append({"role": role, "content": content})
+        else:
+            self.conversations[chat_id] = [{"role": "system", "content": self.config['assistant_prompt']}]
+            self.conversations[chat_id].append({"role": role, "content": content})
     def add_role_to_history(self, chat_id, content):
 
         self.conversations[chat_id] = [{"role": "system", "content": content}]

@@ -2,7 +2,7 @@ from . import views
 from django.urls import path
 
 urlpatterns = [
-    path('exam-text', views.exam_text, name='exam_text'),
+
     path('adtext', views.uniquetext, name='uniquetext'),
     path('uniquefile', views.uniquefile, name='uniquefile'),
     path('success', views.success, name='success'),
@@ -36,13 +36,11 @@ path('register/', views.RegisterPage.as_view(), name='register'),
     path('photo', views.photo, name='photo'),
     path('infotext_result', views.infotext_result.as_view(), name='infotext_result'),
     path('success_result', views.success_result, name='success_result'),
-path('exam_text_get_idea', views.exam_text_get_idea, name='exam_text_get_idea'),
-    path('check_idea/<int:id>/', views.check_idea, name='check_idea'),
+
+
     path('session/', views.session, name='session'),
     path('favorite', views.Favorite.as_view(), name='favorite'),
     path('user_rating', views.UserRating.as_view(), name='user_rating'),
-
-
-
-
+    # path('chat/', views.chat_view, name='chat'),
+    # path('chat-gpt', views.ChatGPTView.as_view(), name='chat_gpt'),
 ]

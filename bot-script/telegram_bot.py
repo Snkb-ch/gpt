@@ -66,7 +66,11 @@ sys.path.insert(0, project_root)
 
 # Теперь можно импортировать модели из bot.models
 
-
+import PyPDF2
+import docx
+from pptx import Presentation
+import openpyxl
+import io
 
 class ChatGPTTelegramBot:
     """
@@ -102,7 +106,7 @@ class ChatGPTTelegramBot:
             BotCommand(command='stats', description='Моя Статистика'),
             BotCommand(command='resend', description='Переслать последний запрос'),
             BotCommand(command='save', description='Закрепить выбранное сообщение'),
-            BotCommand(command='delete', description='Удалить из контекста выбранное сообщение'),
+            BotCommand(command='delete', description='Удалить из контекста выбранное ��общение'),
             BotCommand(command='model', description='Изменить модель'),
             BotCommand(command='imagine', description='Сгенерировать изображение'),
             BotCommand(command='quality', description='Изменить качество изображения'),
@@ -145,9 +149,9 @@ class ChatGPTTelegramBot:
             message = await self.bot.send_poll(
                 chat_id=user,
                 question='Почему вы не готовы купить подписку?',
-                options=['Пока не надо', 'Дорого', 'Мало токенов в подписке', 'Система токенов сложная — не понимаю'],
+                options=['Пока не надо', 'Дорого — у других выгоднее', 'Хочу больше моделей, функций'],
                 is_anonymous=False,
-                allows_multiple_answers=True,
+                allows_multiple_answers=False,
             )
 
 
@@ -183,10 +187,11 @@ class ChatGPTTelegramBot:
                 message = await self.bot.send_poll(
                     chat_id=user,
                     question='Почему вы не готовы купить подписку?',
-                    options=['Пока не надо', 'Дорого', 'Мало токенов в подписке', 'Система токенов сложная — не понимаю'],
+                    options=['Пока не надо', 'Дорого — у других выгоднее', 'Хочу больше моделей, функций'],
                     is_anonymous=False,
                     allows_multiple_answers=True,
                 )
+
 
 
 
@@ -339,6 +344,81 @@ class ChatGPTTelegramBot:
 
         print(response.status_code)
         print(response.json())
+
+
+    async def add_offline(self, user_id, target):
+        client_id = await self.db.get_client_id(user_id)
+        if not client_id:
+            return
+        
+        if not await self.db.check_offline_conversions_settings_count(target):
+            return
+        
+        if await self.db.get_offline_conversions_of_user(user_id, target):
+            return
+
+        import requests
+        import csv
+        import json
+        id_type = "CLIENT_ID"
+        load_dotenv()
+        counter = 94971306
+        token = os.environ.get('METRICS_BOT_TOKEN')
+        url = "https://api-metrika.yandex.net/management/v1/counter/{}/offline_conversions/upload?client_id_type={}".format(counter, id_type)
+        headers = {
+        "Authorization": token
+        
+        }
+        # minus 60 sec
+        # Вычисляем текущее время с учетом задержки (на 2 минуты меньше текущего времени)
+        date = datetime.utcnow() - timedelta(minutes=10)
+        timestamp = int(date.timestamp())  # Преобразуем в Unix Time Stamp
+     
+
+        data = {
+            'Yclid' : client_id,
+            'target' : target,
+            'DateTime' : date,
+        }
+        # Создаем CSV файл на лету
+        output = io.StringIO()
+        csv_writer = csv.writer(output)
+        csv_writer.writerow(data.keys())  # Пишем заголовки
+        csv_writer.writerow(data.values())  # Пишем данные
+
+        # Перемещаем курсор на начало файла
+        output.seek(0)
+
+        
+
+        # Отправляем запрос
+        files = {'file': ('offline-conversions.csv', output, 'text/csv')}
+        response = requests.post(url, headers=headers, files=files)
+
+        # Закрываем StringIO объект
+        output.close()
+
+        logging.info(response.status_code)
+        logging.info(response.json())
+
+
+
+        response.raise_for_status()
+
+        if response.status_code == 200:
+            
+            self.db.add_offline_conversions(user_id, target)
+        
+        else:
+            logging.error(f"Error adding offline conversions: {response.status_code}")
+            logging.error(f"Error adding offline conversions: {response.json()}")
+
+        
+        
+
+        
+
+
     async def orders(self, update: Update, _: ContextTypes.DEFAULT_TYPE):
         import requests
         import json
@@ -368,6 +448,11 @@ class ChatGPTTelegramBot:
 
         print(response.json())
 
+
+
+
+    
+
     async def cancel(self, update: Update, _: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text(
             message_thread_id=get_thread_id(update),
@@ -388,7 +473,7 @@ class ChatGPTTelegramBot:
 ❗️Но❗️
 Потраченные токены зависят от длины <b>вопроса и ответа</b> GPT. Всё вместе называется <b>история</b> или же контекст. Это третий параметр, который <b>влияет на потраченные токены.</b> И тратит он больше всех.
 
-<b>Поэтому не забывайте сбрасывать историю командой /reset.</b> Так вы «прочистите мозги» нейросети, а еще сэкономите токены.
+<b>Поэтому не забывайте сбрасывать историю командой /reset.</b> Так вы прочистите мозги» нейросети, а еще сэкономите токены.
 
 Под каждым ответом GPT написано количество токенов, которые находятся в контексте, по-другому – истории чата.
 </blockquote>
@@ -403,21 +488,21 @@ class ChatGPTTelegramBot:
 </blockquote>
 <b>⚙️ Команда model</b>
 
-<blockquote><b>В подписках с GPT-4 включена и GPT-4 mini.</b> С помощью команды /model можно переключаться между моделями. <b>Но расход токенов при «GPT-4-mini» уменьшается в 5 раз.</b> Получается, что 40 000 токенов «GPT-4» фактически 200 000 в GPT-4-mini
+<blockquote><b>В подписках с GPT-4 включена и GPT-4 mini.</b> С помощью команды /model можно переключаться ме��ду моделями. <b>Но расход токенов при «GPT-4-mini» уменьшается в 5 раз.</b> Получается, что 40 000 токенов «GPT-4» фактически 200 000 в GPT-4-mini
 </blockquote>
 <b>🎭 Команда role</b>
 
-<blockquote>После ввода команды /role вы пишете <b>условия, которые нейросеть должна соблюдать.</b> Например, если нужны краткие ответы без пояснений, можно попросить нейросеть отвечать только "да" или "нет".
+<blockquote>После ввода команды /role вы пишете <b>условия, которые нейросеь должна соблюдать.</b> Например, если нужны краткие ответы без пояснений, можно попросить нейросеть отвечать только "да" или "нет".
 </blockquote>
 <b>💡 Команда temperature</b>
 
-<blockquote><b>Команда /temperature для того, чтобы регулировать креативность от 0 до 1.25.</b> Чем меньше температура, тем чаще GPT повторяется, но уменьшается шанс ошибки.  Чем выше, тем креативнее и безумнее нейросеть. Начальное, самое стабильное значение 1
+<blockquote><b>Команда /temperature для того, чтобы регулировать креативность от 0 до 1.25.</b> Чем меньше температура, тем чаще GPT повторяется, но уменьшается шанс ошибки. Чем выше, тем креативнее и безумнее нейросеть. Начальное, самое стабильное значение 1
 </blockquote>
 <b>🧷 Команда save</b>
 
 <blockquote><b>Команда /save – это просто закреплённые сообщения.</b> Например, чтобы не листать весь диалог с ответами на экзамене теперь можно сделать «точки» навигации. И вот как:
 
-- Свайпните влево сообщение, которое хотите закрепить. На ПК – кликнуть правой кнопкой по сообщению и нажать в списке «ответить»
+- Свйпните влево сообщение, которое хотите закрепить. На ПК – кликнуть правой кнопкой по сообщению и нажать в списке «ответить»
 - Введите команду /save и отправьте её
 - Всё, готово :)
 
@@ -429,15 +514,15 @@ class ChatGPTTelegramBot:
 
 - Свайпните влево сообщение, которое хотите закрепить. На ПК два ЛКМ по нему
 - Введите команду /delete и отправьте
-- Готово, сообщение удалено из контекста
+- Готово, сообще��ие удалено из контекста
 </blockquote>
 <b>📊 Анализ фото</b>
 
-<blockquote>Доступен только тем, у кого есть подписка с GPT-4. Просто прикрепляете фото в чат, задаёте вопрос и всё. Готово. <b>Но помните, что одна фотография весит 1500 токенов</b>
+<blockquote>Доступен только тем, у кого есть подписка с GPT-4. Просто прикрепляете фото в чат, задаёте вопрос и всё. Готово. <b>Но помните, что одна фотография весит 1500 токено</b>
 </blockquote>
 <b>📸 Команды /imagine и /quality</b>
 
-<blockquote>Нейросеть, которая генерирует фото - это DALL-E 3. Её создатели компания OpenAI,  это они разработали ChatGPT.  В её картинках меньше артефактов, больше деталей, но с её помощью пока нельзя обрабатывать фото. Чтобы сгенерировать изображение введите команду /imagine. После отдельным сообщением введите запрос, что именно вы хотите получить на фото. Команда /quality - это выбор качества между Standard и HD.
+<blockquote>Нейросеть, которая генерирует фото - это DALL-E 3. Её создатели компания OpenAI,  это они разработали ChatGPT.  В её картинках меньше артефактов, больше деталей, но с её помощью пока нельзя обрабатывать фото. Чтобы сгенерировать изображение введите команду /imagine. После отдельным сообщением введите запрос, чт именно вы хотите получить на фото. Команда /quality - это выбор качества между Standard и HD.
 </blockquote>
 Подробнее на сайте: brainstormai.ru
 ''',
@@ -450,6 +535,13 @@ class ChatGPTTelegramBot:
         user_id = update.message.from_user.id
 
         logging.info(f'User {update.message.from_user.name} (id: {user_id}) started the bot')
+
+        try:
+
+            await self.add_offline(user_id, 'commandstart')
+        except Exception as e:
+            logging.error(e)
+            pass
 
         self.status[user_id] = 'prompt'
 
@@ -497,11 +589,11 @@ class ChatGPTTelegramBot:
                 message_thread_id=get_thread_id(update),
                 parse_mode='HTML',
 
-                text='''Добро пожаловать!
+                text='''Доб��о пожаловать!
 
 🆓 Активная подписка: Пробный период
 
-⏬ Вам доступно ⏬
+⏬ Вам дотупно ⏬
 
 ✅ Дней: 3
 
@@ -511,7 +603,7 @@ class ChatGPTTelegramBot:
 
 <b>Важно</b>🔻
 
-Потраченные токены зависят от длины вопроса и ответа GPT. Всё вместе называется история или контекст. Это третий параметр, который влияет на потраченные токены. И тратит он больше всех.
+Потраченные токены зависят от длины вопроса и ответа GPT. Всё вместе называется стория или контекст. Это третий параметр, который влияет на потраченные токены. И тратит он больше всех.
 
 Поэтому не забывайте сбрасывать историю командой /reset. Так вы «прочистите мозги» нейросети, а еще сэкономите токены.
 
@@ -593,19 +685,19 @@ class ChatGPTTelegramBot:
             )
     def get_quality(self, user_id):
         if self.quality_list.get(user_id) == None:
-            return {'quality': "standard", 'size': "1024x1024", 'flag' : True, 'tokens': 3000, 'price': 0.040}
+            return {'quality': "standard", 'size': "1024x1024", 'flag' : True, 'tokens': 5000, 'price': 0.040}
         if self.quality_list.get(user_id,'st-1') == 'st-1':
-            return {'quality': "standard", 'size': "1024x1024", 'tokens': 3000, 'price': 0.040}
+            return {'quality': "standard", 'size': "1024x1024", 'tokens': 5000, 'price': 0.040}
         elif self.quality_list.get(user_id,'st-1') == 'st-2':
-            return {'quality': "standard", 'size': "1024x1792", 'tokens': 1500, 'price': 0.080}
+            return {'quality': "standard", 'size': "1024x1792", 'tokens': 2500, 'price': 0.080}
         elif self.quality_list.get(user_id,'st-1') == 'st-3':
-            return {'quality': "standard", 'size': "1792x1024", 'tokens': 1500, 'price': 0.080}
+            return {'quality': "standard", 'size': "1792x1024", 'tokens': 2500, 'price': 0.080}
         elif self.quality_list.get(user_id,'st-1') == 'hd-1':
-            return {'quality': "hd", 'size': "1024x1024", 'tokens': 6000, 'price': 0.080}
+            return {'quality': "hd", 'size': "1024x1024", 'tokens': 10000, 'price': 0.080}
         elif self.quality_list.get(user_id,'st-1') == 'hd-2':
-            return {'quality': "hd", 'size': "1024x1792", 'tokens': 2250, 'price': 0.120}
+            return {'quality': "hd", 'size': "1024x1792", 'tokens': 5000, 'price': 0.120}
         elif self.quality_list.get(user_id,'st-1') == 'hd-3':
-            return {'quality': "hd", 'size': "1792x1024", 'tokens': 2250, 'price': 0.120}
+            return {'quality': "hd", 'size': "1792x1024", 'tokens': 5000, 'price': 0.120}
 
 
 
@@ -621,10 +713,10 @@ class ChatGPTTelegramBot:
             message_thread_id=get_thread_id(update),
             text='Выберите качество',
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton('Standard 1024x1024 - 3000 токенов', callback_data='st-1')],
+                [InlineKeyboardButton('Standard 1024x1024 - 5000 токенов', callback_data='st-1')],
                 # [InlineKeyboardButton('Standard 1024x1792 - 1000 токенов', callback_data='st-2')],
                 # [InlineKeyboardButton('Standard 1792x1024 - 1000 токенов', callback_data='st-3')],
-                [InlineKeyboardButton('HD 1024x1024 - 6000 токенов', callback_data='hd-1')],
+                [InlineKeyboardButton('HD 1024x1024 - 10000 токенов', callback_data='hd-1')],
                 # [InlineKeyboardButton('HD 1024x1792 - 1000 токенов', callback_data='hd-2')],
                 # [InlineKeyboardButton('HD 1792x1024 - 1000 токенов', callback_data='hd-3')],
             ])
@@ -691,7 +783,7 @@ class ChatGPTTelegramBot:
         if flag:
             await update.message.reply_text(
                 message_thread_id=get_thread_id(update),
-                text='На данный момент у вас установлено качество ' + quality + ' и размер ' + size + '. Чтобы изменить качество и размер, введите /quality',
+                text='На данный момент у вас установлено качество ' + quality + ' и разм��р ' + size + '. Чтобы изменить качество и размер, введите /quality',
             )
         await update.message.reply_text(
             message_thread_id=get_thread_id(update),
@@ -794,7 +886,7 @@ class ChatGPTTelegramBot:
         if await self.is_active(update, context, update.message.from_user.id) == False:
             await update.message.reply_text(
                 message_thread_id=get_thread_id(update),
-                text='Ваша подписка закончилась, купите подписку',
+                text='Ваша подписка акончилась, купите подписку',
             )
             return
         sub_id = await self.db.get_sub_type(update.message.from_user.id)
@@ -942,7 +1034,7 @@ class ChatGPTTelegramBot:
 
                         try:
                             await self.bot.send_message(chat_id=user,
-                                                        text='Привет, напоминаем, что сегодня последний день действия подписки.')
+                                                        text='Привет, напомиаем, что сегодня последний день действия подписки.')
                         except Exception as e:
                             await self.db.set_blocked_user(user)
                             k1_errors += 1
@@ -986,7 +1078,7 @@ class ChatGPTTelegramBot:
                 for admin_id in admin:
                     try:
                         await self.bot.send_message(chat_id=admin_id,
-                                                    text='Отправили уведомление о конце заканчивающейся' + '\n' + 'Количество пользователей: ' + k1 + '\n'+
+                                                    text='Отправили уведомление о конце заканчивающейся' + '\n' + 'Количество пол��зователей: ' + k1 + '\n'+
                                                     'Количество пользователей с ошибкой: ' + str(k1_errors) + '\n' + 'Уникальные ошибки: ' + str(k1_error_messages))
                         await self.bot.send_message(chat_id=admin_id,
                                                     text='Отправили уведомление о сбросе истории чата' + '\n' + 'Количество пользователей подошло: ' + k2 + '\n'+
@@ -1033,8 +1125,11 @@ class ChatGPTTelegramBot:
 
 
     async def buy(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-
+        try:
+            await self.add_offline(update.message.from_user.id, 'commandbuy')
+        except Exception as e:
+            logging.error(e)
+            pass
 
         user_id = update.message.from_user.id
 
@@ -1102,76 +1197,73 @@ class ChatGPTTelegramBot:
         text = f'''
 🗒Описание подписок:
 
-<b>🔸Multi Mini🔸</b>
+<b>🔸GPT Mini🔸</b>
 <blockquote>
-💰 <s><i>{prices_old[0]}</i></s> <b>{prices_new[0]} руб / 30 дней</b>
+💰  <i>{prices_old[0]}</i>  <b>{prices_new[0]} руб / 30 дней</b>
 
-⚙️     <b>GPT-4-mini </b>: 300 тыс.
+⚙️     <b>GPT-4-mini </b>: 500 тыс.
+🔹 Чтение файлов
 
-
-
-    
-    
 </blockquote>
 
 <b>🔸Multi Light🔸</b>
 <blockquote>
-💰 <s><i>{prices_old[1]}</i></s> <b>{prices_new[1]} руб / 30 дней</b>
+💰  <i>{prices_old[1]}</i>  <b>{prices_new[1]} руб / 30 дней</b>
 
-⚙️ <b>GPT-4</b>, GPT 4 mini, DALLE-3
-🔹 Доступно токенов при использовании: 
+⚙️  Доступно токенов при использовании: 
 
-    <b>GPT-4      </b>: 60 тыс.
+    <b>GPT-4      </b>: 100 тыс.
     <i>или</i>
-    <b>GPT-4-mini  </b>: 300 тыс.
+    <b>GPT-4-mini  </b>: 1 млн.
 
 🔹 Анализ фото
 🔹 Генерация до 20 изображений
+🔹 Чтение файлов 
 
 </blockquote> 
 
 <b>🔸Multi Standart🔸</b>
 <blockquote>
-💰 <s><i>{prices_old[2]}</i></s> <b>{prices_new[2]} руб / 30 дней</b>
+💰  <i>{prices_old[2]}</i>  <b>{prices_new[2]} руб / 30 дней</b>
 
-⚙️ <b>GPT-4</b>, GPT-4-mini, DALLE-3
-🔹 Доступно токенов при использовании:
+⚙️  Доступно токенов при использовании:
 
-    <b>GPT-4      </b>: 120 тыс.
+    <b>GPT-4      </b>: 200 тыс.
     <i>или</i>
-    <b>GPT-4-mini  </b>: 600 тыс.
+    <b>GPT-4-mini  </b>: 2 млн.
 
-🔹 Анализ фото
+🔹 Анализ фото и файлов
 🔹 Генерация до 40 изображений
+🔹 Чтение файлов 
 
 </blockquote> 
 
 <b>🔸Multi PRO🔸</b>
 <blockquote>
-💰 <s><i>{prices_old[3]}</i></s> <b>{prices_new[3]} руб / 60 дней</b>
+💰  <i>{prices_old[3]}</i>  <b>{prices_new[3]} руб / 60 дней</b>
 
-⚙️ <b>GPT-4</b>, GPT-4-mini, DALLE-3
-🔹 Доступно токенов при использовании: 
+⚙️ Доступно токенов при использовании: 
 
-    <b>GPT-4      </b>: 300 тыс.
+    <b>GPT-4      </b>: 500 тыс.
     <i>или</i>
-    <b>GPT-4-mini  </b>: 1,5 млн.
+    <b>GPT-4-mini  </b>: 5 млн.
 
 🔹 Анализ фото
-🔹 Генерация до 100 изображений
+🔹 Генерация до 100 изображений 
+🔹 Чтение файлов 
 
 </blockquote>
 
 ⚙️ Менять модель командой /model
 
-📢  Переключив модель с GPT-4 на GPT-4-mini расход токенов снизится в 5 раз
+📢  Переключив модель с GPT-4 на GPT-4-mini расход токенов снизится в 10 раз
 
 <b>✨ Сравнение моделей:</b>
 <blockquote>
-GPT-4         89%
-GPT-4-mini     82%
+GPT-4o         89%
+GPT-4o-mini     82%
 
-% — доля правильных ответов
+% — доля правильных отетов
 
 </blockquote>
 
@@ -1182,7 +1274,8 @@ GPT-4-mini     82%
 ❗️ Приблизительно 1000 токенов – 300 слов или 2300 символов или 1.5 стр. А4.
 
 🔹 1 фото для анализа весит 1500 токенов
-🔹 Генерация 1 изображения стоит от 3000 токенов
+🔹 Генерация 1 изображения стоит от 5000 токенов 
+🔹 <b>Поддерживаются форматы файлов: pdf, pptx, xlsx, txt, docx</b> – бот читает текст из файлов и добавляет его к запросу, обращаейте внимание на трату токенов
 
 </blockquote>
 
@@ -1501,7 +1594,7 @@ GPT-4-mini     82%
                 if count == 2 and client_id is not None:
 
                     await self.add_client(update, context, user_id, client_id)
-                await self.add_order(user_id, income, cost, order_id, product)
+                    await self.add_order(user_id, income, cost, order_id, product)
             except Exception as e:
                 logging.error(f'Error in add order to metrika: {e}')
                 await self.send_to_admin( 'error in add order metrika' + '\n' + str(e))
@@ -1514,7 +1607,7 @@ GPT-4-mini     82%
         else:
             await update.effective_message.reply_text(
                 message_thread_id=get_thread_id(update),
-                text="Платеж не прошёл, попробуйте ещё раз"
+                text="Платеж не прошел, попробуйте еще раз"
             )
 
     async def activate_sub(self, user_id, sub_id, order_id_payment):
@@ -1707,8 +1800,9 @@ GPT-4-mini     82%
 
 
             photo_list = []
+            file_text = ""
 
-            # get photos from message and send to ai
+            # Handle photos
             if update.message.photo:
                 try:
                     await self.db_analytics_for_sessions.photo_send(user_id)
@@ -1738,16 +1832,102 @@ GPT-4-mini     82%
                 # Add the base64 image to the list
                 photo_list.append(base64_image)
 
-            # Create a list to store the prompts
-            prompt = []
+            # Handle document files
+            if update.message.document:
+                try:
+                   file = await context.bot.get_file(update.message.document.file_id)
+                except Exception as e:
+                    print(e)
+                    if 'File is too big' in str(e):
+                        await update.message.reply_text(
+                            message_thread_id=get_thread_id(update),
+                            text='Файл слишком большой, попробуйте загрузить файл меньшего размера'
+                        )
+                    else:
+                        await update.message.reply_text(
+                            message_thread_id=get_thread_id(update),
+                            text='Произошла ошибка, попробуйте еще раз'
+                        )
+                    return
 
-            # Check if there are any photos in the list
+
+
+                
+                file_obj = io.BytesIO()
+                await file.download_to_memory(out=file_obj)
+                file_obj.seek(0)
+
+                mime_type = update.message.document.mime_type
+                file_name = update.message.document.file_name
+
+                if mime_type == 'application/pdf':
+                    pdf_reader = PyPDF2.PdfReader(file_obj)
+                    for page in pdf_reader.pages:
+                        file_text += page.extract_text() + "\n"
+
+                elif mime_type == 'text/plain':
+                    file_text = file_obj.read().decode('utf-8')
+
+                elif mime_type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+                    doc = docx.Document(file_obj)
+                    file_text = "\n".join([paragraph.text for paragraph in doc.paragraphs])
+
+                elif mime_type == 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+                    prs = Presentation(file_obj)
+                    for slide in prs.slides:
+                        for shape in slide.shapes:
+                            if hasattr(shape, 'text'):
+                                file_text += shape.text + "\n"
+
+                elif mime_type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+                    wb = openpyxl.load_workbook(file_obj, data_only=True)
+                    file_text = "Excel file content:\n\n"
+                    for sheet in wb.sheetnames:
+                        ws = wb[sheet]
+                        file_text += f"Sheet: {sheet}\n"
+                        
+                        # Get column headers
+                        headers = [cell.value for cell in ws[1] if cell.value is not None]
+                        
+                        # Calculate column widths
+                        col_widths = [max(len(str(cell.value)) if cell.value is not None else 0 for cell in col) for col in ws.columns]
+                        
+                        # Add headers
+                        header_row = "| " + " | ".join(f"{str(headers[i]):<{col_widths[i]}}" for i in range(len(headers))) + " |"
+                        file_text += header_row + "\n"
+                        file_text += "|" + "|".join("-" * (width + 2) for width in col_widths) + "|\n"
+                        
+                        # Add data rows
+                        for row in ws.iter_rows(min_row=2, values_only=True):
+                            data_row = "| " + " | ".join(f"{str(row[i]):<{col_widths[i]}}" if row[i] is not None else " "*col_widths[i] for i in range(len(row))) + " |"
+                            file_text += data_row + "\n"
+                        
+                        file_text += "\n"  # Add space between sheets
+
+                        
+
+                     
+
+
+                        
+
+
+                else:
+                    await update.message.reply_text(
+                        message_thread_id=get_thread_id(update),
+                        text="Неподдерживаемый формат файла. Поддерживаемые форматы: PDF, TXT, DOCX, PPTX, XLSX."
+                    )
+                    return
+
+            # Create the prompt
             if photo_list:
-                # Add a text prompt
+                prompt = []
+                # Add a text prompt for photos
                 if update.message.caption:
                     text = update.message.caption
                 else:
-                    text = 'что на фото?'
+                    text = 'Analyze the attached image(s)'
+                
                 prompt.append({
                     "type": "text",
                     "text": text
@@ -1757,12 +1937,35 @@ GPT-4-mini     82%
                 for base64_image in photo_list:
                     prompt.append({
                         "type": "image_url",
-                        "image_url": {"url":  f"data:image/jpeg;base64,{base64_image}"}
-
+                        "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}
                     })
+            elif file_text:
+                # For document files, use the extracted text as the prompt
+                if update.message.caption:
+                    text = update.message.caption
+                else:
+                    text = f'Прочитай и запомни информацию {file_name}, попроси пользователя сформулировать вопрос по ней'
+                prompt = f"{text}\n\nFile content:\n{file_text}..."  # Limit to first 2000 characters
+
+                model = await self.db.get_user_model(user_id)
+
+                tokens =  self.openai.count_tokens(([{"role": "user", "content": prompt}]), model)
+                tokens = tokens//model_config['multi_k']
+
+                self.openai.add_to_history(chat_id, "user", prompt)
+
+                await update.message.reply_text(
+                    message_thread_id=get_thread_id(update),
+                    text=f'''Вы прикрепили файл: чтение этого файла стоит ~10687 ток. — для модели gpt-4-mini
+Чтобы отменить — введите /reset
+Чтобы продолжить — просто напишите вопрос, который хотели задать'''
+
+                )
+                return
 
             else:
                 prompt = update.message.text
+
             if user_id not in self.status:
                 self.status[user_id] = 'prompt'
 
@@ -1784,65 +1987,7 @@ GPT-4-mini     82%
                     await self.buy(update, context)
                     return
 
-                # elif self.status[user_id] == 'fluxdev':
-                #     import asyncio
-                #     import fal_client
-                #     prompt = update.message.text
-                #     fal_client.FAL_KEY = os.environ.get("FAL_KEY")
-                #
-                #     handler = await fal_client.submit_async(
-                #
-                #         "fal-ai/flux/dev",
-                #         arguments={
-                #             "prompt": prompt,
-                #         },
-                #     )
-                #
-                #     log_index = 0
-                #     async for event in handler.iter_events(with_logs=True):
-                #         if isinstance(event, fal_client.InProgress):
-                #             new_logs = event.logs[log_index:]
-                #
-                #
-                #             log_index = len(event.logs)
-                #
-                #     result = await handler.get()
-                #
-                #     url = result['images'][0]['url']
-                #     await update.message.reply_photo(
-                #         photo=url,
-                #         message_thread_id=get_thread_id(update),
-                #     )
-                # elif self.status[user_id] == 'fluxpro':
-                #     import asyncio
-                #     import fal_client
-                #     prompt = update.message.text
-                #     fal_client.FAL_KEY = os.environ.get("FAL_KEY")
-                #
-                #     handler = await fal_client.submit_async(
-                #
-                #         "fal-ai/flux-pro",
-                #         arguments={
-                #             "prompt": prompt,
-                #         },
-                #     )
-                #
-                #     log_index = 0
-                #     async for event in handler.iter_events(with_logs=True):
-                #         if isinstance(event, fal_client.InProgress):
-                #             new_logs = event.logs[log_index:]
-                #
-                #
-                #             log_index = len(event.logs)
-                #
-                #     result = await handler.get()
-                #
-                #     url = result['images'][0]['url']
-                #     await update.message.reply_photo(
-                #         photo=url,
-                #         message_thread_id=get_thread_id(update),
-                #     )
-
+        
 
 
 
@@ -1922,6 +2067,7 @@ GPT-4-mini     82%
 
                     self.status[user_id] = 'prompt'
                     users = await self.db.get_all_users()
+                    print(users)
                     k = 0
                     err =0
                     for user in users:
@@ -1929,6 +2075,7 @@ GPT-4-mini     82%
                             await self.bot.send_message(chat_id=user, text=update.message.text,parse_mode = 'HTML')
                             k+=1
                         except Exception as e:
+                         
                             err+=1
                             await self.db.set_blocked_user(user)
 
@@ -2027,7 +2174,7 @@ GPT-4-mini     82%
                     logging.info(model_config)
 
 
-                    tokens_in_message = self.openai.count_tokens(([{"role": "user", "content": prompt}]), model_config['model'])
+                    tokens_in_message = self.openai.count_tokens(([{"role": "user", "content": str(prompt)}]), model_config['model'])
                     tokens_input = tokens_in_message + self.openai.get_conversation_stats(chat_id=chat_id, model=model_config['model'])[1]
 
                     while not await self.is_input_in_tokens(update, context, user_id, tokens_input, model_config):
@@ -2150,9 +2297,9 @@ GPT-4-mini     82%
 
                                                 await update.effective_message.reply_text(
                                                     message_thread_id=get_thread_id(update),
-                                                    text=f'''Бот вернулся к вам. Он не мог отвечать из-за спам-ограничений Telegram-а
+                                                    text=f'''Бот вернулся к вам. Он не мог отвечать из-за спам-оганичений Telegram-а
 
-В среднем блок длится от 3 секунд до 3 минут. Новые запросы — не помогают. Нужно просто подождать'''
+В среднем блок длится от 3 секунд до 3 минут. Новые запросы — не помогают. Нужно просто ��одождать'''
                                                 )
                                             except:
                                                 pass
