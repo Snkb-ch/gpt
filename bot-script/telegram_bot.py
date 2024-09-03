@@ -1789,7 +1789,9 @@ GPT-4o-mini     82%
             #     return
 
             logging.info(
-                f'New message received from user {update.message.from_user.name} (id: {update.message.from_user.id})')
+                f'New message received from user {update.message.from_user.name} (id: {update.message.from_user.id})' + '\n' +
+                f'Message: {update.message.text[:100]}'
+                )
 
 
             chat_id = update.effective_chat.id
@@ -2187,7 +2189,7 @@ GPT-4o-mini     82%
                         )
                         return
 
-                    logging.info(model_config)
+                    
 
 
                     tokens_in_message = self.openai.count_tokens(([{"role": "user", "content": str(prompt)}]), model_config['model'])
