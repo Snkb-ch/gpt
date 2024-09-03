@@ -373,12 +373,12 @@ class ChatGPTTelegramBot:
         # Вычисляем текущее время с учетом задержки (на 2 минуты меньше текущего времени)
         date = datetime.now() - timedelta(seconds=60)
         date = date.strftime("%Y-%m-%d %H:%M:%S")
-        
+
      
 
         data = {
-            'Yclid' : client_id,
-            'target' : target,
+            'ClientId' : client_id,
+            'Target' : target,
             'DateTime' : date,
         }
         # Создаем CSV файл на лету
