@@ -371,8 +371,9 @@ class ChatGPTTelegramBot:
         }
         # minus 60 sec
         # Вычисляем текущее время с учетом задержки (на 2 минуты меньше текущего времени)
-        date = datetime.utcnow() - timedelta(minutes=10)
-        timestamp = int(date.timestamp())  # Преобразуем в Unix Time Stamp
+        date = datetime.now() - timedelta(seconds=60)
+        date = date.strftime("%Y-%m-%d %H:%M:%S")
+        
      
 
         data = {
