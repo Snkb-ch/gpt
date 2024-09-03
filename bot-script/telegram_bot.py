@@ -1216,7 +1216,7 @@ class ChatGPTTelegramBot:
 
 ⚙️     <b>GPT-4-mini </b>: 500 тыс.
 
-🔹 Чтение файлов(pdf, pptx, xlsx, txt, docx)
+🔹 Чтение файлов
 ❌ Анализ и генерация фото
 
 </blockquote>
