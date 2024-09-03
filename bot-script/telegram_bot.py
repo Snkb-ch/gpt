@@ -544,12 +544,7 @@ class ChatGPTTelegramBot:
 
         logging.info(f'User {update.message.from_user.name} (id: {user_id}) started the bot')
 
-        try:
-
-            await self.add_offline(user_id, 'commandstart')
-        except Exception as e:
-            logging.error(e)
-            pass
+        
 
         self.status[user_id] = 'prompt'
 
@@ -592,6 +587,14 @@ class ChatGPTTelegramBot:
             except Exception as e:
 
                 pass
+                
+            try:
+
+                await self.add_offline(user_id, 'commandstart')
+            except Exception as e:
+                logging.error(e)
+                logging.error('Error adding offline on start')
+            pass
 
             await update.message.reply_text(
                 message_thread_id=get_thread_id(update),
@@ -620,6 +623,8 @@ class ChatGPTTelegramBot:
 Подробнее /help
 ''',
             )
+
+            
 
 
 
