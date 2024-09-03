@@ -369,10 +369,11 @@ class ChatGPTTelegramBot:
         "Authorization": token
         
         }
-        # minus 60 sec
-        # Вычисляем текущее время с учетом задержки (на 2 минуты меньше текущего времени)
+        # Вычисляем текущее время с учетом задержки (на 1 минуту меньше текущего времени)
+        # Дата и время конверсии в формате Unix Time Stamp
         date = datetime.now() - timedelta(seconds=60)
-        date = date.strftime("%Y-%m-%d %H:%M:%S")
+        date = int(date.timestamp())
+        date = str(date)
 
      
 
@@ -381,19 +382,25 @@ class ChatGPTTelegramBot:
             'Target' : target,
             'DateTime' : date,
         }
-        # Создаем CSV файл на лету
+        # Создаем CSV файл на лету с расделитеем ,
         output = io.StringIO()
-        csv_writer = csv.writer(output)
+        csv_writer = csv.writer(output, delimiter=',')
         csv_writer.writerow(data.keys())  # Пишем заголовки
         csv_writer.writerow(data.values())  # Пишем данные
 
         # Перемещаем курсор на начало файла
         output.seek(0)
 
+
+        
         
 
         # Отправляем запрос
         files = {'file': ('offline-conversions.csv', output, 'text/csv')}
+
+
+        
+
         response = requests.post(url, headers=headers, files=files)
 
         # Закрываем StringIO объект
@@ -408,7 +415,7 @@ class ChatGPTTelegramBot:
 
         if response.status_code == 200:
             
-            self.db.add_offline_conversions(user_id, target)
+            await self.db.add_offline_conversions(user_id, target)
         
         else:
             logging.error(f"Error adding offline conversions: {response.status_code}")

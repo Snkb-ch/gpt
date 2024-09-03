@@ -500,8 +500,8 @@ class Database:
 
     @sync_to_async
     def add_offline_conversions(self, user_id, target):
-        if not Offline_conversions.objects.filter(user_id=user_id, target=target).exists():
-            Offline_conversions.objects.create(user_id=user_id, target=target)
+        if not Offline_conversions.objects.filter(user_id= User.objects.get(user_id=user_id), target=target).exists():
+            Offline_conversions.objects.create(user_id=User.objects.get(user_id=user_id), target=target)
         
     @sync_to_async
     def add_offline_conversions_settings_count(self, target):
@@ -514,7 +514,7 @@ class Database:
             if obj.day_count >= obj.day_max:
                 obj.day_count = 0
                 obj.day_last_reset = datetime.now()
-                obj.day_max = random.randint(1,3)
+                # obj.day_max = random.randint(1,3)
 
 
             
