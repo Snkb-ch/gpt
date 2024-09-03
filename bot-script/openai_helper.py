@@ -68,8 +68,8 @@ def get_price(sub_name):
         price['input']= 0.000001
         price['output'] = 0.000002
     elif sub_name == 'gpt-4o-mini':
-        price['input']= 0.0000015
-        price['output'] = 0.000006
+        price['input']= 0.00000015
+        price['output'] = 0.0000006
     elif sub_name in 'gpt-4o':
         price['input']= 0.000005
         price['output'] = 0.000015
