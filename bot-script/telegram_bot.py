@@ -918,7 +918,7 @@ class ChatGPTTelegramBot:
         else:
             await update.message.reply_text(
                 message_thread_id=get_thread_id(update),
-                text='Ваша подписка не позволяет менять модель',
+                text='Ваша подписка не позволяет менять модель, подробнее в /buy',
             )
 
 
