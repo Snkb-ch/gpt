@@ -1819,6 +1819,7 @@ GPT-4o-mini     82%
             if update.message.photo:
                 try:
                     await self.db_analytics_for_sessions.photo_send(user_id)
+                    logging.info(f'Photo send: {user_id}')
                 except:
                     pass
                 model_name = await self.db.get_user_model(user_id)
