@@ -1215,7 +1215,9 @@ class ChatGPTTelegramBot:
 💰  <i>{prices_old[0]}</i>  <b>{prices_new[0]} руб / 30 дней</b>
 
 ⚙️     <b>GPT-4-mini </b>: 500 тыс.
-🔹 Чтение файлов
+
+🔹 Чтение файлов(pdf, pptx, xlsx, txt, docx)
+❌ Анализ и генерация фото
 
 </blockquote>
 
@@ -1789,8 +1791,7 @@ GPT-4o-mini     82%
             #     return
 
             logging.info(
-                f'New message received from user {update.message.from_user.name} (id: {update.message.from_user.id})' + '\n' +
-                f'Message: {update.message.text[:100]}'
+                f'New message received from user {update.message.from_user.name} (id: {update.message.from_user.id})'
                 )
 
 
