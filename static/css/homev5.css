@@ -2122,6 +2122,9 @@ align-items: center;
   }
 }
 @media (max-height: 690px) {
+  .homev4-text-pric-h{
+    font-size: 16px;
+  }
   .large-header{
   height:auto;
 
