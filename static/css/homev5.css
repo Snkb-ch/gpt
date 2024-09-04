@@ -1434,6 +1434,7 @@ font-size: 25px;
   }
   .homev4-container07 {
     width: 90%;
+    height: 30px;
      
   }
   .homev4-text02 {
@@ -1502,8 +1503,16 @@ align-self: center;
     width: auto;
     align-self: center;
     align-items: stretch;
+    display: none;
 
 
+  }
+
+
+  .homev4-text20{
+    font-size: 22px;
+    margin-bottom: 25px;
+    margin-top: 25px;
   }
   .homev4-container35 {
     width: auto;
