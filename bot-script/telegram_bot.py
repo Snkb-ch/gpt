@@ -2460,7 +2460,7 @@ GPT-4o-mini     82%
         try:
             while application.running:
                 await asyncio.sleep(1)
-            log.info("App stopped running for some other reason, shutting down...")
+            logging.info("App stopped running for some other reason, shutting down...")
         except asyncio.CancelledError:
             logging.info('Bot stopped')
             await application.stop()
