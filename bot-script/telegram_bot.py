@@ -371,7 +371,7 @@ class ChatGPTTelegramBot:
         }
         # Вычисляем текущее время с учетом задержки (на 1 минуту меньше текущего времени)
         # Дата и время конверсии в формате Unix Time Stamp
-        date = datetime.now() + timedelta(seconds=120)
+        date = datetime.now()
         date = int(date.timestamp())
         date = str(date)
 
@@ -392,9 +392,8 @@ class ChatGPTTelegramBot:
         output.seek(0)
 
 
-        
-        
 
+    
         # Отправляем запрос
         files = {'file': ('offline-conversions.csv', output, 'text/csv')}
 
