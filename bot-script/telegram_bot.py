@@ -371,7 +371,7 @@ class ChatGPTTelegramBot:
         }
         # Вычисляем текущее время с учетом задержки (на 1 минуту меньше текущего времени)
         # Дата и время конверсии в формате Unix Time Stamp
-        date = datetime.now()
+        date = datetime.now() - timedelta(seconds = 3 )
         date = int(date.timestamp())
         date = str(date)
 
@@ -415,6 +415,7 @@ class ChatGPTTelegramBot:
         if response.status_code == 200:
             
             await self.db.add_offline_conversions(user_id, target)
+            await self.db.add_offline_conversions_settings_count(target)
         
         else:
             logging.error(f"Error adding offline conversions: {response.status_code}")
