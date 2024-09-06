@@ -378,8 +378,10 @@ class ChatGPTTelegramBot:
         
         date = int(date.timestamp())
         date = str(date)
-        logging.info(date)
-        
+    
+
+        logging.info(f'{client_id} {target} {date}')
+
 
      
 
