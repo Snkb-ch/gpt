@@ -136,24 +136,26 @@
         </div>
         </div>
         {% else %}
-        <div class="component-container1">
-        <div>
+        
+
+          <a href = "{% url 'home' %}"><div class="frame-9">
+            <img
+              class="photo-2023-10-09-14-35-23-1"
+              src= "{% static 'images/logogpt.png' %}"
+            />
+            <div class="brainstorm-ai">BrainstormAI</div>
+          </div>
+          </a>  
+        
+          <div class="component-container1">
 <a class = 'css-buttonin-fully-rounded--green' href="{% url 'login' %}">
     Войти
 </a>
-        </div>
+
+        
       </div>
-      <div class="component-container2">
-        <div>
 
 
-
-<!--<div class = 'signup'>-->
-<!--<a class = 'css-button-fully-rounded&#45;&#45;green' href="{% url 'register' %}">-->
-<!--    Зарегистрироваться-->
-<!--</a></div>-->
-        </div>
-      </div>
 
 
         {% endif %}
