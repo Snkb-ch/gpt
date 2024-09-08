@@ -3478,6 +3478,7 @@ padding-right:25px;
     overflow: hidden;
     transition: all ease-in-out 0.5s;
     text-align: justify;
+    height: auto;
 }
 .faq-box-answer{
     font-weight: 400;
@@ -3583,8 +3584,3 @@ padding-right:25px;
             grid-template-columns: 1fr 16px;
         }
     }
-    @media (max-width: 479px){
-
-      
-
-
