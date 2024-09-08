@@ -114,7 +114,7 @@
 
    height: 100vh;
 
-  background: #333;
+
   overflow: hidden;
   background-size: cover;
   background-position: center center;
@@ -133,7 +133,9 @@
 @media(max-width: 479px) {
 
 .homev4-container{
-margin-top: -350px;
+/* margin-top: -350px; */
+position: absolute;
+top: 550px;
 }
 }
 
