@@ -95,6 +95,15 @@
   transition-duration: .3s;
   padding-left: 20px;
 }
+.logogpt1{
+width: 55px;
+height: auto;
+border-radius: 16px;
+
+border: solid 1px #7D32FF;
+
+}
+
 /* hover effect button's text */
 .Btn:hover .text {
   opacity: 1;
@@ -135,7 +144,7 @@
 .homev4-container{
 /* margin-top: -350px; */
 position: absolute;
-top: 550px;
+top: 500px;
 }
 }
 
@@ -527,6 +536,11 @@ display:none;
   }
 }
 @media(max-width: 479px) {
+  .logogpt1{
+    width: 35px;
+    border-radius: 5px;
+
+  }
   .main-title{
   top: 5%;
   left: 5%;
