@@ -40,11 +40,10 @@
           <div class="main-title ">
                   <div class="homev4-container02">
         <div class="homev4-container03">
-          <h1 class="homev4-text">ChatGPT в кармане</h1>
+          <h1 class="homev4-text">ChatGPT на русском</h1>
         </div>
-        
         <div class="homev4-container04">
-          <span class="homev4-text01">от 80 рублей</span>
+          <span class="homev4-text01">Cоздавай, учись, узнавай </span>
 
         </div>
 
@@ -79,593 +78,273 @@
 
   <div class="homev4-container">
     <div class="homev4-container01">
-      
 
-      <div class="homev4-container33-price">
+
+      <div class="homev4-container33">
         <h1 class="homev4-text20">
-          <span class="homev4-text21">Что есть в боте</span>
+          <span class="homev4-text21">Подбери нейросеть под задачу</span>
           <br class="homev4-text22" />
-
         </h1>
+      </div>
 
 
+      <div class="homev4-container34">
+
+       <button class="homev4-container36" data-type="text"  onclick="showBlock('text')">для текста</button>
+        <button  class="homev4-container36  " data-type="image"  onclick="showBlock('image')">для изображений</button>
+
+
+
+
+      </div>
+
+
+
+
+
+
+        <span class="homev4-text-pric-h" id="imageex">Примеры изображений DALLE 3</span>
+            <div class="container">
+    <input type="radio" name="slider" id="item-1" checked >
+    <input type="radio" name="slider" id="item-2" >
+    <input type="radio" name="slider" id="item-3">
+
+  <div class="cards" id="imageBlock" style="display:none"  >
+
+    <label class="card" for="item-1" id="song-1">
+
+      <img src="{% static 'images/im4.jpg' %}" class="homev4-container-task "/>
+
+    </label>
+<label class="card" for="item-2" id="song-2">
+           <img src="{% static 'images/im2.jpg' %}" class="homev4-container-task "/>
+    </label>
+
+
+
+    <label class="card" for="item-3" id="song-3">
+
+               <img src="{% static 'images/im3.jpg' %}" class="homev4-container-task "/>
+    </label>
+
+
+  </div>
+  <div class="cards" id="textBlock" >
+
+    <label class="card" for="item-1" id="song-1">
+
+      <div class="homev4-container-task task1" style="min-height:255px;">
+           <span class="task-hed">Решить задачу по фото</span>
+           <br>
+<span>Нейросеть ChatGPT поймет, что на картинке и даст быстрый ответ.</span> <br> <span style="font-size: 12px;"></span>Доступно только в подписках с GPT 4.</span> 
+
+
+</span>
+<!--<span>Больше не нужны сервисы по переводу фото в текст. Нейросеть поймет, что на картинке и даст быстрый ответ всего в два клика-->
+<!--</span>-->
+        </div>
+    </label>
+<label class="card" for="item-2" id="song-2">
+     <div class="homev4-container-task task2"  style="min-height:255px;">
+           <span class="task-hed" >Две модели</span>
+           <br>
+<span>GPT 4 для работы с фактами и обработки больших текстов, а GPT 4 mini — для тех, кому важнее количество сгенерированного контента</span>
+</span>
+        </div>
+    </label>
+
+
+
+    <label class="card" for="item-3" id="song-3" >
+
+    <div class="homev4-container-task task3"  style="min-height:255px;">
+           <span  class="task-hed">Помощник маркетолога</span>
+           <br>
+<!--                  <span>Все знания у тебя в кармане. Не трать время на рутину. Больше не нужно часами искать источники</span>-->
+                  <span>Нейросеть поможет с написанием любого текста, карточек товаров, постов в соцсетях</span>
+
+        </div>
+
+    </label>
+
+
+  </div>
             </div>
+ <div class="homev4-container-tasks"  id="imageBlockwide" style="display:none">
+
+    <div class="scroll-container">
+
+        <img src="{% static 'images/im4.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im2.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+        <img src="{% static 'images/im1.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+        <img src="{% static 'images/im5.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im6.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im7.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im8.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+         <img src="{% static 'images/im14.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im9.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+        <img src="{% static 'images/im10.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+             <img src="{% static 'images/im3.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im11.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im12.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im13.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im4.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im2.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+        <img src="{% static 'images/im1.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+        <img src="{% static 'images/im5.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im6.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im7.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im8.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im14.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im9.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+
+        <img src="{% static 'images/im10.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+             <img src="{% static 'images/im3.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im11.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im12.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
+        <img src="{% static 'images/im13.jpg' %}" class="homev4-container-task-img " style="width :400px;"/>
 
 
-      <div class="frame-190">
-        <div class="frame-189">
-          <div class="heading-subheading">
-            <div class="heading">
-              <div class="label">
-                <div class="label2">Бот для</div>
-              </div>
-            </div>
+
+   </div>
+
+
+                 </div>
+
+  <div class="homev4-container-tasks"  id="textBlockwide" >
+       <div class="homev4-container-task task1">
+           <span class="task-hed">Решить задачу по фото
+</span>
+           <br>
+           <span>Нейросеть ChatGPT поймет, что на картинке и даст быстрый ответ.</span> <br> <span style="font-size: 12px;"></span>Доступно только в подписках с GPT 4.</span> 
+</span>
+<!--<span>Больше не нужны сервисы по переводу фото в текст. Нейросеть поймет, что на картинке и даст быстрый ответ всего в два клика-->
+<!--</span>-->
+        </div>
+        <div class="homev4-container-task task2">
+           <span class="task-hed">Модели для текста</span>
+           <br>
+<span>GPT 4 для работы с фактами и обработки больших текстов, а GPT 4 mini  — для тех, кому важнее количество сгенерированного контента</span>
+        </div>
+            <div class="homev4-container-task task3">
+           <span  class="task-hed">Помощник маркетолога</span>
+           <br>
+<!--                  <span>Все знания у тебя в кармане. Не трать время на рутину. Больше не нужно часами искать источники</span>-->
+                  <span>Нейросеть поможет с написанием любого текста, карточек товаров, постов в соцсетях</span>
+
+        </div>
+
+      </div>
+           <div class="homev4-container06" id="texttype06" >
+        <div class="homev4-container07">
+          <div class="homev4-container08">
+            <h1 class="homev4-text02">Почему ChatGPT в Telegram лучше</h1>
           </div>
-          <div class="frame-157">
-            <div class="frame-156">
-              <div class="frame-153">
-                <div class="frame-159">
-                  <div class="group-158">
-                    <div class="group-157">
-                      <div class="ellipse-38"></div>
-                    </div>
-                  </div>
-                  <div class="group-159">
-                    <div class="group-1582">
-                      <div class="heading2">
-                        <div class="label3">
-                          <div class="label4">текста</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <img class="mask-group" src="{% static 'images/Mask2.svg' %}"  />
-                </div>
-                <div class="frame-1542">
-                  <div class="group-160">
-                    <div class="group-1583">
-                      <div class="group-1572">
-                        <div class="ellipse-382"></div>
-                        <div class="group-156">
-                          <div class="rectangle-174"></div>
-                          <div class="rectangle-175"></div>
-                          <img class="group-127" src="{% static 'images/Mask1.svg' %}" />
-                        </div>
-                      </div>
-                    </div>
-                    <div class="rectangle-176"></div>
-                    <div class="group-1592">
-                      <div class="group-1582">
-                        <div class="heading2">
-                          <div class="label3">
-                            <div class="label4">картинок</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+          <div class="homev4-container09">
+            <div class="homev4-container10">
+                <h1 class="h-dif">Сайт OpenAI</h1>
+              <div class="homev4-container-diff">
+                  <div>
+                  <ul>
+
+<li class='item-d'><svg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' width='24' height='24' viewBox='0 0 48 48'>
+<linearGradient id='hbE9Evnj3wAjjA2RX0We2a_OZuepOQd0omj_gr1' x1='7.534' x2='27.557' y1='7.534' y2='27.557' gradientUnits='userSpaceOnUse'><stop offset='0' stop-color='#f44f5a'></stop><stop offset='.443' stop-color='#ee3d4a'></stop><stop offset='1' stop-color='#e52030'></stop></linearGradient><path fill='url(#hbE9Evnj3wAjjA2RX0We2a_OZuepOQd0omj_gr1)' d='M42.42,12.401c0.774-0.774,0.774-2.028,0-2.802L38.401,5.58c-0.774-0.774-2.028-0.774-2.802,0	L24,17.179L12.401,5.58c-0.774-0.774-2.028-0.774-2.802,0L5.58,9.599c-0.774,0.774-0.774,2.028,0,2.802L17.179,24L5.58,35.599	c-0.774,0.774-0.774,2.028,0,2.802l4.019,4.019c0.774,0.774,2.028,0.774,2.802,0L42.42,12.401z'></path><linearGradient id='hbE9Evnj3wAjjA2RX0We2b_OZuepOQd0omj_gr2' x1='27.373' x2='40.507' y1='27.373' y2='40.507' gradientUnits='userSpaceOnUse'><stop offset='0' stop-color='#a8142e'></stop><stop offset='.179' stop-color='#ba1632'></stop><stop offset='.243' stop-color='#c21734'></stop></linearGradient><path fill='url(#hbE9Evnj3wAjjA2RX0We2b_OZuepOQd0omj_gr2)' d='M24,30.821L35.599,42.42c0.774,0.774,2.028,0.774,2.802,0l4.019-4.019	c0.774-0.774,0.774-2.028,0-2.802L30.821,24L24,30.821z'></path>
+</svg><pre class='list_text_d'>Не работает в России</pre></li>
+<li class='item-d'><svg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' width='24' height='24' viewBox='0 0 48 48'>
+<linearGradient id='hbE9Evnj3wAjjA2RX0We2a_OZuepOQd0omj_gr1' x1='7.534' x2='27.557' y1='7.534' y2='27.557' gradientUnits='userSpaceOnUse'><stop offset='0' stop-color='#f44f5a'></stop><stop offset='.443' stop-color='#ee3d4a'></stop><stop offset='1' stop-color='#e52030'></stop></linearGradient><path fill='url(#hbE9Evnj3wAjjA2RX0We2a_OZuepOQd0omj_gr1)' d='M42.42,12.401c0.774-0.774,0.774-2.028,0-2.802L38.401,5.58c-0.774-0.774-2.028-0.774-2.802,0	L24,17.179L12.401,5.58c-0.774-0.774-2.028-0.774-2.802,0L5.58,9.599c-0.774,0.774-0.774,2.028,0,2.802L17.179,24L5.58,35.599	c-0.774,0.774-0.774,2.028,0,2.802l4.019,4.019c0.774,0.774,2.028,0.774,2.802,0L42.42,12.401z'></path><linearGradient id='hbE9Evnj3wAjjA2RX0We2b_OZuepOQd0omj_gr2' x1='27.373' x2='40.507' y1='27.373' y2='40.507' gradientUnits='userSpaceOnUse'><stop offset='0' stop-color='#a8142e'></stop><stop offset='.179' stop-color='#ba1632'></stop><stop offset='.243' stop-color='#c21734'></stop></linearGradient><path fill='url(#hbE9Evnj3wAjjA2RX0We2b_OZuepOQd0omj_gr2)' d='M24,30.821L35.599,42.42c0.774,0.774,2.028,0.774,2.802,0l4.019-4.019	c0.774-0.774,0.774-2.028,0-2.802L30.821,24L24,30.821z'></path>
+</svg><span class='list_text_d'>Доступ к GPT 4 за 20$</span></li>
+
+<li class='item-d'><svg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' width='24' height='24' viewBox='0 0 48 48'>
+<linearGradient id='hbE9Evnj3wAjjA2RX0We2a_OZuepOQd0omj_gr1' x1='7.534' x2='27.557' y1='7.534' y2='27.557' gradientUnits='userSpaceOnUse'><stop offset='0' stop-color='#f44f5a'></stop><stop offset='.443' stop-color='#ee3d4a'></stop><stop offset='1' stop-color='#e52030'></stop></linearGradient><path fill='url(#hbE9Evnj3wAjjA2RX0We2a_OZuepOQd0omj_gr1)' d='M42.42,12.401c0.774-0.774,0.774-2.028,0-2.802L38.401,5.58c-0.774-0.774-2.028-0.774-2.802,0	L24,17.179L12.401,5.58c-0.774-0.774-2.028-0.774-2.802,0L5.58,9.599c-0.774,0.774-0.774,2.028,0,2.802L17.179,24L5.58,35.599	c-0.774,0.774-0.774,2.028,0,2.802l4.019,4.019c0.774,0.774,2.028,0.774,2.802,0L42.42,12.401z'></path><linearGradient id='hbE9Evnj3wAjjA2RX0We2b_OZuepOQd0omj_gr2' x1='27.373' x2='40.507' y1='27.373' y2='40.507' gradientUnits='userSpaceOnUse'><stop offset='0' stop-color='#a8142e'></stop><stop offset='.179' stop-color='#ba1632'></stop><stop offset='.243' stop-color='#c21734'></stop></linearGradient><path fill='url(#hbE9Evnj3wAjjA2RX0We2b_OZuepOQd0omj_gr2)' d='M24,30.821L35.599,42.42c0.774,0.774,2.028,0.774,2.802,0l4.019-4.019	c0.774-0.774,0.774-2.028,0-2.802L30.821,24L24,30.821z'></path>
+</svg><pre class='list_text_d'>Нужна зарубежная
+карта</pre></li>
+<li class='item-d'><svg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' width='24' height='24' viewBox='0 0 48 48'>
+<linearGradient id='hbE9Evnj3wAjjA2RX0We2a_OZuepOQd0omj_gr1' x1='7.534' x2='27.557' y1='7.534' y2='27.557' gradientUnits='userSpaceOnUse'><stop offset='0' stop-color='#f44f5a'></stop><stop offset='.443' stop-color='#ee3d4a'></stop><stop offset='1' stop-color='#e52030'></stop></linearGradient><path fill='url(#hbE9Evnj3wAjjA2RX0We2a_OZuepOQd0omj_gr1)' d='M42.42,12.401c0.774-0.774,0.774-2.028,0-2.802L38.401,5.58c-0.774-0.774-2.028-0.774-2.802,0	L24,17.179L12.401,5.58c-0.774-0.774-2.028-0.774-2.802,0L5.58,9.599c-0.774,0.774-0.774,2.028,0,2.802L17.179,24L5.58,35.599	c-0.774,0.774-0.774,2.028,0,2.802l4.019,4.019c0.774,0.774,2.028,0.774,2.802,0L42.42,12.401z'></path><linearGradient id='hbE9Evnj3wAjjA2RX0We2b_OZuepOQd0omj_gr2' x1='27.373' x2='40.507' y1='27.373' y2='40.507' gradientUnits='userSpaceOnUse'><stop offset='0' stop-color='#a8142e'></stop><stop offset='.179' stop-color='#ba1632'></stop><stop offset='.243' stop-color='#c21734'></stop></linearGradient><path fill='url(#hbE9Evnj3wAjjA2RX0We2b_OZuepOQd0omj_gr2)' d='M24,30.821L35.599,42.42c0.774,0.774,2.028,0.774,2.802,0l4.019-4.019	c0.774-0.774,0.774-2.028,0-2.802L30.821,24L24,30.821z'></path>
+</svg><pre class='list_text_d'>Ограничение на
+сообщения в час</pre></li>
+
+
+
+
+</ul>
+
+
                   </div>
                 </div>
-              </div>
-              <div class="frame-1552">
-                <div class="frame-1592">
-                  <div class="frame-158">
-                    <div class="group-1573">
-                      <div class="ellipse-383"></div>
-                      <div class="group-156">
-                        <div class="rectangle-1742"></div>
-                        <div class="rectangle-1752"></div>
-                        <img class="group-1272" src="{% static 'images/Mask3.svg' %}"  />
-                      </div>
-                    </div>
-                  </div>
-                  <div class="frame-1593">
-                    <div class="group-1584">
-                      <div class="heading3">
-                        <div class="label3">
-                          <div class="label5">
-                            анализа
-                            <br />
-                            фото
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="frame-161">
-                  <div class="frame-1582">
-                    <div class="group-1573">
-                      <div class="ellipse-384"></div>
-                      <div class="group-156">
-                        <div class="rectangle-1742"></div>
-                        <div class="rectangle-1752"></div>
-                        <img class="group-1273" src="{% static 'images/Mask4.svg' %}"  />
-                      </div>
-                    </div>
-                  </div>
-                  <div class="frame-1594">
-                    <div class="group-1584">
-                      <div class="heading3">
-                        <div class="label3">
-                          <div class="label5">
-                            чтения
-                            <br />
-                            файлов
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+
+            </div>
+            <div class="homev4-container11">
+                <h1 class="h-dif">Telegram Bot</h1>
+             <div class="homev4-container-diff">
+                  <div>
+                                     <ul>
+
+<li class='item-d'><svg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' width='24' height='24' viewBox='0,0,256,256'
+style='fill:#000000;'>
+<defs><linearGradient x1='21.241' y1='39.241' x2='3.541' y2='21.541' gradientUnits='userSpaceOnUse' id='color-1_VFaz7MkjAiu0_gr1'><stop offset='0.108' stop-color='#0d7044'></stop><stop offset='0.433' stop-color='#11945a'></stop></linearGradient><linearGradient x1='44.41029' y1='9.58989' x2='14.59' y2='39.41123' gradientUnits='userSpaceOnUse' id='color-2_VFaz7MkjAiu0_gr2'><stop offset='0' stop-color='#2ac782'></stop><stop offset='1' stop-color='#21b876'></stop></linearGradient></defs><g fill='none' fill-rule='nonzero' stroke='none' stroke-width='1' stroke-linecap='butt' stroke-linejoin='miter' stroke-miterlimit='10' stroke-dasharray='' stroke-dashoffset='0' font-family='none' font-weight='none' font-size='none' text-anchor='none' style='mix-blend-mode: normal'><g transform='scale(5.33333,5.33333)'><path d='M16.599,41.42l-15.019,-15.019c-0.774,-0.774 -0.774,-2.028 0,-2.802l4.019,-4.019c0.774,-0.774 2.028,-0.774 2.802,0l15.019,15.019c0.774,0.774 0.774,2.028 0,2.802l-4.019,4.019c-0.774,0.773 -2.028,0.773 -2.802,0z' fill='url(#color-1_VFaz7MkjAiu0_gr1)'></path><path d='M12.58,34.599l27.019,-27.019c0.774,-0.774 2.028,-0.774 2.802,0l4.019,4.019c0.774,0.774 0.774,2.028 0,2.802l-27.019,27.019c-0.774,0.774 -2.028,0.774 -2.802,0l-4.019,-4.019c-0.773,-0.774 -0.773,-2.028 0,-2.802z' fill='url(#color-2_VFaz7MkjAiu0_gr2)'></path></g></g>
+</svg><pre class='list_text_d'>Без VPN и виртуальных
+номеров</pre></li>
+<li class='item-d'><svg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' width='24' height='24' viewBox='0,0,256,256'
+style='fill:#000000;'>
+<defs><linearGradient x1='21.241' y1='39.241' x2='3.541' y2='21.541' gradientUnits='userSpaceOnUse' id='color-1_VFaz7MkjAiu0_gr1'><stop offset='0.108' stop-color='#0d7044'></stop><stop offset='0.433' stop-color='#11945a'></stop></linearGradient><linearGradient x1='44.41029' y1='9.58989' x2='14.59' y2='39.41123' gradientUnits='userSpaceOnUse' id='color-2_VFaz7MkjAiu0_gr2'><stop offset='0' stop-color='#2ac782'></stop><stop offset='1' stop-color='#21b876'></stop></linearGradient></defs><g fill='none' fill-rule='nonzero' stroke='none' stroke-width='1' stroke-linecap='butt' stroke-linejoin='miter' stroke-miterlimit='10' stroke-dasharray='' stroke-dashoffset='0' font-family='none' font-weight='none' font-size='none' text-anchor='none' style='mix-blend-mode: normal'><g transform='scale(5.33333,5.33333)'><path d='M16.599,41.42l-15.019,-15.019c-0.774,-0.774 -0.774,-2.028 0,-2.802l4.019,-4.019c0.774,-0.774 2.028,-0.774 2.802,0l15.019,15.019c0.774,0.774 0.774,2.028 0,2.802l-4.019,4.019c-0.774,0.773 -2.028,0.773 -2.802,0z' fill='url(#color-1_VFaz7MkjAiu0_gr1)'></path><path d='M12.58,34.599l27.019,-27.019c0.774,-0.774 2.028,-0.774 2.802,0l4.019,4.019c0.774,0.774 0.774,2.028 0,2.802l-27.019,27.019c-0.774,0.774 -2.028,0.774 -2.802,0l-4.019,-4.019c-0.773,-0.774 -0.773,-2.028 0,-2.802z' fill='url(#color-2_VFaz7MkjAiu0_gr2)'></path></g></g>
+</svg><span class='list_text_d'>GPT 4 от 150 рублей</span></li>
+<li class='item-d'><svg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' width='24' height='24' viewBox='0,0,256,256'
+style='fill:#000000;'>
+<defs><linearGradient x1='21.241' y1='39.241' x2='3.541' y2='21.541' gradientUnits='userSpaceOnUse' id='color-1_VFaz7MkjAiu0_gr1'><stop offset='0.108' stop-color='#0d7044'></stop><stop offset='0.433' stop-color='#11945a'></stop></linearGradient><linearGradient x1='44.41029' y1='9.58989' x2='14.59' y2='39.41123' gradientUnits='userSpaceOnUse' id='color-2_VFaz7MkjAiu0_gr2'><stop offset='0' stop-color='#2ac782'></stop><stop offset='1' stop-color='#21b876'></stop></linearGradient></defs><g fill='none' fill-rule='nonzero' stroke='none' stroke-width='1' stroke-linecap='butt' stroke-linejoin='miter' stroke-miterlimit='10' stroke-dasharray='' stroke-dashoffset='0' font-family='none' font-weight='none' font-size='none' text-anchor='none' style='mix-blend-mode: normal'><g transform='scale(5.33333,5.33333)'><path d='M16.599,41.42l-15.019,-15.019c-0.774,-0.774 -0.774,-2.028 0,-2.802l4.019,-4.019c0.774,-0.774 2.028,-0.774 2.802,0l15.019,15.019c0.774,0.774 0.774,2.028 0,2.802l-4.019,4.019c-0.774,0.773 -2.028,0.773 -2.802,0z' fill='url(#color-1_VFaz7MkjAiu0_gr1)'></path><path d='M12.58,34.599l27.019,-27.019c0.774,-0.774 2.028,-0.774 2.802,0l4.019,4.019c0.774,0.774 0.774,2.028 0,2.802l-27.019,27.019c-0.774,0.774 -2.028,0.774 -2.802,0l-4.019,-4.019c-0.773,-0.774 -0.773,-2.028 0,-2.802z' fill='url(#color-2_VFaz7MkjAiu0_gr2)'></path></g></g>
+</svg><span class='list_text_d'>Анализ и генерация фото</span></li>
+<li class='item-d'><svg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' width='24' height='24' viewBox='0,0,256,256'
+style='fill:#000000;'>
+
+<defs><linearGradient x1='21.241' y1='39.241' x2='3.541' y2='21.541' gradientUnits='userSpaceOnUse' id='color-1_VFaz7MkjAiu0_gr1'><stop offset='0.108' stop-color='#0d7044'></stop><stop offset='0.433' stop-color='#11945a'></stop></linearGradient><linearGradient x1='44.41029' y1='9.58989' x2='14.59' y2='39.41123' gradientUnits='userSpaceOnUse' id='color-2_VFaz7MkjAiu0_gr2'><stop offset='0' stop-color='#2ac782'></stop><stop offset='1' stop-color='#21b876'></stop></linearGradient></defs><g fill='none' fill-rule='nonzero' stroke='none' stroke-width='1' stroke-linecap='butt' stroke-linejoin='miter' stroke-miterlimit='10' stroke-dasharray='' stroke-dashoffset='0' font-family='none' font-weight='none' font-size='none' text-anchor='none' style='mix-blend-mode: normal'><g transform='scale(5.33333,5.33333)'><path d='M16.599,41.42l-15.019,-15.019c-0.774,-0.774 -0.774,-2.028 0,-2.802l4.019,-4.019c0.774,-0.774 2.028,-0.774 2.802,0l15.019,15.019c0.774,0.774 0.774,2.028 0,2.802l-4.019,4.019c-0.774,0.773 -2.028,0.773 -2.802,0z' fill='url(#color-1_VFaz7MkjAiu0_gr1)'></path><path d='M12.58,34.599l27.019,-27.019c0.774,-0.774 2.028,-0.774 2.802,0l4.019,4.019c0.774,0.774 0.774,2.028 0,2.802l-27.019,27.019c-0.774,0.774 -2.028,0.774 -2.802,0l-4.019,-4.019c-0.773,-0.774 -0.773,-2.028 0,-2.802z' fill='url(#color-2_VFaz7MkjAiu0_gr2)'></path></g></g>
+</svg><pre class='list_text_d'>Несколько запросов
+одновременно</pre></li>
+
+
+</ul>
                   </div>
                 </div>
-              </div>
             </div>
           </div>
         </div>
+           </div>
+
+
+
+
+
+
+
       </div>
 
-      <div class="frame-177">
-        <div class="logotypes"></div>
-        <div class="frame-191">
-          <div class="heading-subheading">
-            <div class="heading">
-              <div class="label">
-                <div class="label2">Подписки</div>
-              </div>
-            </div>
-          </div>
-          <div class="frame-192">
-            <div class="frame-156">
-              <div class="blocksub">
-                <div class="frame-183">
-                  
-                  <div class="frame-1612" id = "first"  style="display: none;">
-                    <div class="multi-standart">GPT Mini</div>
-                    <div class="frame-198">
-                      <div class="frame-199">
-                        <img
-                          class="chat-gpt-stroke-rounded-1-1"
-                          src="{% static 'images/chat-gpt.svg' %}" 
-                        />
-                      </div>
-                      <div class="frame-200">
-                        <div class="gpt-4">GPT 4 mini</div>
-                      </div>
-                    </div>
-                    <div class="frame-2002">
-                      <div class="frame-199">
-                        <img
-                          class="chat-gpt-stroke-rounded-1-12"
-                          src= "{% static 'images/coins.png' %}"
-                        />
-                      </div>
-                      <div class="frame-2003">
-                        <div class="_500-000-30">
-                          <span>
-                            <span class="_500-000-30-span">500 000 токенов</span>
-                            <span class="_500-000-30-span5">/</span>
-
-                            <span class="_500-000-30-span7">30 дней</span>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div class="frame-201">
-                      <div class="frame-199">
-                        <span class='material-symbols-outlined' style="color: white;">
-                          description
-                          </span>
-                      </div>
-                      <div class="frame-2003">
-                        <div class="_30">Чтение файлов</div>
-                      </div>
-                    </div>
-                    <div class="frame-1992">
-                      <div class="frame-1993">
-                        <img
-                          class="chat-gpt-stroke-rounded-1-13"
-                          src="https://img.icons8.com/emoji/48/cross-mark-emoji.png" 
-                        />
-                      </div>
-                      <div class="frame-200">
-                        <div class="gpt-4">GPT 4</div>
-                      </div>
-
-                    </div>
-                    <div class="frame-202">
-                      <div class="frame-199">
-                        <img
-                          class="chat-gpt-stroke-rounded-1-15"
-                          src="https://img.icons8.com/emoji/48/cross-mark-emoji.png"
-                        />
-                      </div>
-                      <div class="frame-2004">
-                        <div class="_30">Анализ и генерация фото</div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div class="frame-1612" id = "second" style="display: flex;">
-                    <div class="multi-standart" >Multi Light</div>
-                    <div class="frame-198">
-                      <div class="frame-199">
-                        <img
-                          class="chat-gpt-stroke-rounded-1-1"
-                          src="{% static 'images/chat-gpt.svg' %}" 
-                        />
-                      </div>
-                      <div class="frame-200">
-                        <div class="gpt-4">GPT 4</div>
-                      </div>
-                    </div>
-                    <div class="frame-2002">
-                      <div class="frame-199">
-                        <img
-                          class="chat-gpt-stroke-rounded-1-12"
-                          src= "{% static 'images/coins.png' %}"
-                        />
-                      </div>
-                      <div class="frame-2003">
-                        <div class="_500-000-30">
-                          <span>
-                            <span class="_500-000-30-span">100 000 токенов</span>
-                            <span class="_500-000-30-span5">/</span>
-
-                            <span class="_500-000-30-span7">30 дней</span>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="frame-1992">
-                      <div class="frame-1993">
-                        <img
-                          class="chat-gpt-stroke-rounded-1-13"
-                          src="{% static 'images/chat-gpt.svg' %}" 
-                        />
-                      </div>
-                      <div class="frame-2003">
-                        <div class="gpt-4-mini-10">
-                          <span>
-                            <span class="gpt-4-mini-10-span">
-                              GPT 4 mini
-                              <br />
-                            </span>
-                            <span class="gpt-4-mini-10-span2">
-                              тратит в 10 раз меньше
-                            </span>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="frame-201">
-                      <div class="frame-199">
-                        <span class='material-symbols-outlined' style="color: white;">
-                          description
-                          </span>
-                      </div>
-                      <div class="frame-2003">
-                        <div class="_30">Чтение файлов</div>
-                      </div>
-                    </div>
-                    <div class="frame-202">
-                      <div class="frame-199">
-                        <img
-                          class="chat-gpt-stroke-rounded-1-15"
-                           src="{% static 'images/done.png' %}"
-                        />
-                      </div>
-                      <div class="frame-2004">
-                        <div class="_30">Анализ и генерация фото</div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div class="frame-1612" id = "third" style="display: none;">
-                    <div class="multi-standart">Multi Standart</div>
-                    <div class="frame-198">
-                      <div class="frame-199">
-                        <img
-                          class="chat-gpt-stroke-rounded-1-1"
-                          src="{% static 'images/chat-gpt.svg' %}" 
-                        />
-                      </div>
-                      <div class="frame-200">
-                        <div class="gpt-4">GPT 4</div>
-                      </div>
-                    </div>
-                    <div class="frame-2002">
-                      <div class="frame-199">
-                        <img
-                          class="chat-gpt-stroke-rounded-1-12"
-                          src= "{% static 'images/coins.png' %}"
-                        />
-                      </div>
-                      <div class="frame-2003">
-                        <div class="_500-000-30">
-                          <span>
-                            <span class="_500-000-30-span">200 000 токенов</span>
-                            <span class="_500-000-30-span5">/</span>
-
-                            <span class="_500-000-30-span7">30 дней</span>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="frame-1992">
-                      <div class="frame-1993">
-                        <img
-                          class="chat-gpt-stroke-rounded-1-13"
-                          src="{% static 'images/chat-gpt.svg' %}" 
-                        />
-                      </div>
-                      <div class="frame-2003">
-                        <div class="gpt-4-mini-10">
-                          <span>
-                            <span class="gpt-4-mini-10-span">
-                              GPT 4 mini
-                              <br />
-                            </span>
-                            <span class="gpt-4-mini-10-span2">
-                              тратит в 10 раз меньше
-                            </span>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="frame-201">
-                      <div class="frame-199">
-                        <span class='material-symbols-outlined' style="color: white;">
-                          description
-                          </span>
-                      </div>
-                      <div class="frame-2003">
-                        <div class="_30">Чтение файлов</div>
-                      </div>
-                    </div>
-                    <div class="frame-202">
-                      <div class="frame-199">
-                        <img
-                          class="chat-gpt-stroke-rounded-1-15"
-                           src="{% static 'images/done.png' %}"
-                        />
-                      </div>
-                      <div class="frame-2004">
-                        <div class="_30">Анализ и генерация фото</div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div class="frame-1612" id = "fourth" style="display: none;">
-                    <div class="multi-standart" >Multi PRO</div>
-                    <div class="frame-198">
-                      <div class="frame-199">
-                        <img
-                          class="chat-gpt-stroke-rounded-1-1"
-                          src="{% static 'images/chat-gpt.svg' %}" 
-                        />
-                      </div>
-                      <div class="frame-200">
-                        <div class="gpt-4">GPT 4</div>
-                      </div>
-                    </div>
-                    <div class="frame-2002">
-                      <div class="frame-199">
-                        <img
-                          class="chat-gpt-stroke-rounded-1-12"
-                          src= "{% static 'images/coins.png' %}"
-                        />
-                      </div>
-                      <div class="frame-2003">
-                        <div class="_500-000-30">
-                          <span>
-                            <span class="_500-000-30-span">500 000 токенов</span>
-                            <span class="_500-000-30-span5">/</span>
-
-                            <span class="_500-000-30-span7">30 дней</span>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="frame-1992">
-                      <div class="frame-1993">
-                        <img
-                          class="chat-gpt-stroke-rounded-1-13"
-                          src="{% static 'images/chat-gpt.svg' %}" 
-                        />
-                      </div>
-                      <div class="frame-2003">
-                        <div class="gpt-4-mini-10">
-                          <span>
-                            <span class="gpt-4-mini-10-span">
-                              GPT 4 mini
-                              <br />
-                            </span>
-                            <span class="gpt-4-mini-10-span2">
-                              тратит в 10 раз меньше
-                            </span>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="frame-201">
-                      <div class="frame-199">
-                        <span class='material-symbols-outlined' style="color: white;">
-                          description
-                          </span>
-                      </div>
-                      <div class="frame-2003">
-                        <div class="_30">Чтение файлов</div>
-                      </div>
-                    </div>
-                    <div class="frame-202">
-                      <div class="frame-199">
-                        <img
-                          class="chat-gpt-stroke-rounded-1-15"
-                           src="{% static 'images/done.png' %}"
-                        />
-                      </div>
-                      <div class="frame-2004">
-                        <div class="_30">Анализ и генерация фото</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="blockprices">
-              <div class="frame-176" onclick="handleClick(this, 1)">
-                <div class="frame-172">
-                  <div class="_150">
-                    <span>
-                      <span class="_150-span">80</span>
-                      <span class="_150-span2">₽</span>
-                    </span>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="frame-176" onclick="handleClick(this, 2)">
-                <div class="frame-172 active">
-                  <div class="_150">
-                    <span>
-                      <span class="_150-span">150 </span>
-                      <span class="_150-span2">₽</span>
-                    </span>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="frame-176" onclick="handleClick(this, 3)">
-                <div class="frame-172">
-                  <div class="_150">
-                    <span>
-                      <span class="_150-span">260</span>
-                      <span class="_150-span2">₽</span>
-                    </span>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="frame-176" onclick="handleClick(this, 4)">
-                <div class="frame-172">
-                  <div class="_150">
-                    <span>
-                      <span class="_150-span">580</span>
-                      <span class="_150-span2">₽</span>
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-
-
-
-
-      <div class="block-1">
-        <div class="block-2">
-          <div class="frame-143">
-            <div class="frame-132">
-              <div class="test-1">
-                <div class="_1">
-                  <div class="div">
-                    <div class="div2">Для текста</div>
-                    <div class="gpt-4-gpt-4-mini">Есть GPT 4, GPT 4 mini</div>
-                  </div>
-                </div>
-                <div class="_12">
-                  <div class="_13"></div>
-                  <img class="mask-group-1" src="{% static 'images/Mask2.svg' %}"  />
-                </div>
-              </div>
-              <div class="test-2">
-                <div class="_1">
-                  <div class="div">
-                    <div class="div2">Для картинок</div>
-                    <div class="dall-e">Используем DALL E</div>
-                  </div>
-                </div>
-                <div class="_12">
-                  <div class="_14"></div>
-                  <img class="mask-group-12" src="{% static 'images/Mask1.svg' %}"  />
-                </div>
-              </div>
-            </div>
-            <div class="frame-135">
-              <div class="test-2">
-                <div class="_15">
-                  <div class="div">
-                    <div class="div3">Для анализа фото</div>
-                    <div class="dall-e">Тоже GPT 4</div>
-                  </div>
-                </div>
-                <div class="_12">
-                  <div class="_16"></div>
-                  <img class="mask-group-13" src="{% static 'images/Mask3.svg' %}"  />
-                </div>
-              </div>
-              <div class="test-1">
-                <div class="_15">
-                  <div class="div">
-                    <div class="div4">
-                      Ещё читаем файлы
-                    </div>
-                    <div class="pdf-docx-pptx-xlsx">PDF, DOCX, PPTX, XLSX</div>
-                  </div>
-                </div>
-                <div class="_12">
-                  <div class="_17"></div>
-                  <img class="mask-group-14" src="{% static 'images/Mask4.svg' %}"  />
-                </div>
-              </div>
-            </div>
-            <div class="freeblock">
-              <div class="frame-150">
-                <div class="frame-155">
-                  <div class="frame-152">
-                    <div class="frame-1542">
-                      <div class="text-button">
-                        <div class="div2">Три дня — бесплатно</div>
-                        <div class="gpt-4-mini">Доступна только GPT 4 mini</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="frame-153">
-                    <div class="frame-149">
-                      <a href="https://t.me/gpthabot?start={{utm_campaign}}_{{gbid}}"  class="button-tg-2"><img class="tg-img" src = "{% static 'images/tgicon20.png' %}"><span class="button-tg-text">Попробовать</span></a>
-          
-                    </div>
-                  </div>
-                </div>
-                <img class="div5" src="{% static 'images/tryim.svg' %}"  />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-
-      </div>
-      
-
-            
 
 
 
 
             <div class="homev4-container33-price">
         <h1 class="homev4-text20">
-          <span class="homev4-text21">Подписки</span>
+          <span class="homev4-text21">Тарифы</span>
           <br class="homev4-text22" />
 
         </h1>
 
 
             </div>
+        <div class="homev4-container33-price-pod">
 
+          <span class="homev4-text-pric-h"   id="pric-h"></span><span class="homev4-text-pric-h"   id="pric-h-im">Генерация одного изображения - 5000 токенов.</span>
+          <br class="homev4-text22" />
+
+
+
+
+
+
+            </div>
 
 
 
@@ -777,7 +456,8 @@ style="fill:#000000;">
                 <div class="sub-unit"><span class = "light-text" >Рекомендуем</span>
               <div class="homev4-container24 tariff imagelight light">
                 <div class="homev4-container25">
-                  <h3 class="homev4-text14">Multi Standart</h3> <div class="homev4-container26">
+                  <h3 class="homev4-text14">Multi Standart</h3>
+                  <div class="homev4-container26">
 <!--                    <s>290 </s> <span class="homev4-text15">232</span>-->
                     <span class="homev4-text15">260</span>
                     <span class="homev4-text16">руб/30 дней</span>
@@ -802,10 +482,7 @@ description
         <li class='item'><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30" height="30" viewBox="0,0,256,256"
 style="fill:#000000;">
 <g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(8.53333,8.53333)"><path d="M14.07031,2c-2.7397,0 -5.08587,1.71626 -6.03125,4.12695c-1.97774,0.26417 -3.74487,1.41772 -4.76172,3.17969c-1.36952,2.37231 -1.05748,5.26118 0.55664,7.28516c-0.75944,1.8443 -0.64484,3.95188 0.37109,5.71289c1.3701,2.3733 4.03086,3.54745 6.5918,3.16016c1.21754,1.58032 3.09904,2.53516 5.13281,2.53516c2.7397,0 5.08587,-1.71626 6.03125,-4.12695c1.97774,-0.26417 3.74487,-1.41772 4.76172,-3.17969c1.36952,-2.37231 1.05748,-5.26118 -0.55664,-7.28516c0.75944,-1.8443 0.64484,-3.95188 -0.37109,-5.71289c-1.3701,-2.3733 -4.03085,-3.54745 -6.5918,-3.16016c-1.21754,-1.58032 -3.09904,-2.53516 -5.13281,-2.53516zM14.07031,4c1.15613,0 2.24033,0.45464 3.06055,1.22656c-0.06263,0.03348 -0.1275,0.05994 -0.18945,0.0957l-4.43945,2.56445c-0.462,0.266 -0.748,0.75897 -0.75,1.29297l-0.02734,5.9668l-2.13477,-1.24609v-5.41992c0,-2.47 2.01047,-4.48047 4.48047,-4.48047zM20.49219,6.4668c1.43525,0.10211 2.79844,0.89164 3.57031,2.22852c0.57799,1.0009 0.72696,2.1675 0.46875,3.26367c-0.06105,-0.03799 -0.11696,-0.08098 -0.17969,-0.11719l-4.44141,-2.56445c-0.462,-0.266 -1.03114,-0.26695 -1.49414,-0.00195l-5.17969,2.96094l0.01172,-2.4707l4.69336,-2.71094c0.80213,-0.46312 1.68963,-0.64916 2.55078,-0.58789zM7.59961,8.26758c-0.00233,0.07118 -0.00977,0.14116 -0.00977,0.21289v5.12695c0,0.534 0.28314,1.02787 0.74414,1.29688l5.1543,3.00586l-2.14453,1.22461l-4.69531,-2.70898c-2.139,-1.235 -2.87367,-3.98209 -1.63867,-6.12109c0.57765,-1.00032 1.51225,-1.71239 2.58984,-2.03711zM18.65625,10.86523l4.69531,2.70899c2.139,1.235 2.87367,3.98209 1.63867,6.12109c-0.57765,1.00032 -1.51225,1.71239 -2.58984,2.03711c0.00233,-0.07118 0.00977,-0.14116 0.00977,-0.21289v-5.12695c0,-0.534 -0.28314,-1.02787 -0.74414,-1.29687l-5.1543,-3.00586zM15.00977,12.94727l1.77148,1.0332l-0.00977,2.05469l-1.78125,1.01758l-1.77148,-1.03516l0.00977,-2.05273zM18.27539,14.85352l2.13477,1.24609v5.41992c0,2.47 -2.01047,4.48047 -4.48047,4.48047c-1.15613,0 -2.24033,-0.45464 -3.06055,-1.22656c0.06263,-0.03348 0.1275,-0.05994 0.18945,-0.0957l4.43945,-2.56445c0.462,-0.266 0.748,-0.75897 0.75,-1.29297zM16.76367,17.76367l-0.01172,2.4707l-4.69336,2.71094c-2.139,1.235 -4.88609,0.49837 -6.12109,-1.64062c-0.57798,-1.0009 -0.72696,-2.1675 -0.46875,-3.26367c0.06105,0.03799 0.11696,0.08098 0.17969,0.11719l4.44141,2.56445c0.462,0.266 1.03114,0.26695 1.49414,0.00195z"></path></g></g>
-</svg><span class='list_text'>Доступ к GPT 4 mini</span>
-
-
-</li>
+</svg><span class='list_text'>Доступ к GPT 4 mini  </span></li>
          <li class='item'><img width='24' height='24' src="{% static 'images/done.png' %}"> <pre class='list_text'>Генерация до 40
 изображений</pre></li>
 <li class='item'><img width='24' height='24' src="{% static 'images/done.png' %}"><span class='list_text'>Анализ фото и файлов</span></li>
@@ -872,16 +549,152 @@ style="fill:#000000;">
 
             </div>
 
+              <div class="homev4-container23" id="23im">
+                  <div class="homev4-container28 tariff"  style="height:auto">
+                <div class="homev4-container29">
+                  <h3 class="homev4-text17">Multi light</h3>
+                  <div class="homev4-container30">
+<!--                    <s>700   </s> <span class="homev4-text18">   560</span>-->
+                    <span class="homev4-text18">   150</span>
+                    <span class="homev4-text19">руб/30 дней
+                    </span>
+                  </div>
+                </div>
+                <div class="homev4-container31">
+
+
+
+                  <div>
+
+                     <link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0' />
+<ul>
+        <li class='item'><img width='24' height='24' src="{% static 'images/done.png' %}"> <pre class='list_text'>Генерация до 100
+изображений</pre></li>
+
+
+
+<li class='item'><img width='24' height='24' src="{% static 'images/done.png' %}">
+<defs><linearGradient x1='21.241' y1='39.241' x2='3.541' y2='21.541' gradientUnits='userSpaceOnUse' id='color-1_VFaz7MkjAiu0_gr1'><stop offset='0.108' stop-color='#0d7044'></stop><stop offset='0.433' stop-color='#11945a'></stop></linearGradient><linearGradient x1='44.41029' y1='9.58989' x2='14.59' y2='39.41123' gradientUnits='userSpaceOnUse' id='color-2_VFaz7MkjAiu0_gr2'><stop offset='0' stop-color='#2ac782'></stop><stop offset='1' stop-color='#21b876'></stop></linearGradient></defs><g fill='none' fill-rule='nonzero' stroke='none' stroke-width='1' stroke-linecap='butt' stroke-linejoin='miter' stroke-miterlimit='10' stroke-dasharray='' stroke-dashoffset='0' font-family='none' font-weight='none' font-size='none' text-anchor='none' style='mix-blend-mode: normal'><g transform='scale(5.33333,5.33333)'><path d='M16.599,41.42l-15.019,-15.019c-0.774,-0.774 -0.774,-2.028 0,-2.802l4.019,-4.019c0.774,-0.774 2.028,-0.774 2.802,0l15.019,15.019c0.774,0.774 0.774,2.028 0,2.802l-4.019,4.019c-0.774,0.773 -2.028,0.773 -2.802,0z' fill='url(#color-1_VFaz7MkjAiu0_gr1)'></path><path d='M12.58,34.599l27.019,-27.019c0.774,-0.774 2.028,-0.774 2.802,0l4.019,4.019c0.774,0.774 0.774,2.028 0,2.802l-27.019,27.019c-0.774,0.774 -2.028,0.774 -2.802,0l-4.019,-4.019c-0.773,-0.774 -0.773,-2.028 0,-2.802z' fill='url(#color-2_VFaz7MkjAiu0_gr2)'></path></g></g>
+</svg><span class='list_text'>Анализ фото и файлов</span></li>
+
+
+<li class='item'><img width='24' height='24' src="{% static 'images/coins.png' %}" alt='stack-of-coins'/><span class='list_text'> 100 000 токенов</span></li>
+
+
+
+
+        <li class='item'><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30" height="30" viewBox="0,0,256,256"
+style="fill:#000000;">
+<g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(8.53333,8.53333)"><path d="M14.07031,2c-2.7397,0 -5.08587,1.71626 -6.03125,4.12695c-1.97774,0.26417 -3.74487,1.41772 -4.76172,3.17969c-1.36952,2.37231 -1.05748,5.26118 0.55664,7.28516c-0.75944,1.8443 -0.64484,3.95188 0.37109,5.71289c1.3701,2.3733 4.03086,3.54745 6.5918,3.16016c1.21754,1.58032 3.09904,2.53516 5.13281,2.53516c2.7397,0 5.08587,-1.71626 6.03125,-4.12695c1.97774,-0.26417 3.74487,-1.41772 4.76172,-3.17969c1.36952,-2.37231 1.05748,-5.26118 -0.55664,-7.28516c0.75944,-1.8443 0.64484,-3.95188 -0.37109,-5.71289c-1.3701,-2.3733 -4.03085,-3.54745 -6.5918,-3.16016c-1.21754,-1.58032 -3.09904,-2.53516 -5.13281,-2.53516zM14.07031,4c1.15613,0 2.24033,0.45464 3.06055,1.22656c-0.06263,0.03348 -0.1275,0.05994 -0.18945,0.0957l-4.43945,2.56445c-0.462,0.266 -0.748,0.75897 -0.75,1.29297l-0.02734,5.9668l-2.13477,-1.24609v-5.41992c0,-2.47 2.01047,-4.48047 4.48047,-4.48047zM20.49219,6.4668c1.43525,0.10211 2.79844,0.89164 3.57031,2.22852c0.57799,1.0009 0.72696,2.1675 0.46875,3.26367c-0.06105,-0.03799 -0.11696,-0.08098 -0.17969,-0.11719l-4.44141,-2.56445c-0.462,-0.266 -1.03114,-0.26695 -1.49414,-0.00195l-5.17969,2.96094l0.01172,-2.4707l4.69336,-2.71094c0.80213,-0.46312 1.68963,-0.64916 2.55078,-0.58789zM7.59961,8.26758c-0.00233,0.07118 -0.00977,0.14116 -0.00977,0.21289v5.12695c0,0.534 0.28314,1.02787 0.74414,1.29688l5.1543,3.00586l-2.14453,1.22461l-4.69531,-2.70898c-2.139,-1.235 -2.87367,-3.98209 -1.63867,-6.12109c0.57765,-1.00032 1.51225,-1.71239 2.58984,-2.03711zM18.65625,10.86523l4.69531,2.70899c2.139,1.235 2.87367,3.98209 1.63867,6.12109c-0.57765,1.00032 -1.51225,1.71239 -2.58984,2.03711c0.00233,-0.07118 0.00977,-0.14116 0.00977,-0.21289v-5.12695c0,-0.534 -0.28314,-1.02787 -0.74414,-1.29687l-5.1543,-3.00586zM15.00977,12.94727l1.77148,1.0332l-0.00977,2.05469l-1.78125,1.01758l-1.77148,-1.03516l0.00977,-2.05273zM18.27539,14.85352l2.13477,1.24609v5.41992c0,2.47 -2.01047,4.48047 -4.48047,4.48047c-1.15613,0 -2.24033,-0.45464 -3.06055,-1.22656c0.06263,-0.03348 0.1275,-0.05994 0.18945,-0.0957l4.43945,-2.56445c0.462,-0.266 0.748,-0.75897 0.75,-1.29297zM16.76367,17.76367l-0.01172,2.4707l-4.69336,2.71094c-2.139,1.235 -4.88609,0.49837 -6.12109,-1.64062c-0.57798,-1.0009 -0.72696,-2.1675 -0.46875,-3.26367c0.06105,0.03799 0.11696,0.08098 0.17969,0.11719l4.44141,2.56445c0.462,0.266 1.03114,0.26695 1.49414,0.00195z"></path></g></g>
+</svg><span class='list_text'>Досутп к GPT 4 mini и GPT 4</span></li>
+
+
+</ul>
+
+                  </div>
+
+                </div>
+              </div>
+                <div class="sub-unit"><span class = "light-text" >Рекомендуем</span>
+              <div class="homev4-container24 tariff imagelight light" style="height:auto">
+                <div class="homev4-container25">
+                  <h3 class="homev4-text14">Multi Standart</h3>
+                  <div class="homev4-container26">
+<!--                    <s>290 </s> <span class="homev4-text15">232</span>-->
+                    <span class="homev4-text15">260</span>
+                    <span class="homev4-text16">руб/30 дней</span>
+                  </div>
+                </div>
+
+
+                  <div class="homev4-container27">
+                  <div>
+
+                     <link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0' />
+<ul>
+
+        <li class='item'><img width='24' height='24' src="{% static 'images/done.png' %}"> <pre class='list_text'>Генерация до 40
+изображений</pre></li>
+
+
+
+<li class='item'><img width='24' height='24' src="{% static 'images/done.png' %}">
+<defs><linearGradient x1='21.241' y1='39.241' x2='3.541' y2='21.541' gradientUnits='userSpaceOnUse' id='color-1_VFaz7MkjAiu0_gr1'><stop offset='0.108' stop-color='#0d7044'></stop><stop offset='0.433' stop-color='#11945a'></stop></linearGradient><linearGradient x1='44.41029' y1='9.58989' x2='14.59' y2='39.41123' gradientUnits='userSpaceOnUse' id='color-2_VFaz7MkjAiu0_gr2'><stop offset='0' stop-color='#2ac782'></stop><stop offset='1' stop-color='#21b876'></stop></linearGradient></defs><g fill='none' fill-rule='nonzero' stroke='none' stroke-width='1' stroke-linecap='butt' stroke-linejoin='miter' stroke-miterlimit='10' stroke-dasharray='' stroke-dashoffset='0' font-family='none' font-weight='none' font-size='none' text-anchor='none' style='mix-blend-mode: normal'><g transform='scale(5.33333,5.33333)'><path d='M16.599,41.42l-15.019,-15.019c-0.774,-0.774 -0.774,-2.028 0,-2.802l4.019,-4.019c0.774,-0.774 2.028,-0.774 2.802,0l15.019,15.019c0.774,0.774 0.774,2.028 0,2.802l-4.019,4.019c-0.774,0.773 -2.028,0.773 -2.802,0z' fill='url(#color-1_VFaz7MkjAiu0_gr1)'></path><path d='M12.58,34.599l27.019,-27.019c0.774,-0.774 2.028,-0.774 2.802,0l4.019,4.019c0.774,0.774 0.774,2.028 0,2.802l-27.019,27.019c-0.774,0.774 -2.028,0.774 -2.802,0l-4.019,-4.019c-0.773,-0.774 -0.773,-2.028 0,-2.802z' fill='url(#color-2_VFaz7MkjAiu0_gr2)'></path></g></g>
+</svg><span class='list_text'>Анализ фото и файлов</span></li>
+
+
+<li class='item'><img width='24' height='24' src="{% static 'images/coins.png' %}" alt='stack-of-coins'/><span class='list_text'> 200 000 токенов</span></li>
+
+
+
+
+        <li class='item'><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30" height="30" viewBox="0,0,256,256"
+style="fill:#000000;">
+<g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(8.53333,8.53333)"><path d="M14.07031,2c-2.7397,0 -5.08587,1.71626 -6.03125,4.12695c-1.97774,0.26417 -3.74487,1.41772 -4.76172,3.17969c-1.36952,2.37231 -1.05748,5.26118 0.55664,7.28516c-0.75944,1.8443 -0.64484,3.95188 0.37109,5.71289c1.3701,2.3733 4.03086,3.54745 6.5918,3.16016c1.21754,1.58032 3.09904,2.53516 5.13281,2.53516c2.7397,0 5.08587,-1.71626 6.03125,-4.12695c1.97774,-0.26417 3.74487,-1.41772 4.76172,-3.17969c1.36952,-2.37231 1.05748,-5.26118 -0.55664,-7.28516c0.75944,-1.8443 0.64484,-3.95188 -0.37109,-5.71289c-1.3701,-2.3733 -4.03085,-3.54745 -6.5918,-3.16016c-1.21754,-1.58032 -3.09904,-2.53516 -5.13281,-2.53516zM14.07031,4c1.15613,0 2.24033,0.45464 3.06055,1.22656c-0.06263,0.03348 -0.1275,0.05994 -0.18945,0.0957l-4.43945,2.56445c-0.462,0.266 -0.748,0.75897 -0.75,1.29297l-0.02734,5.9668l-2.13477,-1.24609v-5.41992c0,-2.47 2.01047,-4.48047 4.48047,-4.48047zM20.49219,6.4668c1.43525,0.10211 2.79844,0.89164 3.57031,2.22852c0.57799,1.0009 0.72696,2.1675 0.46875,3.26367c-0.06105,-0.03799 -0.11696,-0.08098 -0.17969,-0.11719l-4.44141,-2.56445c-0.462,-0.266 -1.03114,-0.26695 -1.49414,-0.00195l-5.17969,2.96094l0.01172,-2.4707l4.69336,-2.71094c0.80213,-0.46312 1.68963,-0.64916 2.55078,-0.58789zM7.59961,8.26758c-0.00233,0.07118 -0.00977,0.14116 -0.00977,0.21289v5.12695c0,0.534 0.28314,1.02787 0.74414,1.29688l5.1543,3.00586l-2.14453,1.22461l-4.69531,-2.70898c-2.139,-1.235 -2.87367,-3.98209 -1.63867,-6.12109c0.57765,-1.00032 1.51225,-1.71239 2.58984,-2.03711zM18.65625,10.86523l4.69531,2.70899c2.139,1.235 2.87367,3.98209 1.63867,6.12109c-0.57765,1.00032 -1.51225,1.71239 -2.58984,2.03711c0.00233,-0.07118 0.00977,-0.14116 0.00977,-0.21289v-5.12695c0,-0.534 -0.28314,-1.02787 -0.74414,-1.29687l-5.1543,-3.00586zM15.00977,12.94727l1.77148,1.0332l-0.00977,2.05469l-1.78125,1.01758l-1.77148,-1.03516l0.00977,-2.05273zM18.27539,14.85352l2.13477,1.24609v5.41992c0,2.47 -2.01047,4.48047 -4.48047,4.48047c-1.15613,0 -2.24033,-0.45464 -3.06055,-1.22656c0.06263,-0.03348 0.1275,-0.05994 0.18945,-0.0957l4.43945,-2.56445c0.462,-0.266 0.748,-0.75897 0.75,-1.29297zM16.76367,17.76367l-0.01172,2.4707l-4.69336,2.71094c-2.139,1.235 -4.88609,0.49837 -6.12109,-1.64062c-0.57798,-1.0009 -0.72696,-2.1675 -0.46875,-3.26367c0.06105,0.03799 0.11696,0.08098 0.17969,0.11719l4.44141,2.56445c0.462,0.266 1.03114,0.26695 1.49414,0.00195z"></path></g></g>
+</svg><span class='list_text'>Досутп к GPT 4 mini и GPT 4</span></li>
+</ul>
+
+                  </div>
+                </div>
+
+              </div>
+                </div>
+                <div class="sub-unit">
+              <div class="homev4-container28 tariff"  style="height:auto">
+                <div class="homev4-container29">
+                  <h3 class="homev4-text17">Multi PRO</h3>
+                  <div class="homev4-container30">
+<!--                    <s>700   </s> <span class="homev4-text18">   560</span>-->
+                    <span class="homev4-text18">   580</span>
+                    <span class="homev4-text19">руб/60 дней
+                    </span>
+                  </div>
+                </div>
+                <div class="homev4-container31">
+
+
+
+                  <div>
+
+                     <link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0' />
+<ul>
+        <li class='item'><img width='24' height='24' src="{% static 'images/done.png' %}"> <pre class='list_text'>Генерация до 100
+изображений</pre></li>
+
+
+
+<li class='item'><img width='24' height='24' src="{% static 'images/done.png' %}">
+<defs><linearGradient x1='21.241' y1='39.241' x2='3.541' y2='21.541' gradientUnits='userSpaceOnUse' id='color-1_VFaz7MkjAiu0_gr1'><stop offset='0.108' stop-color='#0d7044'></stop><stop offset='0.433' stop-color='#11945a'></stop></linearGradient><linearGradient x1='44.41029' y1='9.58989' x2='14.59' y2='39.41123' gradientUnits='userSpaceOnUse' id='color-2_VFaz7MkjAiu0_gr2'><stop offset='0' stop-color='#2ac782'></stop><stop offset='1' stop-color='#21b876'></stop></linearGradient></defs><g fill='none' fill-rule='nonzero' stroke='none' stroke-width='1' stroke-linecap='butt' stroke-linejoin='miter' stroke-miterlimit='10' stroke-dasharray='' stroke-dashoffset='0' font-family='none' font-weight='none' font-size='none' text-anchor='none' style='mix-blend-mode: normal'><g transform='scale(5.33333,5.33333)'><path d='M16.599,41.42l-15.019,-15.019c-0.774,-0.774 -0.774,-2.028 0,-2.802l4.019,-4.019c0.774,-0.774 2.028,-0.774 2.802,0l15.019,15.019c0.774,0.774 0.774,2.028 0,2.802l-4.019,4.019c-0.774,0.773 -2.028,0.773 -2.802,0z' fill='url(#color-1_VFaz7MkjAiu0_gr1)'></path><path d='M12.58,34.599l27.019,-27.019c0.774,-0.774 2.028,-0.774 2.802,0l4.019,4.019c0.774,0.774 0.774,2.028 0,2.802l-27.019,27.019c-0.774,0.774 -2.028,0.774 -2.802,0l-4.019,-4.019c-0.773,-0.774 -0.773,-2.028 0,-2.802z' fill='url(#color-2_VFaz7MkjAiu0_gr2)'></path></g></g>
+</svg><span class='list_text'>Анализ фото и файлов</span></li>
+
+
+<li class='item'><img width='24' height='24' src="{% static 'images/coins.png' %}" alt='stack-of-coins'/><span class='list_text'> 500 000 токенов</span></li>
+
+
+
+
+        <li class='item'><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30" height="30" viewBox="0,0,256,256"
+style="fill:#000000;">
+<g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(8.53333,8.53333)"><path d="M14.07031,2c-2.7397,0 -5.08587,1.71626 -6.03125,4.12695c-1.97774,0.26417 -3.74487,1.41772 -4.76172,3.17969c-1.36952,2.37231 -1.05748,5.26118 0.55664,7.28516c-0.75944,1.8443 -0.64484,3.95188 0.37109,5.71289c1.3701,2.3733 4.03086,3.54745 6.5918,3.16016c1.21754,1.58032 3.09904,2.53516 5.13281,2.53516c2.7397,0 5.08587,-1.71626 6.03125,-4.12695c1.97774,-0.26417 3.74487,-1.41772 4.76172,-3.17969c1.36952,-2.37231 1.05748,-5.26118 -0.55664,-7.28516c0.75944,-1.8443 0.64484,-3.95188 -0.37109,-5.71289c-1.3701,-2.3733 -4.03085,-3.54745 -6.5918,-3.16016c-1.21754,-1.58032 -3.09904,-2.53516 -5.13281,-2.53516zM14.07031,4c1.15613,0 2.24033,0.45464 3.06055,1.22656c-0.06263,0.03348 -0.1275,0.05994 -0.18945,0.0957l-4.43945,2.56445c-0.462,0.266 -0.748,0.75897 -0.75,1.29297l-0.02734,5.9668l-2.13477,-1.24609v-5.41992c0,-2.47 2.01047,-4.48047 4.48047,-4.48047zM20.49219,6.4668c1.43525,0.10211 2.79844,0.89164 3.57031,2.22852c0.57799,1.0009 0.72696,2.1675 0.46875,3.26367c-0.06105,-0.03799 -0.11696,-0.08098 -0.17969,-0.11719l-4.44141,-2.56445c-0.462,-0.266 -1.03114,-0.26695 -1.49414,-0.00195l-5.17969,2.96094l0.01172,-2.4707l4.69336,-2.71094c0.80213,-0.46312 1.68963,-0.64916 2.55078,-0.58789zM7.59961,8.26758c-0.00233,0.07118 -0.00977,0.14116 -0.00977,0.21289v5.12695c0,0.534 0.28314,1.02787 0.74414,1.29688l5.1543,3.00586l-2.14453,1.22461l-4.69531,-2.70898c-2.139,-1.235 -2.87367,-3.98209 -1.63867,-6.12109c0.57765,-1.00032 1.51225,-1.71239 2.58984,-2.03711zM18.65625,10.86523l4.69531,2.70899c2.139,1.235 2.87367,3.98209 1.63867,6.12109c-0.57765,1.00032 -1.51225,1.71239 -2.58984,2.03711c0.00233,-0.07118 0.00977,-0.14116 0.00977,-0.21289v-5.12695c0,-0.534 -0.28314,-1.02787 -0.74414,-1.29687l-5.1543,-3.00586zM15.00977,12.94727l1.77148,1.0332l-0.00977,2.05469l-1.78125,1.01758l-1.77148,-1.03516l0.00977,-2.05273zM18.27539,14.85352l2.13477,1.24609v5.41992c0,2.47 -2.01047,4.48047 -4.48047,4.48047c-1.15613,0 -2.24033,-0.45464 -3.06055,-1.22656c0.06263,-0.03348 0.1275,-0.05994 0.18945,-0.0957l4.43945,-2.56445c0.462,-0.266 0.748,-0.75897 0.75,-1.29297zM16.76367,17.76367l-0.01172,2.4707l-4.69336,2.71094c-2.139,1.235 -4.88609,0.49837 -6.12109,-1.64062c-0.57798,-1.0009 -0.72696,-2.1675 -0.46875,-3.26367c0.06105,0.03799 0.11696,0.08098 0.17969,0.11719l4.44141,2.56445c0.462,0.266 1.03114,0.26695 1.49414,0.00195z"></path></g></g>
+</svg><span class='list_text'>Досутп к GPT 4 mini и GPT 4</span></li>
+
+
+</ul>
+
+                  </div>
+
+                </div>
+              </div>
+                </div>
+
+            </div>
           </div></div>
 
 
 
 
 
-          <!-- <div class = "multi-model"><span class="multi"><b>GPT 4 mini расходует в 10 раз меньше токенов по сравнению с GPT 4</b></span> </div>
-           -->
-
-          <div class = "multi-model"><span class="multi"><b>При использовании GPT 4 mini в подписках Multi расход токенов будет в 10 раз меньше</b></span> </div>
+            <div class = "multi-model"><span><b>GPT 4 mini расходует в 10 раз меньше токенов по сравнению с GPT 4</b></span> </div>
             <div class = "multi-model"> <span> Вы можете тратить токены на генерацию фото и текста</span> </div>
 
 
@@ -1090,6 +903,20 @@ for (i = 0; i < faq.length; i++) {
       </div>
 
 
+
+
+      <div class="homev4-banner">
+          <span class="homev4-text69">
+            Еще у нас можно повысить оригинальность текста
+          </span>
+        <h2 class="homev4-text68">
+
+
+          <span></span>
+        </h2>
+
+        <a class="homev4-button2 button" href = "{% url 'unique' %}">Подробнее</a>
+      </div>
 
 
 </div>

@@ -187,32 +187,148 @@
     }
 
 })();
+function showfromtype(type) {
 
 
-function handleClick(element, number) {
-    // Clear all 'frame-1612' divs except the one corresponding to the clicked number
-    const allFrames = document.querySelectorAll('.frame-1612');
-    allFrames.forEach(frame => {
-      frame.style.display = 'none';
+var fifferblock = document.getElementById('texttype06');
+var prich = document.getElementById('pric-h');
+var prichim = document.getElementById('pric-h-im');
+var tr1 = document.getElementById('tr-1');
+var text23 = document.getElementById('23text');
+var im23 = document.getElementById('23im');
+var imageex = document.getElementById('imageex');
+
+
+
+
+if (type == 'image') {
+    fifferblock.style.display = 'none';
+    tr1.style.display = 'none';
+    prich.style.display = 'none';
+    text23.style.display = 'none';
+    im23.style.display = 'flex';
+    prichim.style.display = 'flex';
+    imageex.style.display = 'block';
+} else if (type == 'text') {
+    fifferblock.style.display = 'flex';
+    tr1.style.display = 'flex';
+    prich.style.display = 'flex';
+    prichim.style.display = 'none';
+        text23.style.display = 'flex';
+    im23.style.display = 'none';
+    imageex.style.display = 'none';
+}
+
+       console.log(type + 'f');
+
+}
+
+
+function showBlock(type) {
+        // Hide all blocks
+    showfromtype(type)
+         var buttons = document.querySelectorAll('.homev4-container36');
+    buttons.forEach(function(button) {
+      button.classList.remove('type-active');
     });
-  
-    // Show the selected 'frame-1612' div based on the clicked number
-    const selectedFrame = document.getElementById(['first', 'second', 'third', 'fourth'][number - 1]);
-    if (selectedFrame) {
-      selectedFrame.style.display = 'flex';
+
+
+    // Add 'type-active' class to the clicked button
+    var clickedButton = document.querySelector('[data-type="' + type + '"]');
+
+    clickedButton.classList.add('type-active');
+
+
+
+        if (window.innerWidth < 800) {
+
+        var blocks = document.getElementsByClassName('cards');
+        }
+        else{
+        var blocks = document.getElementsByClassName('homev4-container-tasks');
+        }
+        for (var i = 0; i < blocks.length; i++) {
+            blocks[i].style.display = 'none';
+        }
+
+
+         if (window.innerWidth < 800) {
+
+        // Show the selected block
+        document.getElementById(type + 'Block').style.display = 'flex';
+        }
+        else{
+        document.getElementById(type + 'Blockwide').style.display = 'flex';
+
+
+        }
+
+
+
+
     }
-  
-    // Remove 'active' class from all .frame-172 divs inside .frame-176
-    const allFrame176 = document.querySelectorAll('.frame-176 .frame-172');
-    allFrame176.forEach(frame => {
-      frame.classList.remove('active');
+
+  $(document).ready(function () {
+
+  var urlParams = new URLSearchParams(window.location.search);
+var type = urlParams.get('type') || 'text';
+console.log(type);
+showfromtype(type)
+   var clickedButton = document.querySelector('[data-type="' + type + '"]');
+    clickedButton.classList.add('type-active');
+
+
+
+        if (window.innerWidth < 800) {
+
+        var blocks = document.getElementsByClassName('cards');
+        }
+        else{
+        var blocks = document.getElementsByClassName('homev4-container-tasks');
+        }
+        for (var i = 0; i < blocks.length; i++) {
+            blocks[i].style.display = 'none';
+        }
+
+
+
+         if (window.innerWidth < 800) {
+
+        // Show the selected block
+        document.getElementById(type + 'Block').style.display = 'flex';
+        }
+        else{
+        document.getElementById(type + 'Blockwide').style.display = 'flex';
+
+
+
+        }
+
+
+    // Initialize Hammer.js on the container element
+    var container = document.querySelector('.container');
+    var hammer = new Hammer(container);
+
+    // Handle both click and swipe events
+    $('input').on('change', function () {
+      $('body').toggleClass('blue');
     });
-  
-    // Add 'active' class to the clicked element
-    const frame172 = element.querySelector('.frame-172');
-    frame172.classList.add('active');
-  }
-  
+
+    // Listen for swipe events
+    hammer.on('swipeleft swiperight', function (e) {
+      var currentIndex = $('input[name="slider"]:checked').index('input[name="slider"]');
+      var totalItems = $('input[name="slider"]').length;
+
+      if (e.type === 'swiperight') {
+        currentIndex = (currentIndex - 1 + totalItems) % totalItems;
+      } else if (e.type === 'swipeleft') {
+        currentIndex = (currentIndex + 1) % totalItems;
+      }
+
+      // Trigger change event on the corresponding radio button
+      $('input[name="slider"]').eq(currentIndex).prop('checked', true).change();
+    });
+  });
 
 //  if button-tg clicked send Client ID to django
 

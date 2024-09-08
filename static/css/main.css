@@ -16,6 +16,44 @@
 
 
 }
+.frame-9,
+.frame-9 * {
+  box-sizing: border-box;
+}
+.frame-9 {
+  padding: 10px 0px 10px 0px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+.photo-2023-10-09-14-35-23-1 {
+  border-radius: 15px;
+  border-style: solid;
+  border-color: #7d32ff;
+  border-width: 1px;
+  flex-shrink: 0;
+  width: 55px;
+  height: 55px;
+  position: relative;
+  transform-origin: 0 0;
+  transform: rotate(0deg) scale(1, 1);
+  object-fit: cover;
+}
+.brainstorm-ai {
+  color: #ffffff;
+  text-align: left;
+  font-family: "OpenSans-SemiBold", sans-serif;
+  font-size: 32px;
+  line-height: 28px;
+
+  position: relative;
+}
+
 
 /* plus sign */
 .sign {
@@ -139,7 +177,7 @@ margin-top: -350px;
   padding-left: var(--dl-space-space-threeunits);
   padding-right: 13px;
   padding-bottom: var(--dl-space-space-halfunit);
-  justify-content: flex-end;
+  justify-content: space-between;
   background-color: #1D2A49;
 
   z-index: 100;
@@ -153,7 +191,7 @@ margin-top: -350px;
   display: flex;
   align-items: center;
   margin-right: var(--dl-space-space-unit);
-  flex-direction: column;
+  flex-direction: row;
   justify-content: flex-start;
 }
 .component-container2 {
@@ -460,30 +498,15 @@ display:none;
 }
 @media(max-width: 1250px) {
 
-  .component-text {
-    padding-left: 1px;
-    padding-right: 1px;
-  }
-  .component-text1 {
-    padding-left: 1px;
-    padding-right: 1px;
-  }
-  .component-text2 {
-    padding-left: 1px;
-    padding-right: 1px;
-  }
-  .component-text3 {
-    padding-left: 1px;
-    padding-right: 1px;
-  }
+
 }
 @media(max-width: 1100px) {
   .component-header {
     padding-left: var(--dl-space-space-twounits);
     padding-right: var(--dl-space-space-twounits);
   }
-  .component-navbar-interactive {
-    
+  .component-text{
+    display:none;
   }
   .component-desktop-menu {
     display: none;
@@ -506,16 +529,20 @@ display:none;
   top: 5%;
   left: 5%;
   }
-
+.frame-9{
+  padding: 0px;
+}
   .component-header {
 
     top: 0px;
     left: 0px;
     right: 0px;
 
-    height: 50px;
+    height: auto;
     
 	width: 100%;
+  display: flex;
+  justify-content: center;
 
     
   }
