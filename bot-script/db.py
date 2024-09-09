@@ -517,9 +517,9 @@ class Database:
                 # obj.day_max = random.randint(1,3)
 
 
-            
+        
 
-            obj.save()
+        obj.save()
 
     @sync_to_async
     def  check_offline_conversions_settings_count(self, target):
