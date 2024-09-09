@@ -2033,7 +2033,7 @@ GPT-4o-mini     82%
                     if url == False:
                         await update.message.reply_text(
                             message_thread_id=get_thread_id(update),
-                            text='Произошла ошибка, попробуйте еще раз',
+                            text='Произошла ошибка, попробуйте еще раз или измените запрос, возможно запрос не прошел модерацию OpenAI',
                         )
                         return
                     else:
