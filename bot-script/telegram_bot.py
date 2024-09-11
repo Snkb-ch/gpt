@@ -1594,7 +1594,7 @@ GPT-4o-mini     82%
                     await self.db.set_user_model(user_id, 'gpt-4o-mini')
                     await update.effective_message.reply_text(
                         message_thread_id=get_thread_id(update),
-                        text='Сейчас вы используете модель GPT 4 mini, расход токенов уменьшен в 5 раз, для смены модели на GPT-4 введите /model',
+                        text='Сейчас вы используете модель GPT 4 mini, расход токенов уменьшен в 10 раз, для смены модели на GPT-4 введите /model',
                     )
                 await update.effective_message.reply_text("Платеж прошел")
             except Exception as e:
