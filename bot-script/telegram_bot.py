@@ -1978,7 +1978,7 @@ GPT-4o-mini     82%
 
                 await update.message.reply_text(
                     message_thread_id=get_thread_id(update),
-                    text=f'''Вы прикрепили файл: чтение этого файла стоит ~{tokens} ток. — для модели gpt-4-mini
+                    text=f'''Вы прикрепили файл: чтение этого файла стоит ~{tokens} ток. — для модели {model}
 
 Чтобы отменить — введите /reset
 
