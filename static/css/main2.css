@@ -694,6 +694,7 @@ display:none;
 @media(max-width: 479px) {
   .component1-footer {
 
+    display: none;
     height: auto;
     padding: var(--dl-space-space-unit);
 
