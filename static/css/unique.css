@@ -1504,10 +1504,7 @@ padding-right:15px;
 }
 
 @media (max-height: 690px) {
-  .large-header{
-  height:auto;
 
-  }
   .homev4-container01{
   margin-top:200px;
   }
