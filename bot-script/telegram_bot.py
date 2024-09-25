@@ -995,19 +995,23 @@ class ChatGPTTelegramBot:
 
 
 
-        async def job():
-            await self.send_to_admin('start send notif')
-            await self.send_notifications()
-            await self.send_to_admin('start send reminders')
-            await self.send_reminder()
+        async def job(type):
+            if type == 1:
+                await self.send_to_admin('start send notif')
+                await self.send_notifications()
+            elif type == 2:
+                await self.send_to_admin('start send reminders')
+                await self.send_reminder()
 
 
-        def run_job():
-            asyncio.create_task(job())
+        def run_job(type):
+            asyncio.create_task(job(type))
 
 
 
-        schedule.every().day.at('00:00').do(run_job)
+    # Используем lambda для задержки вызова run_job
+        schedule.every().day.at('00:00').do(lambda: run_job(1))
+        schedule.every().day.at('15:00').do(lambda: run_job(2))
 
         try:
             while True:
