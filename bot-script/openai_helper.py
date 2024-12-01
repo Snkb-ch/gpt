@@ -358,7 +358,7 @@ class OpenAIHelper:
                         base_url="https://api.x.ai/v1",
                         # api_key=os.environ.get("OPENAI_API_KEY"),
                     )
-                    model_config['model'] = "grok-beta"
+                   
                 else:
                     client = AsyncOpenAI(
                         api_key=os.environ.get("OPENAI_API_KEY"),
