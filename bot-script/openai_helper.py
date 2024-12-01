@@ -49,6 +49,7 @@ GPT_4_MODELS = ("gpt-4", "gpt-4-0314", "gpt-4-0613", "gpt-4-1106-preview", "gpt-
 GPT_4_32K_MODELS = ("gpt-4-32k", "gpt-4-32k-0314", "gpt-4-32k-0613")
 LLAMA_MODELS_70= ("meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo", )
 LLAMA_MODELS_400= ("meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo", )
+GROK = ("grok-beta", "grok")
 
 GPT_ALL_MODELS = GPT_3_MODELS + GPT_3_16K_MODELS + GPT_4_MODELS + GPT_4_32K_MODELS
 
@@ -207,11 +208,13 @@ class OpenAIHelper:
 
 
                 answer += item.choices[0].delta.content or ""
+
+
                 yield answer, 'not_finished'
 
 
             answer = answer.strip()
-
+           
             tokens_in_answer = self.count_tokens([{"role": "assistant", "content": answer}], model_config['model'])
             sub_name = await self.db.get_sub_name_from_user(chat_id)
 
@@ -349,6 +352,13 @@ class OpenAIHelper:
                         # api_key=os.environ.get("OPENAI_API_KEY"),
                     )
                     model_config['custom_temp'] = 0.7
+                elif model_config['model'] in GROK:
+                    client = AsyncOpenAI(
+                        api_key=os.environ.get("XAI_API_KEY"),
+                        base_url="https://api.x.ai/v1",
+                        # api_key=os.environ.get("OPENAI_API_KEY"),
+                    )
+                    model_config['model'] = "grok-beta"
                 else:
                     client = AsyncOpenAI(
                         api_key=os.environ.get("OPENAI_API_KEY"),
@@ -495,6 +505,8 @@ class OpenAIHelper:
         if model in GPT_3_16K_MODELS:
             return base * 4
         if model in GPT_4_MODELS:
+            return 128000
+        if model in GROK:
             return 128000
         if model in GPT_4_32K_MODELS:
             return base * 8
