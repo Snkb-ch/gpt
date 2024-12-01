@@ -151,8 +151,8 @@ class photo_api(APIView):
 
 
 
-def photo(request):
-    return render(request, 'basegpt/photo.html')
+# def photo(request):
+#     return render(request, 'basegpt/photo.html')
 
 
 def error(request):
@@ -275,57 +275,57 @@ def home(request):
 
 
     return render(request, 'basegpt/homev5.html', context)
-def balance(request):
+# def balance(request):
 
-    # create payment and redirect to payment page
-    if request.method == 'POST' and 'pay' in request.POST:
-        tokens = request.POST.get('input')
-        print(tokens)
-        try:
-            price = int(tokens)
-        except:
-            return render(request, 'basegpt/balance.html')
+#     # create payment and redirect to payment page
+#     if request.method == 'POST' and 'pay' in request.POST:
+#         tokens = request.POST.get('input')
+#         print(tokens)
+#         try:
+#             price = int(tokens)
+#         except:
+#             return render(request, 'basegpt/balance.html')
 
-        Configuration.account_id = settings.YOOKASSA_SHOP_ID
-        Configuration.secret_key = settings.YOOKASSA_SECRET_KEY
-        payment = Payment.create({
-            "amount": {
-                "value": price,
-                "currency": "RUB"
-            },
-            "confirmation": {
-                "type": "redirect",
-                "return_url": "https://brainstormai.ru/"
-            },
-            "capture": True,
-            "description": "Покупка токенов",
-            "receipt": {
-                "customer": {
-                    "email": request.user.email,
-                },
-                "items": [
-                    {
-                        "description": "Покупка токенов",
-                        "quantity": tokens,
-                        "amount": {
-                            "value": price,
-                            "currency": "RUB"
-                        },
-                        "vat_code": 1
-                    }
-                ]
-            }
-        }, uuid.uuid4())
+#         Configuration.account_id = settings.YOOKASSA_SHOP_ID
+#         Configuration.secret_key = settings.YOOKASSA_SECRET_KEY
+#         payment = Payment.create({
+#             "amount": {
+#                 "value": price,
+#                 "currency": "RUB"
+#             },
+#             "confirmation": {
+#                 "type": "redirect",
+#                 "return_url": "https://brainstormai.ru/"
+#             },
+#             "capture": True,
+#             "description": "Покупка токенов",
+#             "receipt": {
+#                 "customer": {
+#                     "email": request.user.email,
+#                 },
+#                 "items": [
+#                     {
+#                         "description": "Покупка токенов",
+#                         "quantity": tokens,
+#                         "amount": {
+#                             "value": price,
+#                             "currency": "RUB"
+#                         },
+#                         "vat_code": 1
+#                     }
+#                 ]
+#             }
+#         }, uuid.uuid4())
 
-        OrderTokens.objects.create(user=request.user, price=price, tokens=tokens, transaction_id=payment.id)
-        return HttpResponseRedirect(payment.confirmation.confirmation_url)
-
-
+#         OrderTokens.objects.create(user=request.user, price=price, tokens=tokens, transaction_id=payment.id)
+#         return HttpResponseRedirect(payment.confirmation.confirmation_url)
 
 
 
-    return render(request, 'basegpt/balance.html')
-def unique(request):
+
+
+#     return render(request, 'basegpt/balance.html')
+# def unique(request):
     return render(request, 'basegpt/home.html')
 
 def split_text_on_parts(text, max_length):
@@ -720,14 +720,14 @@ def get_price_text(text, code, request, type):
 
 
 
-def uniquetext(request):
+# def uniquetext(request):
 
-    # only for admin
-
-
+#     # only for admin
 
 
-        return render(request, 'basegpt/uniquetext.html')
+
+
+#         return render(request, 'basegpt/uniquetext.html')
 
 @sync_to_async
 def generate_info_text(product, audience, platform, type, request):

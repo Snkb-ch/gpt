@@ -207,26 +207,9 @@
             class="component-nav1"
           >
             <a class="component-text chatgpt" href="{% url 'home' %}"><span>ChatGPT</span></a>
-            <!-- <a class="component-text ad" href="{% url 'uniquetext' %}"><span>Написать рекламу</span></a> -->
-            <a class="component-text photo" href="{% url 'photo' %}"><span>Ответить по фото</span></a>
 
-
-            <a class="component-text orig" href="{% url 'uniquefile' %}"><span>Повысить оригинальность</span></a>
-            <a class="component-text1 success" href="{% url 'success' %}"><span>Работы в ожидании</span></a>
         <a class="component-text2 contact" href="{% url 'contact' %}"><span>Обратная связь</span></a>
-            <a class="component-text3 history" href="{% url 'history' %}"><span>История</span></a>
 
-<!--                       <ul>-->
-<!--  <li><a href="#" class="component-text">Другие сервисы <i class="fa fa-chevron-down"></i></a>-->
-
-<!--    <ul class="drop-down ">-->
-<!--      <li><a class="component-text-drop " href="{% url 'contact' %}"><span>Обратная связь</span></a></li>-->
-<!--      <li><a class="component-text-drop " href="{% url 'history' %}"><span>История ответов</span></a></li>-->
-<!--      <li> <a class="component-text-drop " href="{% url 'success' %}"><span>Работы в ожидании</span></a></li>-->
-
-<!--    </ul>-->
-<!--  </li>-->
-<!--              </ul>-->
           </nav>
         </div>
         <div data-thq="thq-navbar-btn-group" class="component-btn-group"></div>
@@ -257,13 +240,11 @@ style="fill:#000000;">
               class="component-nav3"
             >
 
-              <a class="component-text4" href="{% url 'uniquefile' %}"><span>Повысить оригинальность</span></a>
+
               <a class="component-text4" href="{% url 'home' %}"><span>ChatGPT</span></a>
-              <a class="component-text5" href="{% url 'success' %}"><span>Работы в ожидании</span></a>
+
               <a class="component-text6" href="{% url 'contact' %}"><span>Обратная связь</span></a>
-              <a class="component-text6" href="{% url 'history' %}"><span>История ответов</span></a>
-                            <a class="component-text6" href="{% url 'uniquetext' %}"><span>Написать рекламу</span></a>
-                            <a class="component-text6" href="{% url 'photo' %}"><span>Ответить по фото</span></a>
+
               {% if user.is_authenticated %}
                 <a class="component-text7" href="{% url 'logout' %}"><span>Выход</span></a>
 
