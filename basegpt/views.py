@@ -55,6 +55,8 @@ client = openai.OpenAI(
     api_key=os.environ.get("OPENAI_API_KEY_ORIG"),
 )
 
+def redactor(requrst):
+    return render(requrst, 'basegpt/redactor.html')
 
 @login_required(login_url='login')
 def history(request):

@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Простой редактор Dingboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+        }
+        #controls {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 5px;
+            z-index: 10;
+        }
+        #text-modal, #image-modal, #remove-bg-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            z-index: 20;
+        }
+        #text-modal select, #text-modal input, #image-modal input, #image-modal textarea,
+        #remove-bg-modal input {
+            margin: 5px 0;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <input type="file" id="imageInput" accept="image/*">
+        <button onclick="openTextModal()">Добавить текст</button>
+        <button onclick="openImageModal()">Сгенерировать фото</button>
+        <button onclick="openRemoveBgModal()" id="removeBgBtn" disabled>Убрать фон</button>
+        <button onclick="startCrop()" id="cropBtn" disabled>Обрезать</button>
+        <button onclick="startEraser()" id="eraserBtn" disabled>Ластик</button>
+        <button onclick="deleteSelectedItem()" id="deleteBtn" disabled>Удалить</button>
+        <button onclick="groupSelected()" id="groupBtn" disabled>Объединить</button>
+        <button onclick="downloadSelectedAsPNG()" id="downloadBtn" disabled>Скачать как PNG</button>
+        <button onclick="moveLayerUp()" id="layerUpBtn" disabled>Слой вверх</button>
+        <button onclick="moveLayerDown()" id="layerDownBtn" disabled>Слой вниз</button>
+        <button onclick="undo()" id="undoBtn" disabled>Назад</button>
+        <button onclick="redo()" id="redoBtn" disabled>Вперед</button>
+    </div>
+    <div id="canvas-container"></div>
+    <div id="text-modal">
+        <h3>Добавить текст</h3>
+        <input type="text" id="textInput" placeholder="Введите текст">
+        <select id="fontSelect">
+            <option value="Arial">Arial</option>
+            <option value="Times New Roman">Times New Roman</option>
+            <option value="Courier New">Courier New</option>
+        </select>
+        <input type="color" id="colorPicker" value="#000000">
+        <select id="fontSizeSelect">
+            <option value="16">16px</option>
+            <option value="24" selected>24px</option>
+            <option value="32">32px</option>
+            <option value="48">48px</option>
+        </select>
+        <select id="fontWeightSelect">
+            <option value="normal">Обычный</option>
+            <option value="bold">Жирный</option>
+        </select>
+        <button onclick="addText()">OK</button>
+        <button onclick="closeTextModal()">Отмена</button>
+    </div>
+    <div id="image-modal">
+        <h3>Сгенерировать фото</h3>
+        <textarea id="imagePrompt" placeholder="Введите описание для генерации фото"></textarea>
+        <input type="text" id="apiKeyInput" placeholder="Введите ваш OpenAI API ключ">
+        <button onclick="generateImage()">Сгенерировать</button>
+        <button onclick="closeImageModal()">Отмена</button>
+    </div>
+    <div id="remove-bg-modal">
+        <h3>Убрать фон</h3>
+        <input type="text" id="removeBgApiKey" placeholder="Введите ваш remove.bg API ключ">
+        <button onclick="removeBackground()">Убрать</button>
+        <button onclick="closeRemoveBgModal()">Отмена</button>
+    </div>
+
+    <script>
+        let images = [];
+        let texts = [];
+        let groups = [];
+        let layers = []; // Новый массив для управления слоями
+        let selectedItem = null;
+        let selectedItems = [];
+        let isDragging = false;
+        let isResizing = false;
+        let isCropping = false;
+        let isErasing = false;
+        let offsetX, offsetY;
+        let canvas;
+        let resizeStartX, resizeStartY, aspectRatio;
+        let cropStartX, cropStartY, cropEndX, cropEndY;
+        let groupStartX, groupStartY, groupEndX, groupEndY;
+        const eraserSize = 20;
+
+        let history = [];
+        let historyIndex = -1;
+
+        function saveState(action) {
+            const state = {
+                images: images.map(img => ({ ...img, img: img.img })),
+                texts: texts.map(txt => ({ ...txt })),
+                groups: groups.map(group => ({
+                    ...group,
+                    items: group.items.map(item => ({ ...item, img: item.img }))
+                })),
+                layers: [...layers],
+                selectedItem: selectedItem,
+                selectedItems: [...selectedItems]
+            };
+            history = history.slice(0, historyIndex + 1);
+            history.push({ action, state });
+            historyIndex++;
+            updateButtonStates();
+        }
+
+        function undo() {
+            if (historyIndex <= 0) return;
+            historyIndex--;
+            applyState(history[historyIndex].state);
+            updateButtonStates();
+        }
+
+        function redo() {
+            if (historyIndex >= history.length - 1) return;
+            historyIndex++;
+            applyState(history[historyIndex].state);
+            updateButtonStates();
+        }
+
+        function applyState(state) {
+            images = state.images.map(img => ({ ...img, img: img.img }));
+            texts = state.texts.map(txt => ({ ...txt }));
+            groups = state.groups.map(group => ({
+                ...group,
+                items: group.items.map(item => ({ ...item, img: item.img }))
+            }));
+            layers = [...state.layers];
+            selectedItem = state.selectedItem;
+            selectedItems = [...state.selectedItems];
+        }
+
+        function setup() {
+            canvas = createCanvas(windowWidth, windowHeight);
+            canvas.parent('canvas-container');
+            canvas.elt.addEventListener('mousedown', handleCanvasMouseDown);
+        }
+
+        function handleCanvasMouseDown(e) {
+            mousePressed();
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+        }
+
+        function draw() {
+            background(255);
+
+            layers.forEach(({ type, item }) => {
+                if (type === 'image' && !item.group) {
+                    image(item.img, item.x, item.y, item.w, item.h);
+                    if (item === selectedItem || selectedItems.includes(item)) {
+                        stroke(0, 0, 255);
+                        noFill();
+                        rect(item.x, item.y, item.w, item.h);
+                        fill(0, 0, 255);
+                        rect(item.x + item.w - 10, item.y + item.h - 10, 10, 10);
+                    }
+                    if (isCropping && item === selectedItem) {
+                        stroke(255, 0, 0);
+                        noFill();
+                        let x = min(cropStartX, cropEndX);
+                        let y = min(cropStartY, cropEndY);
+                        let w = abs(cropEndX - cropStartX);
+                        let h = abs(cropEndY - cropStartY);
+                        rect(x, y, w, h);
+                    }
+                } else if (type === 'group') {
+                    if (!item.items) {
+                        console.warn('Invalid group, missing items:', item);
+                        return;
+                    }
+                    item.items.forEach(subItem => {
+                        if (subItem.img) {
+                            image(subItem.img, subItem.x, subItem.y, subItem.w, subItem.h);
+                        } else {
+                            textFont(subItem.font);
+                            textSize(subItem.size);
+                            textStyle(subItem.weight === 'bold' ? BOLD : NORMAL);
+                            fill(subItem.color);
+                            text(subItem.text, subItem.x, subItem.y);
+                        }
+                    });
+                    if (item === selectedItem || selectedItems.includes(item)) {
+                        stroke(0, 0, 255);
+                        noFill();
+                        rect(item.x, item.y, item.w, item.h);
+                        fill(0, 0, 255);
+                        rect(item.x + item.w - 10, item.y + item.h - 10, 10, 10);
+                    }
+                } else if (type === 'text' && !item.group) {
+                    textFont(item.font);
+                    textSize(item.size);
+                    textStyle(item.weight === 'bold' ? BOLD : NORMAL);
+                    fill(item.color);
+                    text(item.text, item.x, item.y);
+                    if (item === selectedItem || selectedItems.includes(item)) {
+                        stroke(0, 0, 255);
+                        noFill();
+                        let w = textWidth(item.text);
+                        rect(item.x, item.y - item.size, w, item.size);
+                        fill(0, 0, 255);
+                        rect(item.x + w - 10, item.y - 10, 10, 10);
+                    }
+                }
+            });
+
+            if (groupStartX !== undefined && groupEndX !== undefined) {
+                stroke(0, 255, 0);
+                noFill();
+                let x = min(groupStartX, groupEndX);
+                let y = min(groupStartY, groupEndY);
+                let w = abs(groupEndX - groupStartX);
+                let h = abs(groupEndY - groupStartY);
+                rect(x, y, w, h);
+            }
+        }
+
+        function mousePressed() {
+            if (isCropping && selectedItem && selectedItem.img) {
+                cropStartX = mouseX;
+                cropStartY = mouseY;
+                cropEndX = mouseX;
+                cropEndY = mouseY;
+                return;
+            }
+
+            if (isErasing && selectedItem && selectedItem.img) {
+                eraseAt(mouseX, mouseY);
+                return;
+            }
+
+            const elementUnderCursor = document.elementFromPoint(mouseX, mouseY);
+            if (elementUnderCursor && elementUnderCursor.tagName !== 'CANVAS') {
+                return;
+            }
+
+            let newSelection = null;
+            let smallestArea = Infinity;
+
+            let candidates = [];
+
+            for (let txt of texts.slice().reverse()) {
+                if (!txt.group) {
+                    let w = textWidth(txt.text);
+                    if (mouseX >= txt.x && mouseX <= txt.x + w &&
+                        mouseY >= txt.y - txt.size && mouseY <= txt.y) {
+                        let area = w * txt.size;
+                        candidates.push({
+                            item: txt,
+                            area: area,
+                            isResizing: mouseX >= txt.x + w - 15 && mouseY >= txt.y - 15
+                        });
+                    }
+                }
+            }
+
+            for (let img of images.slice().reverse()) {
+                if (!img.group) {
+                    if (mouseX >= img.x && mouseX <= img.x + img.w &&
+                        mouseY >= img.y && mouseY <= img.y + img.h) {
+                        let area = img.w * img.h;
+                        candidates.push({
+                            item: img,
+                            area: area,
+                            isResizing: mouseX >= img.x + img.w - 15 && mouseY >= img.y + img.h - 15
+                        });
+                    }
+                }
+            }
+
+            for (let group of groups.slice().reverse()) {
+                if (mouseX >= group.x && mouseX <= group.x + group.w &&
+                    mouseY >= group.y && mouseY <= group.y + group.h) {
+                    let area = group.w * group.h;
+                    candidates.push({
+                        item: group,
+                        area: area,
+                        isResizing: mouseX >= group.x + group.w - 15 && mouseY >= group.y + group.h - 15
+                    });
+                }
+            }
+
+            if (candidates.length > 0) {
+                candidates.sort((a, b) => a.area - b.area);
+                newSelection = candidates[0].item;
+                isResizing = candidates[0].isResizing;
+                if (isResizing) {
+                    resizeStartX = mouseX;
+                    resizeStartY = mouseY;
+                    if (newSelection.img || newSelection.items) {
+                        aspectRatio = newSelection.w / newSelection.h;
+                    }
+                } else {
+                    isDragging = true;
+                    offsetX = mouseX - newSelection.x;
+                    offsetY = mouseY - newSelection.y;
+                }
+            }
+
+            if (newSelection) {
+                if (keyIsDown(CONTROL)) {
+                    if (!selectedItems.includes(newSelection)) {
+                        selectedItems.push(newSelection);
+                    }
+                    selectedItem = null;
+                } else {
+                    if (selectedItems.includes(newSelection) && !isResizing) {
+                        isDragging = true;
+                        selectedItems.forEach(item => {
+                            item.offsetX = mouseX - item.x;
+                            item.offsetY = mouseY - item.y;
+                        });
+                    } else {
+                        selectedItem = newSelection;
+                        selectedItems = [];
+                        if (!isResizing) {
+                            isDragging = true;
+                            offsetX = mouseX - newSelection.x;
+                            offsetY = mouseY - newSelection.y;
+                        }
+                    }
+                }
+            } else {
+                groupStartX = mouseX;
+                groupStartY = mouseY;
+                groupEndX = mouseX;
+                groupEndY = mouseY;
+                selectedItems = [];
+                selectedItem = null;
+            }
+
+            updateButtonStates();
+        }
+
+        function mouseDragged() {
+            if (isCropping && selectedItem && selectedItem.img) {
+                cropEndX = mouseX;
+                cropEndY = mouseY;
+                return;
+            }
+
+            if (isErasing && selectedItem && selectedItem.img) {
+                eraseAt(mouseX, mouseY);
+                return;
+            }
+
+            if (groupStartX !== undefined) {
+                groupEndX = mouseX;
+                groupEndY = mouseY;
+                updateGroupSelection();
+                return;
+            }
+
+            if (selectedItem && isDragging) {
+                let oldX = selectedItem.x;
+                let oldY = selectedItem.y;
+                selectedItem.x = mouseX - offsetX;
+                selectedItem.y = mouseY - offsetY;
+                if (selectedItem.items) {
+                    let dx = selectedItem.x - selectedItem.originalX;
+                    let dy = selectedItem.y - selectedItem.originalY;
+                    selectedItem.items.forEach(item => {
+                        item.x += dx;
+                        item.y += dy;
+                    });
+                    selectedItem.originalX = selectedItem.x;
+                    selectedItem.originalY = selectedItem.y;
+                }
+                if (oldX !== selectedItem.x || oldY !== selectedItem.y) {
+                    saveState('move');
+                }
+            } else if (selectedItems.length > 0 && isDragging) {
+                let moved = false;
+                selectedItems.forEach(item => {
+                    let oldX = item.x;
+                    let oldY = item.y;
+                    item.x = mouseX - item.offsetX;
+                    item.y = mouseY - item.offsetY;
+                    if (item.items) {
+                        let dx = item.x - item.originalX;
+                        let dy = item.y - item.originalY;
+                        item.items.forEach(subItem => {
+                            subItem.x += dx;
+                            subItem.y += dy;
+                        });
+                        item.originalX = item.x;
+                        item.originalY = item.y;
+                    }
+                    if (oldX !== item.x || oldY !== item.y) {
+                        moved = true;
+                    }
+                });
+                if (moved) {
+                    saveState('moveMultiple');
+                }
+            } else if (selectedItem && isResizing) {
+                if (selectedItem.img) {
+                    let newWidth = mouseX - selectedItem.x;
+                    if (newWidth < 20) newWidth = 20;
+                    selectedItem.w = newWidth;
+                    selectedItem.h = newWidth / aspectRatio;
+                } else if (selectedItem.items) {
+                    let newWidth = mouseX - selectedItem.x;
+                    if (newWidth < 20) newWidth = 20;
+                    let scale = newWidth / selectedItem.w;
+                    selectedItem.w = newWidth;
+                    selectedItem.h = newWidth / aspectRatio;
+                    selectedItem.items.forEach(item => {
+                        item.x = selectedItem.x + (item.x - selectedItem.originalX) * scale;
+                        item.y = selectedItem.y + (item.y - selectedItem.originalY) * scale;
+                        if (item.img) {
+                            item.w *= scale;
+                            item.h *= scale;
+                        } else {
+                            item.size = Math.max(12, Math.round(item.size * scale));
+                        }
+                    });
+                    selectedItem.originalX = selectedItem.x;
+                    selectedItem.originalY = selectedItem.y;
+                } else {
+                    let deltaX = mouseX - resizeStartX;
+                    let newSize = selectedItem.size + deltaX * 0.2;
+                    selectedItem.size = Math.max(12, Math.round(newSize));
+                    resizeStartX = mouseX;
+                }
+                saveState('resize');
+            }
+        }
+
+        function mouseReleased() {
+            if (isCropping && selectedItem && selectedItem.img) {
+                applyCrop();
+                return;
+            }
+            if (isErasing) {
+                isErasing = false;
+                saveState('erase');
+                return;
+            }
+            if (groupStartX !== undefined) {
+                groupStartX = groupEndX = groupStartY = groupEndY = undefined;
+                updateButtonStates();
+                return;
+            }
+            isDragging = false;
+            isResizing = false;
+        }
+
+        function updateGroupSelection() {
+            selectedItems = [];
+            let x = Math.min(groupStartX, groupEndX);
+            let y = Math.min(groupStartY, groupEndY);
+            let w = Math.abs(groupEndX - groupStartX);
+            let h = Math.abs(groupEndY - groupStartY);
+
+            let itemsWithLayer = [];
+
+            images.forEach((img) => {
+                if (!img.group &&
+                    img.x >= x && img.x + img.w <= x + w &&
+                    img.y >= y && img.y + img.h <= y + h) {
+                    let layerIndex = layers.findIndex(l => l.type === 'image' && l.item === img);
+                    itemsWithLayer.push({ item: img, layer: layerIndex });
+                }
+            });
+
+            texts.forEach((txt) => {
+                if (!txt.group) {
+                    let tw = textWidth(txt.text);
+                    if (txt.x >= x && txt.x + tw <= x + w &&
+                        txt.y - txt.size >= y && txt.y <= y + h) {
+                        let layerIndex = layers.findIndex(l => l.type === 'text' && l.item === txt);
+                        itemsWithLayer.push({ item: txt, layer: layerIndex });
+                    }
+                }
+            });
+
+            groups.forEach((group) => {
+                if (group.x >= x && group.x + group.w <= x + w &&
+                    group.y >= y && group.y + group.h <= y + h) {
+                    let layerIndex = layers.findIndex(l => l.type === 'group' && l.item === group);
+                    itemsWithLayer.push({ item: group, layer: layerIndex });
+                }
+            });
+
+            itemsWithLayer.sort((a, b) => a.layer - b.layer);
+            selectedItems = itemsWithLayer.map(entry => entry.item);
+        }
+
+        function groupSelected() {
+            if (selectedItems.length < 2) {
+                alert('Выберите как минимум два объекта');
+                return;
+            }
+
+            let minX = Infinity, minY = Infinity;
+            let maxX = -Infinity, maxY = -Infinity;
+
+            selectedItems.forEach(item => {
+                if (item.items) {
+                    minX = Math.min(minX, item.x);
+                    minY = Math.min(minY, item.y);
+                    maxX = Math.max(maxX, item.x + item.w);
+                    maxY = Math.max(maxY, item.y + item.h);
+                } else if (item.img) {
+                    minX = Math.min(minX, item.x);
+                    minY = Math.min(minY, item.y);
+                    maxX = Math.max(maxX, item.x + item.w);
+                    maxY = Math.max(maxY, item.y + item.h);
+                } else {
+                    let w = textWidth(item.text);
+                    minX = Math.min(minX, item.x);
+                    minY = Math.min(minY, item.y - item.size);
+                    maxX = Math.max(maxX, item.x + w);
+                    maxY = Math.max(maxY, item.y);
+                }
+            });
+
+            let groupItems = [];
+            selectedItems.forEach(item => {
+                if (item.items) {
+                    groupItems.push(...item.items);
+                    groups = dynamicRemove(groups, item);
+                    layers = layers.filter(l => l.item !== item);
+                } else {
+                    groupItems.push(item);
+                }
+                item.group = null;
+                if (item.img) {
+                    layers = layers.filter(l => l.item !== item);
+                } else if (!item.items) {
+                    layers = layers.filter(l => l.item !== item);
+                }
+            });
+
+            let group = {
+                items: groupItems,
+                x: minX,
+                y: minY,
+                w: maxX - minX,
+                h: maxY - minY,
+                originalX: minX,
+                originalY: minY
+            };
+
+            groupItems.forEach(item => {
+                item.group = group;
+            });
+
+            groups.push(group);
+            layers.push({ type: 'group', item: group });
+            selectedItem = group;
+            selectedItems = [];
+            saveState('group');
+            console.log('Group created and selected:', group, 'Groups:', groups, 'Layers:', layers);
+            updateButtonStates();
+        }
+
+        function dynamicRemove(array, item) {
+            const index = array.indexOf(item);
+            if (index !== -1) {
+                array.splice(index, 1);
+            }
+            return array;
+        }
+
+        function moveLayerUp() {
+            if (!selectedItem) {
+                alert('Выберите объект');
+                return;
+            }
+
+            let currentIndex = layers.findIndex(entry => entry.item === selectedItem);
+            if (currentIndex >= 0 && currentIndex < layers.length - 1) {
+                [layers[currentIndex], layers[currentIndex + 1]] = [layers[currentIndex + 1], layers[currentIndex]];
+                saveState('layer');
+                console.log('Moved up:', selectedItem, 'From index:', currentIndex, 'To:', currentIndex + 1);
+            } else {
+                console.warn('Cannot move up:', currentIndex, layers.length);
+            }
+            updateButtonStates();
+        }
+
+        function moveLayerDown() {
+            if (!selectedItem) {
+                alert('Выберите объект');
+                return;
+            }
+
+            let currentIndex = layers.findIndex(entry => entry.item === selectedItem);
+            if (currentIndex > 0) {
+                [layers[currentIndex], layers[currentIndex - 1]] = [layers[currentIndex - 1], layers[currentIndex]];
+                saveState('layer');
+                console.log('Moved down:', selectedItem, 'From index:', currentIndex, 'To:', currentIndex - 1);
+            } else {
+                console.warn('Cannot move down:', currentIndex, layers.length);
+            }
+            updateButtonStates();
+        }
+
+        function downloadSelectedAsPNG() {
+            if (!selectedItem) {
+                alert('Выберите объект для скачивания');
+                return;
+            }
+
+            let tempCanvas = document.createElement('canvas');
+            let ctx = tempCanvas.getContext('2d');
+
+            if (selectedItem.items) {
+                tempCanvas.width = selectedItem.w;
+                tempCanvas.height = selectedItem.h;
+
+                selectedItem.items.forEach(item => {
+                    if (item.img) {
+                        ctx.drawImage(
+                            item.img.canvas,
+                            item.x - selectedItem.x,
+                            item.y - selectedItem.y,
+                            item.w,
+                            item.h
+                        );
+                    } else {
+                        ctx.font = `${item.weight === 'bold' ? 'bold' : 'normal'} ${item.size}px ${item.font}`;
+                        ctx.fillStyle = item.color;
+                        ctx.fillText(item.text, item.x - selectedItem.x, item.y - selectedItem.y);
+                    }
+                });
+            } else if (selectedItem.img) {
+                tempCanvas.width = selectedItem.w;
+                tempCanvas.height = selectedItem.h;
+                ctx.drawImage(selectedItem.img.canvas, 0, 0, selectedItem.w, selectedItem.h);
+            } else {
+                let w = textWidth(selectedItem.text);
+                tempCanvas.width = w;
+                tempCanvas.height = selectedItem.size * 1.5;
+                ctx.font = `${selectedItem.weight === 'bold' ? 'bold' : 'normal'} ${selectedItem.size}px ${selectedItem.font}`;
+                ctx.fillStyle = selectedItem.color;
+                ctx.fillText(selectedItem.text, 0, selectedItem.size);
+            }
+
+            let link = document.createElement('a');
+            link.download = 'object.png';
+            link.href = tempCanvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function startEraser() {
+            if (!selectedItem || !selectedItem.img) {
+                alert('Выберите изображение');
+                return;
+            }
+            isErasing = true;
+        }
+
+        function eraseAt(x, y) {
+            if (!selectedItem || !selectedItem.img) return;
+
+            const ctx = selectedItem.img.canvas.getContext('2d');
+            const scaleX = selectedItem.img.width / selectedItem.w;
+            const scaleY = selectedItem.img.height / selectedItem.h;
+
+            const imgX = (x - selectedItem.x) * scaleX;
+            const imgY = (y - selectedItem.y) * scaleY;
+
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.beginPath();
+            ctx.arc(imgX, imgY, eraserSize * scaleX / 2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalCompositeOperation = 'source-over';
+        }
+
+        function deleteSelectedItem() {
+            if (!selectedItem && selectedItems.length === 0) {
+                alert('Выберите объект для удаления');
+                return;
+            }
+
+            saveState('delete');
+
+            if (selectedItem) {
+                if (selectedItem.items) {
+                    selectedItem.items.forEach(item => {
+                        item.group = null;
+                    });
+                    groups = dynamicRemove(groups, selectedItem);
+                    layers = layers.filter(l => l.item !== selectedItem);
+                } else if (selectedItem.img) {
+                    images = dynamicRemove(images, selectedItem);
+                    layers = layers.filter(l => l.item !== selectedItem);
+                } else {
+                    texts = dynamicRemove(texts, selectedItem);
+                    layers = layers.filter(l => l.item !== selectedItem);
+                }
+                selectedItem = null;
+            } else if (selectedItems.length > 0) {
+                selectedItems.forEach(item => {
+                    if (item.items) {
+                        item.items.forEach(subItem => {
+                            subItem.group = null;
+                        });
+                        groups = dynamicRemove(groups, item);
+                        layers = layers.filter(l => l.item !== item);
+                    } else if (item.img) {
+                        images = dynamicRemove(images, item);
+                        layers = layers.filter(l => l.item !== item);
+                    } else {
+                        texts = dynamicRemove(texts, item);
+                        layers = layers.filter(l => l.item !== item);
+                    }
+                });
+                selectedItems = [];
+            }
+
+            updateButtonStates();
+        }
+
+        function updateButtonStates() {
+            document.getElementById('removeBgBtn').disabled = !selectedItem || !selectedItem.img;
+            document.getElementById('cropBtn').disabled = !selectedItem || !selectedItem.img;
+            document.getElementById('eraserBtn').disabled = !selectedItem || !selectedItem.img;
+            document.getElementById('deleteBtn').disabled = !selectedItem && selectedItems.length === 0;
+            document.getElementById('groupBtn').disabled = selectedItems.length < 2;
+            document.getElementById('downloadBtn').disabled = !selectedItem;
+
+            let canMoveUp = false;
+            let canMoveDown = false;
+
+            if (selectedItem) {
+                let currentIndex = layers.findIndex(entry => entry.item === selectedItem);
+                if (currentIndex >= 0) {
+                    canMoveUp = currentIndex < layers.length - 1;
+                    canMoveDown = currentIndex > 0;
+                    console.log('Selected item:', selectedItem, 'Type:', layers[currentIndex].type,
+                               'Index:', currentIndex, 'Total items:', layers.length);
+                } else {
+                    console.warn('Selected item not found in layers:', selectedItem);
+                }
+            }
+
+            document.getElementById('layerUpBtn').disabled = !canMoveUp;
+            document.getElementById('layerDownBtn').disabled = !canMoveDown;
+            document.getElementById('undoBtn').disabled = historyIndex <= 0;
+            document.getElementById('redoBtn').disabled = historyIndex >= history.length - 1;
+        }
+
+        document.getElementById('imageInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const url = URL.createObjectURL(file);
+                loadImage(url, (img) => {
+                    let newImage = { img: img, x: 50, y: 50, w: img.width / 2, h: img.height / 2 };
+                    images.push(newImage);
+                    layers.push({ type: 'image', item: newImage });
+                    saveState('addImage');
+                    updateButtonStates();
+                });
+            }
+        });
+
+        function openTextModal() {
+            document.getElementById('text-modal').style.display = 'block';
+        }
+
+        function closeTextModal() {
+            document.getElementById('text-modal').style.display = 'none';
+        }
+
+        function addText() {
+            const text = document.getElementById('textInput').value;
+            const font = document.getElementById('fontSelect').value;
+            const color = document.getElementById('colorPicker').value;
+            const size = parseInt(document.getElementById('fontSizeSelect').value);
+            const weight = document.getElementById('fontWeightSelect').value;
+            if (text) {
+                let newText = {
+                    text: text,
+                    x: 100,
+                    y: 100,
+                    font: font,
+                    color: color,
+                    size: size,
+                    weight: weight
+                };
+                texts.push(newText);
+                layers.push({ type: 'text', item: newText });
+                saveState('addText');
+                closeTextModal();
+                document.getElementById('textInput').value = '';
+                updateButtonStates();
+            }
+        }
+
+        function openImageModal() {
+            document.getElementById('image-modal').style.display = 'block';
+        }
+
+        function closeImageModal() {
+            document.getElementById('image-modal').style.display = 'none';
+        }
+
+        async function generateImage() {
+            const prompt = document.getElementById('imagePrompt').value;
+            const apiKey = document.getElementById('apiKeyInput').value;
+
+            if (!prompt || !apiKey) {
+                alert('Введите описание и API ключ');
+                return;
+            }
+
+            try {
+                const response = await fetch('https://api.openai.com/v1/images/generations', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: 'dall-e-3',
+                        prompt: prompt,
+                        n: 1,
+                        size: '1024x1024'
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Ошибка при генерации изображения');
+                }
+
+                const data = await response.json();
+                const imageUrl = data.data[0].url;
+                const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+                const proxiedImageUrl = proxyUrl + imageUrl;
+
+                loadImage(proxiedImageUrl, (img) => {
+                    let newImage = { img: img, x: 50, y: 50, w: img.width / 2, h: img.height / 2 };
+                    images.push(newImage);
+                    layers.push({ type: 'image', item: newImage });
+                    saveState('addImage');
+                    closeImageModal();
+                    document.getElementById('imagePrompt').value = '';
+                    document.getElementById('apiKeyInput').value = '';
+                    updateButtonStates();
+                }, undefined, (error) => {
+                    console.error('Ошибка загрузки изображения:', error);
+                    alert('Не удалось загрузить сгенерированное изображение. Попробуйте снова.');
+                });
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Не удалось сгенерировать изображение. Проверьте API ключ и описание.');
+            }
+        }
+
+        function openRemoveBgModal() {
+            if (!selectedItem || !selectedItem.img) {
+                alert('Выберите изображение');
+                return;
+            }
+            document.getElementById('remove-bg-modal').style.display = 'block';
+        }
+
+        function closeRemoveBgModal() {
+            document.getElementById('remove-bg-modal').style.display = 'none';
+        }
+
+        async function removeBackground() {
+            if (!selectedItem || !selectedItem.img) {
+                alert('Выберите изображение');
+                return;
+            }
+
+            const apiKey = document.getElementById('removeBgApiKey').value;
+            if (!apiKey) {
+                alert('Введите API ключ remove.bg');
+                return;
+            }
+
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = selectedItem.img.width;
+                canvas.height = selectedItem.img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(selectedItem.img.canvas, 0, 0);
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+
+                const formData = new FormData();
+                formData.append('image_file', blob);
+                formData.append('size', 'auto');
+
+                const response = await fetch('https://api.remove.bg/v1.0/removebg', {
+                    method: 'POST',
+                    headers: {
+                        'X-Api-Key': apiKey
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Ошибка при удалении фона');
+                }
+
+                const imageBlob = await response.blob();
+                const imageUrl = URL.createObjectURL(imageBlob);
+
+                loadImage(imageUrl, (img) => {
+                    selectedItem.img = img;
+                    selectedItem.w = img.width / 2;
+                    selectedItem.h = img.height / 2;
+                    saveState('removeBackground');
+                    closeRemoveBgModal();
+                    document.getElementById('removeBgApiKey').value = '';
+                    updateButtonStates();
+                });
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Не удалось убрать фон. Проверьте API ключ remove.bg.');
+            }
+        }
+
+        function startCrop() {
+            if (!selectedItem || !selectedItem.img) {
+                alert('Выберите изображение');
+                return;
+            }
+            isCropping = true;
+        }
+
+        function applyCrop() {
+            if (!cropStartX || !cropEndX) {
+                alert('Выберите область для обрезки');
+                isCropping = false;
+                return;
+            }
+
+            saveState('crop');
+
+            let cropX = Math.min(cropStartX, cropEndX);
+            let cropY = Math.min(cropStartY, cropEndY);
+            let cropWidth = Math.abs(cropEndX - cropStartX);
+            let cropHeight = Math.abs(cropEndY - cropStartY);
+
+            if (cropWidth <= 0 || cropHeight <= 0) {
+                alert('Область обрезки слишком мала');
+                isCropping = false;
+                return;
+            }
+
+            cropX = Math.max(cropX, selectedItem.x);
+            cropY = Math.max(cropY, selectedItem.y);
+            cropWidth = Math.min(cropWidth, selectedItem.x + selectedItem.w - cropX);
+            cropHeight = Math.min(cropHeight, selectedItem.y + selectedItem.h - cropY);
+
+            if (cropWidth <= 0 || cropHeight <= 0) {
+                alert('Область обрезки выходит за границы изображения');
+                isCropping = false;
+                return;
+            }
+
+            const scaleX = selectedItem.img.width / selectedItem.w;
+            const scaleY = selectedItem.img.height / selectedItem.h;
+            const srcX = (cropX - selectedItem.x) * scaleX;
+            const srcY = (cropY - selectedItem.y) * scaleY;
+            const srcWidth = cropWidth * scaleX;
+            const srcHeight = cropHeight * scaleY;
+
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = cropWidth;
+            tempCanvas.height = cropHeight;
+            const ctx = tempCanvas.getContext('2d');
+            ctx.drawImage(selectedItem.img.canvas, srcX, srcY, srcWidth, srcHeight, 0, 0, cropWidth, cropHeight);
+
+            loadImage(tempCanvas.toDataURL(), (img) => {
+                selectedItem.img = img;
+                selectedItem.w = cropWidth;
+                selectedItem.h = cropHeight;
+                selectedItem.x = cropX;
+                selectedItem.y = cropY;
+                isCropping = false;
+                cropStartX = cropEndX = cropStartY = cropEndY = undefined;
+            });
+        }
+    </script>
+</body>
+</html>

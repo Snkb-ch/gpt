@@ -8,7 +8,7 @@ urlpatterns = [
     path('success', views.success, name='success'),
     path('notifications', views.notifications.as_view(), name='notifications'),
     # path('history', views.history, name='history'),
-
+    path('redactor/',views.redactor, name = 'redactor'),
 
     path('get_objects', views.get_objects, name='get_objects'),
 
