@@ -548,10 +548,13 @@ class OpenAIHelper:
         photo_tok = 1500
         if model == 'gpt-4.1-nano':
             photo_tok = 4000
+            k = 10
         elif model == 'gpt-4.1-mini':
             photo_tok = 2500
+            k = 5
         elif model == 'gpt-4.1':
             photo_tok = 1500
+            k = 1
         for message in messages:
             num_tokens += tokens_per_message
 
@@ -561,7 +564,7 @@ class OpenAIHelper:
 
                     if type(value) == list:
 
-                        num_tokens = num_tokens +  len(encoding.encode(value[0]['text'])) + photo_tok
+                        num_tokens = num_tokens +  len(encoding.encode(value[0]['text'])) + photo_tok * k
                     elif value[0]== '[':
                         num_tokens = num_tokens  + photo_tok
 
