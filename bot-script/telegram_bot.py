@@ -1736,7 +1736,7 @@ GPT-4o-mini     82%
             return True
         elif multimodel_3 and await self.db.get_max_tokens(user_id)*multi_k - (await self.db.get_used_tokens(user_id)*multi_k + tokens_input) <= 10:
 
-                return False
+            return False
         elif not multimodel_3 and  await self.db.get_max_tokens(user_id) - (await self.db.get_used_tokens(user_id) + tokens_input) <= 10:
 
             return False
@@ -1836,7 +1836,7 @@ GPT-4o-mini     82%
                     pass
                 model_name = await self.db.get_user_model(user_id)
 
-                if  model_name != 'gpt-4':
+                if  model_name == 'gpt-4o-mini':
 
                     await update.message.reply_text(
                         message_thread_id=get_thread_id(update),
@@ -2203,7 +2203,9 @@ GPT-4o-mini     82%
 
 
                     tokens_in_message = self.openai.count_tokens(([{"role": "user", "content": str(prompt)}]), model_config['model'])
+
                     tokens_input = tokens_in_message + self.openai.get_conversation_stats(chat_id=chat_id, model=model_config['model'])[1]
+
 
                     while not await self.is_input_in_tokens(update, context, user_id, tokens_input, model_config):
                         try:

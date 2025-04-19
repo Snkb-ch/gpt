@@ -45,13 +45,14 @@ from tenacity import retry, stop_after_attempt, wait_fixed, retry_if_exception_t
 # Models can be found here: https://platform.openai.com/docs/models/overview
 GPT_3_MODELS = ('gpt-3.5-turbo-1106', "gpt-3.5-turbo", "gpt-3.5-turbo-0613","gpt-3.5-turbo-1106" , "gpt-3.5-turbo-0125")
 GPT_3_16K_MODELS = ("gpt-3.5-turbo-16k", "gpt-3.5-turbo-16k-0613" , "gpt-3.5-turbo-0125", "gpt-3.5-turbo")
+GPT_41_MODELS = ("gpt-4.1-nano","gpt-4.1-mini","gpt-4.1")
 GPT_4_MODELS = ("gpt-4", "gpt-4-0314", "gpt-4-0613", "gpt-4-1106-preview", "gpt-4-vision-preview", "gpt-4-turbo","gpt-4-turbo-2024-04-09", "gpt-4o", "gpt-4o-mini", "gpt-4o-2024-08-06")
 GPT_4_32K_MODELS = ("gpt-4-32k", "gpt-4-32k-0314", "gpt-4-32k-0613")
 LLAMA_MODELS_70= ("meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo", )
 LLAMA_MODELS_400= ("meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo", )
 GROK = ("grok-beta", "grok")
 
-GPT_ALL_MODELS = GPT_3_MODELS + GPT_3_16K_MODELS + GPT_4_MODELS + GPT_4_32K_MODELS
+GPT_ALL_MODELS = GPT_3_MODELS + GPT_3_16K_MODELS + GPT_4_MODELS + GPT_4_32K_MODELS + GPT_41_MODELS
 
 def get_price(sub_name):
     price = {}
@@ -506,6 +507,8 @@ class OpenAIHelper:
             return base * 4
         if model in GPT_4_MODELS:
             return 128000
+        if model in GPT_41_MODELS:
+            return 1000000
         if model in GROK:
             return 128000
         if model in GPT_4_32K_MODELS:
@@ -541,22 +544,41 @@ class OpenAIHelper:
             tokens_per_name = 1
 
         num_tokens = 0
+
+        photo_tok = 1500
+        if model == 'gpt-4.1-nano':
+            photo_tok = 4000
+        elif model == 'gpt-4.1-mini':
+            photo_tok = 2500
+        elif model == 'gpt-4.1':
+            photo_tok = 1500
         for message in messages:
             num_tokens += tokens_per_message
-            for key, value in message.items():
+
+            for value in message.values():
                 try:
-                    if type(value) == str:
+
+
+                    if type(value) == list:
+
+                        num_tokens = num_tokens +  len(encoding.encode(value[0]['text'])) + photo_tok
+                    elif value[0]== '[':
+                        num_tokens = num_tokens  + photo_tok
+
+
+                    else:
+
 
                         num_tokens += len(encoding.encode(value))
-                    elif type(value) == list:
 
-                        num_tokens = num_tokens + len(encoding.encode(value[0]['text'])) + 1500
+
 
                 except Exception as e:
 
                     logging.error(f"Error encoding message: {e}")
-                if key == "name":
-                    num_tokens += tokens_per_name
+
+                # if key == "name":
+                #     num_tokens += tokens_per_name
         num_tokens += 3  # every reply is primed with <|start|>assistant<|message|>
         return num_tokens
 
