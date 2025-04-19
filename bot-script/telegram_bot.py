@@ -1834,9 +1834,9 @@ GPT-4o-mini     82%
                     logging.info(f'Photo send: {user_id}')
                 except:
                     pass
-                model_name = await self.db.get_user_model(user_id)
+                model_name = await self.db.get_model_config(user_id)
 
-                if  model_name == 'gpt-4o-mini':
+                if  model_name['model'] == 'gpt-4o-mini':
 
                     await update.message.reply_text(
                         message_thread_id=get_thread_id(update),
