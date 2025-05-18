@@ -548,7 +548,7 @@ class OpenAIHelper:
         photo_tok = 1500
         if model == 'gpt-4.1-nano':
             photo_tok = 4000
-            k = 10
+            k = 1
         elif model == 'gpt-4.1-mini':
             photo_tok = 2500
             k = 5
