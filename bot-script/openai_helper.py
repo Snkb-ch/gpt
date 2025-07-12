@@ -88,7 +88,10 @@ def default_max_tokens(model: str) -> int:
     :param model: The model name
     :return: The default number of max tokens
     """
-    base = 800
+    if model == 'grok-4-0709':
+        base  = 10000
+    else:
+        base = 800
 
 
     return base
