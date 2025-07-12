@@ -50,7 +50,7 @@ GPT_4_MODELS = ("gpt-4", "gpt-4-0314", "gpt-4-0613", "gpt-4-1106-preview", "gpt-
 GPT_4_32K_MODELS = ("gpt-4-32k", "gpt-4-32k-0314", "gpt-4-32k-0613")
 LLAMA_MODELS_70= ("meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo", )
 LLAMA_MODELS_400= ("meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo", )
-GROK = ("grok-beta", "grok")
+GROK = ("grok-beta", "grok", "grok-4-0709")
 
 GPT_ALL_MODELS = GPT_3_MODELS + GPT_3_16K_MODELS + GPT_4_MODELS + GPT_4_32K_MODELS + GPT_41_MODELS
 
